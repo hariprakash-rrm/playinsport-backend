@@ -23,5 +23,11 @@ export class User{
 
     @Prop()
     Atoken:string
+
+    @Prop()
+    otp:number
+
+    @Prop()
+    verified:number
 }
 export const UserSchema = SchemaFactory.createForClass(User)
