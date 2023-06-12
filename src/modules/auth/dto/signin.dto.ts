@@ -17,10 +17,7 @@ export class SigninDto {
 
 export class SignupDto {
 
-    @IsNotEmpty()
-    @IsString()
-    readonly name: string;
-
+   
     @IsNotEmpty()
     @IsString()
     @MinLength(6)

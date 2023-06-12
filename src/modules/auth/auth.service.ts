@@ -28,13 +28,13 @@ export class AuthService {
      * @returns 
      */
     async signup(signupDto: SignupDto): Promise<returnSignUpDto> {
-        const { name, username, number } = signupDto
+        const {  username, number } = signupDto
 
-        const hashedPassword = await bcrypt.hash(env.JWT_SECRET, env.JWT_SECRET)
+        const hashedPassword = await bcrypt.hash('10', 10)
         const wallet = 0
         try {
             var user = await this.userModel.create({
-                name, username, number, password: hashedPassword, wallet
+                 username, number, password: hashedPassword, wallet
             })
         } catch (err) {
             if (err.code == 11000) {
