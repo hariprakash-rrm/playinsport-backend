@@ -14,16 +14,12 @@ const mongoose_1 = require("@nestjs/mongoose");
 let User = class User {
 };
 __decorate([
-    (0, mongoose_1.Prop)(),
-    __metadata("design:type", Object)
-], User.prototype, "name", void 0);
-__decorate([
     (0, mongoose_1.Prop)({ unique: true }),
     __metadata("design:type", String)
 ], User.prototype, "username", void 0);
 __decorate([
     (0, mongoose_1.Prop)({ unique: true }),
-    __metadata("design:type", Number)
+    __metadata("design:type", String)
 ], User.prototype, "number", void 0);
 __decorate([
     (0, mongoose_1.Prop)(),
@@ -37,6 +33,14 @@ __decorate([
     (0, mongoose_1.Prop)(),
     __metadata("design:type", String)
 ], User.prototype, "Atoken", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Number)
+], User.prototype, "otp", void 0);
+__decorate([
+    (0, mongoose_1.Prop)(),
+    __metadata("design:type", Number)
+], User.prototype, "verified", void 0);
 User = __decorate([
     (0, mongoose_1.Schema)({
         timestamps: true

@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 
 import * as bcrypt from 'bcryptjs'
 import { JwtService } from '@nestjs/jwt';
-import { SignupDto, SetPasswordDto, returnSignInDto, returnSignUpDto, returnSubmitOtpDto, returnSetPasswordDto } from './dto/signin.dto';
+import { SignupDto, SetPasswordDto, returnSignInDto, returnSignUpDto, returnSubmitOtpDto, returnSetPasswordDto, sendOTPForResetPasswordDto } from './dto/signin.dto';
 import { SigninDto, SubmitOtpDto } from './dto/signin.dto';
 import { Client, Message } from 'whatsapp-web.js';
 import { env } from 'process';
@@ -28,14 +28,16 @@ export class AuthService {
      * @returns 
      */
     async signup(signupDto: SignupDto): Promise<returnSignUpDto> {
-        const { name, username, number } = signupDto
+        const { username, number } = signupDto
 
-        const hashedPassword = await bcrypt.hash(env.JWT_SECRET, env.JWT_SECRET)
+        const hashedPassword = await bcrypt.hash('10', 1)
         const wallet = 0
         try {
             var user = await this.userModel.create({
-                name, username, number, password: hashedPassword, wallet
+                username, number, password: hashedPassword, wallet
             })
+
+            console.log(user)
         } catch (err) {
             if (err.code == 11000) {
                 let data = Object.keys(err.keyValue)
@@ -49,8 +51,12 @@ export class AuthService {
         const otp = Math.floor(Math.random() * (max - min + 1) + min);
 
         user.otp = otp
+        console.log(otp)
         user.verified = 0
         user.save()
+
+        let num = console.log(parseInt(number))
+        console.log(typeof (num))
         const postData = {
             // Data to be sent in the request body
             number: number,
@@ -70,9 +76,7 @@ export class AuthService {
         var users = user.number
         try {
             const response = await axios.post('http://localhost:3001/send-otp', postData).then((res: any) => {
-                // console.log(res)
                 data = res
-
             })
             console.log(data)
             const responseData = {
@@ -85,11 +89,10 @@ export class AuthService {
                 if (user.verified == 0) {
                     await this.userModel.findOneAndDelete({ users })
                 }
-            }, 10000);
+            }, 100000);
 
             return responseData;
         } catch (err) {
-
             await this.userModel.findOneAndDelete({ users })
             throw new NotAcceptableException(`Something went wrong, Contact admin`)
         }
@@ -132,7 +135,6 @@ export class AuthService {
     async submitOtp(submitOtpDto: SubmitOtpDto): Promise<returnSubmitOtpDto> {
         const { number, otp } = submitOtpDto
         const user = await this.userModel.findOne({ number })
-        console.log(user)
         if (!user) {
             throw new UnauthorizedException('User details not found')
         }
@@ -165,7 +167,7 @@ export class AuthService {
      */
     async setPassword(setPasswordDto: SetPasswordDto, auth): Promise<returnSetPasswordDto> {
         const { token, password } = setPasswordDto
-        const hashedPassword = await bcrypt.hash(password, env.JWT_SECRET)
+        const hashedPassword = await bcrypt.hash(password, 10)
         const user = await this.userModel.findOne({ auth })
         if (!user) {
             throw new UnauthorizedException('number is not valid')
@@ -180,6 +182,34 @@ export class AuthService {
 
     }
 
+    async sendOTPForResetPassword(SendOTPForResetPasswordDto: sendOTPForResetPasswordDto): Promise<any> {
 
+        const { number } = SendOTPForResetPasswordDto;
+
+        const user = await this.userModel.findOne({ number: number });
+        if (!user) {
+            throw new UnauthorizedException('number is not valid')
+        }
+        console.log(`user:    ${user}`);
+        const min = 1000; // Minimum 4-digit number
+        const max = 9999; // Maximum 4-digit number
+
+        const otp = Math.floor(Math.random() * (max - min + 1) + min);
+
+        user.otp = otp
+        user.save()
+        const postData = {
+            // Data to be sent in the request body
+            number: number,
+            message: `Otp only valid for 1 min : ${otp}`
+        };
+
+        console.log(`postData:    ${postData}`)
+        let data: any
+        var users = user.number
+
+        console.log(users)
+        return await this.sendOtp(postData, user)
+    }
 
 }

@@ -17,10 +17,7 @@ export class SigninDto {
 
 export class SignupDto {
 
-    @IsNotEmpty()
-    @IsString()
-    readonly name: string;
-
+   
     @IsNotEmpty()
     @IsString()
     @MinLength(6)
@@ -73,4 +70,19 @@ export class returnSubmitOtpDto{
 export class returnSetPasswordDto{
     statusCode:number
     message :string
+}
+
+export class sendOTPForResetPasswordDto{
+
+    @IsNotEmpty()
+    @IsString()
+    readonly number:string
+
+}
+
+export class returnSubmitOtpForResetPasswordDto {
+
+    @IsNotEmpty()
+    readonly otp: number
+
 }
