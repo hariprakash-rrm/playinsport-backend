@@ -20,15 +20,16 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
-
- 
+  // app.useWebSocketAdapter(new IoAdapter(app));
+  // app.useWebSocketAdapter(new IoAdapter(app));
 
   const corsOptions: CorsOptions = {
-    origin: 'http://localhost:4200/', // Allow requests from this origin
+    origin: 'http://localhost:4200', // Allow requests from this origin
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specified HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allow specified headers
     credentials: true, // Allow sending cookies and other credentials
   };
+ 
   app.enableCors(corsOptions);
   await app.listen(3000);
 }

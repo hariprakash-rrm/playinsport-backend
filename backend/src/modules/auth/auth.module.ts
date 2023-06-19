@@ -8,6 +8,8 @@ import { AuthService } from './auth.service';
 // import { JwtStrategy } from './jwt.strategy';
 import { UserSchema } from './schemas/user.schema';
 import { JwtStrategy } from './jwt.strategy';
+import { ChatGateway } from './socket.gateway';
+import { GameSchema } from '../games/create/schemas/create.schema';
 require("dotenv").config();
 @Module({
   imports: [
@@ -25,10 +27,10 @@ require("dotenv").config();
         };
       },
     }),
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: 'User', schema: UserSchema },{name:'Game',schema:GameSchema}]),
   ],
   controllers: [AuthController],
-  providers: [AuthService,JwtStrategy],
+  providers: [AuthService,JwtStrategy,ChatGateway],
   exports: [JwtStrategy, PassportModule],
 })
 export class AuthModule {}

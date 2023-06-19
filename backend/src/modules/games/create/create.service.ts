@@ -9,16 +9,19 @@ export class CreateService {
 
 
     async create(data: any): Promise<any> {
-        let { name, prize, tokenPrice, date, maximumTokenPerUser } = data
-        console.log(name, prize, tokenPrice, date, maximumTokenPerUser)
-        
+        let { name, prize, tokenPrice, date, maximumTokenPerUser ,totalTokenNumber} = data
+        console.log(name, prize, tokenPrice, date, maximumTokenPerUser,totalTokenNumber)
+        console.log(totalTokenNumber);
+        var totalToken:any[]=[]
+        for(let i=0;i<totalTokenNumber;i++){
+            totalToken.push(i+1)
+        }
         try {
             let count = await this.gameModel.countDocuments().exec();
             var game = await this.gameModel.create({
-                round: count+1, name, prize
+                round: count+1, name,date, prize,tokenPrice,maximumTokenPerUser,totalToken
             })
-             game.totalToken =await [1, 2, 3]
-            await game.save()
+             
 
         } catch (err) {
             console.log(err)

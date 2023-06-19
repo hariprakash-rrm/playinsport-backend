@@ -20,19 +20,19 @@ date:string
 tokenPrice:string
 
 @Prop()
-totalWinners:string
-
-@Prop()
 totalToken:number[]
 
 @Prop()
 prize:[]
 
-@Prop()
-selected:[]
+@Prop({unique:true})
+selected:number[]
 
 @Prop()
 winnerList:[]
+
+@Prop()
+maximumTokenPerUser:string
 
 
 }
