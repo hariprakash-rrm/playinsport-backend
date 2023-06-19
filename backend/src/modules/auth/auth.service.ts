@@ -85,7 +85,7 @@ export class AuthService {
                 if (user.verified == 0) {
                     await this.userModel.findOneAndDelete({ users })
                 }
-            }, 10000);
+            }, 15000);
 
             return responseData;
         } catch (err) {
@@ -165,7 +165,7 @@ export class AuthService {
      */
     async setPassword(setPasswordDto: SetPasswordDto, auth): Promise<returnSetPasswordDto> {
         const { token, password } = setPasswordDto
-        const hashedPassword = await bcrypt.hash(password, env.JWT_SECRET)
+        const hashedPassword = await bcrypt.hash(password, 10)
         const user = await this.userModel.findOne({ auth })
         if (!user) {
             throw new UnauthorizedException('number is not valid')

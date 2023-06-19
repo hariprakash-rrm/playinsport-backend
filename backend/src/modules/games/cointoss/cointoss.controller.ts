@@ -5,7 +5,7 @@ import { PlayCoinTossDto } from './dto/cointoss.dto';
 import { CointossService } from './cointoss.service';
 
 @Controller('')
-export class CointossController {
+export class CointossController  {
 constructor(private cointossService:CointossService)
 {}
     @Post('/play')

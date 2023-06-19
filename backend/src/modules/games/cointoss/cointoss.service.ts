@@ -6,9 +6,11 @@ import { PlayCoinTossDto } from './dto/cointoss.dto';
 // import { PlayCoinTossSchemaResult } from './schemas/cointoss.schema';
 import { PlayCoinTossDtoResult } from './dto/cointoss.dto';
 import { error } from 'console';
+import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
+import { Server, Socket } from 'socket.io';
 
 @Injectable()
-export class CointossService {
+export class CointossService  {
 
     constructor(@InjectModel(User.name)
     private userModels: Model<User>,
@@ -35,3 +37,4 @@ export class CointossService {
         return { username, userWallet }
     }
 }
+

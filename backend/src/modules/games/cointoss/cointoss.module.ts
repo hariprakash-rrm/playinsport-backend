@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common';
 import { CointossController } from './cointoss.controller';
-import { CointossService } from './cointoss.service';
+import {  CointossService } from './cointoss.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BookSchema } from 'src/modules/book/schemas/book.schema';
 import { User, UserSchema } from 'src/modules/auth/schemas/user.schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { ChatGateway } from 'src/modules/auth/socket.gateway';
 
 @Module({
   // imports:[MongooseModule.forFeature([{name:'Book',schema:BookSchema}])],
