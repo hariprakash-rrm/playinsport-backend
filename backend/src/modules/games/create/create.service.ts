@@ -12,14 +12,20 @@ export class CreateService {
         let { name, prize, tokenPrice, date, maximumTokenPerUser ,totalTokenNumber} = data
         console.log(name, prize, tokenPrice, date, maximumTokenPerUser,totalTokenNumber)
         console.log(totalTokenNumber);
-        var totalToken:any[]=[]
+        var tokenDetails:any[]=[]
+
         for(let i=0;i<totalTokenNumber;i++){
-            totalToken.push(i+1)
+            let data ={
+                tokenNumber:i+1,
+                selectedBy:'',
+                isSelected:false
+            }
+            tokenDetails.push(data)
         }
         try {
             let count = await this.gameModel.countDocuments().exec();
             var game = await this.gameModel.create({
-                round: count+1, name,date, prize,tokenPrice,maximumTokenPerUser,totalToken
+                round: count+1, name,date, prize,tokenPrice,maximumTokenPerUser,tokenDetails
             })
              
 

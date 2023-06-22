@@ -116,9 +116,16 @@ export class AuthService {
         const token = this.jwtService.sign({ id: user._id })
         user.Atoken = token
         user.save()
+        let userDetails={
+            name:user.username,
+            number:user.number,
+            wallet:user.wallet,
+            
+        }
         const responseData = {
             statusCode: 201,
             token: token,
+            details:userDetails,
             message: 'Logged in'
         };
         return responseData
@@ -148,10 +155,15 @@ export class AuthService {
         user.verified = 1
         user.otp = null
         user.save()
-
+        let userDetails={
+            name:user.username,
+            number:user.number,
+            wallet:user.wallet
+        }
         const responseData = {
             statusCode: 201,
             token: token,
+            details:userDetails,
             message: "Otp verified"
         }
         return responseData
