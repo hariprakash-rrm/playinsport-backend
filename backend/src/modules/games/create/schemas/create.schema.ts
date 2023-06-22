@@ -20,13 +20,14 @@ date:string
 tokenPrice:string
 
 @Prop()
-totalToken:number[]
+totalToken:object[]
+
+@Prop()
+tokenDetails:object[]
 
 @Prop()
 prize:[]
 
-@Prop({unique:true})
-selected:number[]
 
 @Prop()
 winnerList:[]

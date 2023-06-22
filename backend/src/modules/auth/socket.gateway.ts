@@ -6,6 +6,7 @@ import { User } from 'src/modules/auth/schemas/user.schema';
 import { Game } from '../games/create/schemas/create.schema';
 import { NotAcceptableException, UnauthorizedException } from '@nestjs/common';
 import { error } from 'console';
+import axios from 'axios';
 
 @WebSocketGateway({ cors: { origin: ['http://localhost:4200'] } })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -24,72 +25,79 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit('users', Object.keys(this.server.sockets.sockets).length);
   }
 
-  
+
 
   @SubscribeMessage('getGame')
-  async getGame( ) {
-   
-      let rounds: any = "2"
-      let game = await this.gameModels.findOne({ round: rounds })
-      this.server.emit('chat', game.totalToken);
-   
-   
+  async getGame() {
+
+    let rounds: any = "1"
+    let game = await this.gameModels.findOne({ round: rounds })
+
+    this.server.emit('getGame', game.tokenDetails);
+
+
   }
   @SubscribeMessage('chat')
   async handleMessage(client: Socket, data: any) {
-    let { token, message } = data
+    let { token, index ,tokenNumber} = data
     let response: any
     let user = await this.userModels.findOne(token.token)
 
     if (user) {
-      let rounds: any = "2"
+      let rounds: any = 1
       let game = await this.gameModels.findOne({ round: rounds })
       if (game) {
-        if (message == 'get') {
-          response = game.totalToken
-        }
-        let findToken = await game.totalToken.includes(message)
-        if (findToken) {
-          let index = await game.totalToken.indexOf(message)
-          game.totalToken.splice(index, 1)
-          game.selected.push(message as number)
-          
-          await game.save()
-          this.getGame()
-          response={
-            status:true,
-            message:'Token selected ',
-            statusCode:201
+        this.server.emit('chat', user)
+        let arr: any = await game.tokenDetails[index]
+
+        if (!arr.isSelected) {
+          try {
+            let data = {
+              tokenNumber: tokenNumber,
+              selectedBy: user.username,
+              isSelected: true,
+              number: user.number
+            }
+            game.tokenDetails[index ] = data
+            let postData={
+              number:7373850511,
+              message:`Details :\n
+              Rounds : ${rounds}\n
+              Selected number : ${tokenNumber}`
+            }
+            const response = await axios.post('http://localhost:3001/send-otp', postData).then((res: any) => {
+              // console.log(res)
+              data = res
+
+            })
+            await game.save()
+            this.getGame()
+          } catch (err) {
+
           }
-        } else {
+
+        }
+        else {
           response = {
             status: false,
             errorCode: 401,
-            message: 'Slected number not available'
+            message: 'Token already selected'
           }
-
-          // throw new NotAcceptableException('Selected number not available')
         }
+
       } else {
         response = {
           status: false,
           errorCode: 401,
           message: 'Game not available'
         }
-
-        // throw new NotAcceptableException('Game not found')
       }
-      console.log(game)
-    } else {
       response = {
         status: false,
         errorCode: 401,
         message: 'User not found'
       }
-
-      // throw new UnauthorizedException('user not found')
+      this.server.emit('chat', user)
     }
-    console.log(`Message received: ${response}`);
-    this.server.emit('chat', response);
   }
 }

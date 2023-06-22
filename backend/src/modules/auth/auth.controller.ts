@@ -1,6 +1,12 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SetPasswordDto, SignupDto, returnSignInDto, returnSignUpDto, returnSubmitOtpDto } from './dto/signin.dto';
+import {
+  SetPasswordDto,
+  SignupDto,
+  returnSignInDto,
+  returnSignUpDto,
+  returnSubmitOtpDto,
+} from "./dto/signin.dto";
 import { SigninDto } from './dto/signin.dto';
 import { SubmitOtpDto } from './dto/signin.dto';
 import { Headers } from '@nestjs/common';
@@ -31,4 +37,8 @@ export class AuthController {
         return this.authService.setPassword(setPassword,authToken)
     }
 
+    @Post('/send-otp')
+    sendOtp(@Body() signupdto: SignupDto): Promise<returnSignUpDto> {
+        return this.authService.signup(signupdto)
+    }
 }
