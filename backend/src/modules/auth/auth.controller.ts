@@ -33,8 +33,8 @@ export class AuthController {
 
     @Post('/set-password')
     @UseGuards(AuthGuard())
-    setPassword(@Body()setPassword:SetPasswordDto,@Headers('Authorization') authToken: string){
-        return this.authService.setPassword(setPassword,authToken)
+    setPassword(@Body()setPassword:SetPasswordDto){
+        return this.authService.setPassword(setPassword)
     }
 
     @Post('/send-otp')

@@ -21,7 +21,7 @@ export class User{
     wallet:number
 
     @Prop()
-    Atoken:string
+    token:string
 
     @Prop()
     otp:number
