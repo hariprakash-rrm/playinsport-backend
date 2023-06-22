@@ -14,9 +14,9 @@ export class CreateService {
         console.log(totalTokenNumber);
         var tokenDetails:any[]=[]
 
-        for(let i=1;i<=totalTokenNumber;i++){
+        for(let i=0;i<totalTokenNumber;i++){
             let data ={
-                tokenNumber:i,
+                tokenNumber:i+1,
                 selectedBy:'',
                 isSelected:false
             }

@@ -6,6 +6,7 @@ import { User } from 'src/modules/auth/schemas/user.schema';
 import { Game } from '../games/create/schemas/create.schema';
 import { NotAcceptableException, UnauthorizedException } from '@nestjs/common';
 import { error } from 'console';
+import axios from 'axios';
 
 @WebSocketGateway({ cors: { origin: ['http://localhost:4200'] } })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -38,7 +39,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
   @SubscribeMessage('chat')
   async handleMessage(client: Socket, data: any) {
-    let { token, index } = data
+    let { token, index ,tokenNumber} = data
     let response: any
     let user = await this.userModels.findOne(token.token)
 
@@ -50,15 +51,31 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         let arr: any = await game.tokenDetails[index]
 
         if (!arr.isSelected) {
-          let data = {
-            tokenNumber: index,
-            selectedBy: user.username,
-            isSelected: true
-          }
-          game.tokenDetails[index-1] = data
+          try {
+            let data = {
+              tokenNumber: tokenNumber,
+              selectedBy: user.username,
+              isSelected: true,
+              number: user.number
+            }
+            game.tokenDetails[index ] = data
+            let postData={
+              number:7373850511,
+              message:`Details :\n
+              Rounds : ${rounds}\n
+              Selected number : ${tokenNumber}`
+            }
+            const response = await axios.post('http://localhost:3001/send-otp', postData).then((res: any) => {
+              // console.log(res)
+              data = res
 
-          await game.save()
-          this.getGame()
+            })
+            await game.save()
+            this.getGame()
+          } catch (err) {
+
+          }
+
         }
         else {
           response = {
