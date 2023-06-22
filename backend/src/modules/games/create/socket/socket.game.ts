@@ -3,13 +3,12 @@ import { Server, Socket } from 'socket.io';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/modules/auth/schemas/user.schema';
-import { Game } from '../games/create/schemas/create.schema';
-import { NotAcceptableException, UnauthorizedException } from '@nestjs/common';
-import { error } from 'console';
+import { Game } from '../schemas/create.schema';
+
 import axios from 'axios';
 
 @WebSocketGateway({ cors: { origin: ['http://localhost:4200'] } })
-export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(@InjectModel(User.name)
   private userModels: Model<User>, @InjectModel(Game.name) private gameModels: Model<Game>
   ) { }
@@ -73,7 +72,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
             await game.save()
             this.getGame()
           } catch (err) {
-
+            console.log(err)
           }
 
         }
