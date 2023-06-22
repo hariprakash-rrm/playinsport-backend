@@ -5,7 +5,6 @@ import { BookModule } from './modules/book/book.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './modules/auth/auth.module';
 import { CointossModule } from './modules/games/cointoss/cointoss.module';
-import { ChatGateway } from './modules/auth/socket.gateway';
 import { CreateModule } from './modules/games/create/create.module';
 
 

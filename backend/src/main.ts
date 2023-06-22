@@ -4,8 +4,7 @@ import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
-import { IoAdapter } from '@nestjs/platform-socket.io';
-import { ChatGateway } from './modules/auth/socket.gateway';
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
