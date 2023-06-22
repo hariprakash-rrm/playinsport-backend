@@ -71,3 +71,9 @@ export class returnSetPasswordDto{
     statusCode:number
     message :string
 }
+
+export class returnOtp {
+  statusCode: number;
+  otp: string;
+  message: string;
+}
