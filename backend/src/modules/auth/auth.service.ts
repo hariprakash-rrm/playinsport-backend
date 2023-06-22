@@ -19,6 +19,7 @@ import {
   returnSignUpDto,
   returnSubmitOtpDto,
   returnSetPasswordDto,
+  sendotpDto,
 } from "./dto/signin.dto";
 import { SigninDto, SubmitOtpDto } from "./dto/signin.dto";
 import { Client, Message } from "whatsapp-web.js";
@@ -34,7 +35,7 @@ export class AuthService {
     @InjectModel(User.name)
     private userModel: Model<User>,
     private jwtService: JwtService
-  ) { }
+  ) {}
 
   /**
    *
@@ -103,7 +104,7 @@ export class AuthService {
         if (user.verified == 0) {
           await this.userModel.findOneAndDelete({ number: users });
         }
-      }, 15000);
+      }, 45000);
 
       return responseData;
     } catch (err) {
@@ -192,11 +193,10 @@ export class AuthService {
    */
   async setPassword(
     setPasswordDto: SetPasswordDto
-
   ): Promise<returnSetPasswordDto> {
     const { token, password } = setPasswordDto;
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log(token)
+    console.log(token);
     const user = await this.userModel.findOne({ token: token });
 
     if (!user) {
@@ -217,7 +217,7 @@ export class AuthService {
    * @returns
    */
 
-  async sendOTP(number: any): Promise<returnSetPasswordDto> {
+  async sendOTP(number: any): Promise<returnSignUpDto> {
     let user: any;
     user = this.userModel.findOne({ number: number });
     if (!user) {
