@@ -34,7 +34,7 @@ export class AuthService {
     @InjectModel(User.name)
     private userModel: Model<User>,
     private jwtService: JwtService
-  ) {}
+  ) { }
 
   /**
    *
@@ -99,9 +99,9 @@ export class AuthService {
         message: "Otp sent ",
       };
       setTimeout(async () => {
-        const user = await this.userModel.findOne({ users });
+        const user = await this.userModel.findOne({ number: users });
         if (user.verified == 0) {
-          await this.userModel.findOneAndDelete({ users });
+          await this.userModel.findOneAndDelete({ number: users });
         }
       }, 15000);
 
@@ -120,7 +120,7 @@ export class AuthService {
   async login(singinDto: SigninDto): Promise<returnSignInDto> {
     const { number, password } = singinDto;
 
-    const user = await this.userModel.findOne({ number });
+    const user = await this.userModel.findOne({ number: number });
     if (!user) {
       throw new UnauthorizedException("number is not valid");
     }
@@ -130,7 +130,7 @@ export class AuthService {
       throw new UnauthorizedException("Password is not valid");
     }
     const token = this.jwtService.sign({ id: user._id });
-    user.Atoken = token;
+    user.token = token;
     user.save();
     let userDetails = {
       name: user.username,
@@ -153,7 +153,7 @@ export class AuthService {
    */
   async submitOtp(submitOtpDto: SubmitOtpDto): Promise<returnSubmitOtpDto> {
     const { number, otp } = submitOtpDto;
-    const user = await this.userModel.findOne({ number });
+    const user = await this.userModel.findOne({ number: number });
     if (!user) {
       throw new UnauthorizedException("User details not found");
     }
@@ -166,7 +166,7 @@ export class AuthService {
     }
 
     const token = this.jwtService.sign({ id: user._id });
-    user.Atoken = token;
+    user.token = token;
     user.verified = 1;
     user.otp = null;
     user.save();
@@ -191,12 +191,14 @@ export class AuthService {
    * @returns
    */
   async setPassword(
-    setPasswordDto: SetPasswordDto,
-    auth
+    setPasswordDto: SetPasswordDto
+
   ): Promise<returnSetPasswordDto> {
     const { token, password } = setPasswordDto;
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await this.userModel.findOne({ auth });
+    console.log(token)
+    const user = await this.userModel.findOne({ token: token });
+
     if (!user) {
       throw new UnauthorizedException("number is not valid");
     }

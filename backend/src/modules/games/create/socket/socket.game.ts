@@ -38,10 +38,10 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   }
   @SubscribeMessage('chat')
   async handleMessage(client: Socket, data: any) {
-    let { token, index ,tokenNumber} = data
+    let { token, index, tokenNumber } = data
     let response: any
-    let user = await this.userModels.findOne(token.token)
-
+    let user = await this.userModels.findOne({ token: token })
+    console.log(user)
     if (user) {
       let rounds: any = 1
       let game = await this.gameModels.findOne({ round: rounds })
@@ -57,10 +57,10 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
               isSelected: true,
               number: user.number
             }
-            game.tokenDetails[index ] = data
-            let postData={
-              number:7373850511,
-              message:`Details :\n
+            game.tokenDetails[index] = data
+            let postData = {
+              number: user.number,
+              message: `Details :\n
               Rounds : ${rounds}\n
               Selected number : ${tokenNumber}`
             }
