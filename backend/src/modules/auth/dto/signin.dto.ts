@@ -29,6 +29,12 @@ export class SignupDto {
 
 }
 
+export class sendotpDto {
+  @IsNotEmpty()
+  @IsString()
+  readonly number: string;
+}
+
 export class SubmitOtpDto {
 
     @IsNotEmpty()

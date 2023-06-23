@@ -6,39 +6,40 @@ import {
   returnSignInDto,
   returnSignUpDto,
   returnSubmitOtpDto,
+  sendotpDto,
+  returnOtp,
 } from "./dto/signin.dto";
 import { SigninDto } from './dto/signin.dto';
 import { SubmitOtpDto } from './dto/signin.dto';
 import { Headers } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-@Controller('')
+@Controller("")
 export class AuthController {
-    constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) {}
 
+  @Post("/signup")
+  signUp(@Body() signupdto: SignupDto): Promise<returnSignUpDto> {
+    return this.authService.signup(signupdto);
+  }
 
-    @Post('/signup')
-    signUp(@Body() signupdto: SignupDto): Promise<returnSignUpDto> {
-        return this.authService.signup(signupdto)
-    }
+  @Post("/signin")
+  signin(@Body() signinDto: SigninDto): Promise<returnSignInDto> {
+    return this.authService.login(signinDto);
+  }
 
-    @Post('/signin')
-    signin(@Body() signinDto: SigninDto): Promise<returnSignInDto> {
-        return this.authService.login(signinDto)
-    }
+  @Post("/submit-otp")
+  submitOtp(@Body() submitOtp: SubmitOtpDto): Promise<returnSubmitOtpDto> {
+    return this.authService.submitOtp(submitOtp);
+  }
 
-    @Post('/submit-otp')
-    submitOtp(@Body() submitOtp:SubmitOtpDto):Promise<returnSubmitOtpDto> {
-        return this.authService.submitOtp(submitOtp)
-    }
+  @Post("/set-password")
+  @UseGuards(AuthGuard())
+  setPassword(@Body() setPassword: SetPasswordDto) {
+    return this.authService.setPassword(setPassword);
+  }
 
-    @Post('/set-password')
-    @UseGuards(AuthGuard())
-    setPassword(@Body()setPassword:SetPasswordDto){
-        return this.authService.setPassword(setPassword)
-    }
-
-    @Post('/send-otp')
-    sendOtp(@Body() signupdto: number): Promise<returnSignUpDto> {
-        return this.authService.sendOTP(signupdto)
-    }
+  @Post("/send-otp")
+  sendOtp(@Body() number: number): Promise<returnSignUpDto> {
+    return this.authService.sendOTP(number);
+  }
 }
