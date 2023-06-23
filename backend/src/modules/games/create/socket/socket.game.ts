@@ -36,9 +36,20 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
 
 
   }
+  @SubscribeMessage('isError')
+  async isError(data: any,userId) {
+    const targetClient = this.server.sockets.sockets.get(userId);
+    if (targetClient) {
+      targetClient.emit('isError', data);
+    } else {
+      console.log(`Target client with ID ${userId} not found`);
+    }
+
+
+  }
   @SubscribeMessage('chat')
   async handleMessage(client: Socket, data: any) {
-    let { token, index, tokenNumber } = data
+    let { token, index, tokenNumber,id } = data
     let response: any
     let user = await this.userModels.findOne({ token: token })
     console.log(user)
@@ -72,7 +83,13 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
             await game.save()
             this.getGame()
           } catch (err) {
-            console.log(err)
+            response = {
+              status: false,
+              errorCode: 401,
+              message: 'Something went wrong'
+            }
+            this.isError(response,id)
+
           }
 
         }
@@ -80,8 +97,10 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
           response = {
             status: false,
             errorCode: 401,
-            message: 'Token already selected'
+            message: 'Token already selected',
+            
           }
+          this.isError(response,id)
         }
 
       } else {
@@ -90,13 +109,19 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
           errorCode: 401,
           message: 'Game not available'
         }
+        this.isError(response,id)
+
       }
+
+
+    } else {
       response = {
         status: false,
         errorCode: 401,
         message: 'User not found'
       }
-      this.server.emit('chat', user)
+      this.isError(response,id)
     }
+   
   }
 }

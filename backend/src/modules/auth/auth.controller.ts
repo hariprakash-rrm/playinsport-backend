@@ -38,7 +38,7 @@ export class AuthController {
     }
 
     @Post('/send-otp')
-    sendOtp(@Body() signupdto: SignupDto): Promise<returnSignUpDto> {
-        return this.authService.signup(signupdto)
+    sendOtp(@Body() signupdto: number): Promise<returnSignUpDto> {
+        return this.authService.sendOTP(signupdto)
     }
 }

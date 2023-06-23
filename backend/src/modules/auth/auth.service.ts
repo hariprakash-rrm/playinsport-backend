@@ -82,7 +82,7 @@ export class AuthService {
    * @param user
    * @returns
    */
-  async sendOtp(postData: any, user: any): Promise<any> {
+  async sendOtp(postData: any, user: any): Promise<returnSignUpDto> {
     let data: any;
     var users = user.number;
     try {
@@ -217,9 +217,10 @@ export class AuthService {
    * @returns
    */
 
-  async sendOTP(number: any): Promise<returnSetPasswordDto> {
-    let user: any;
-    user = this.userModel.findOne({ number: number });
+  async sendOTP(number: number): Promise<returnSignUpDto> {
+    let { num }: any = number
+    let user: any = await this.userModel.findOne({ number: num });
+    //  console.log(user)
     if (!user) {
       throw new NotAcceptableException(`User not found, sign-up first`);
     }
@@ -229,7 +230,7 @@ export class AuthService {
     const otp = Math.floor(Math.random() * (max - min + 1) + min);
 
     user.otp = otp;
-    user.save();
+    await user.save();
     const postData = {
       number: number,
       message: `Otp only valid for 45sec : ${otp}`,
