@@ -6,6 +6,7 @@ import { User } from 'src/modules/auth/schemas/user.schema';
 import { Game } from '../schemas/create.schema';
 
 import axios from 'axios';
+import { subscribe } from 'diagnostics_channel';
 
 @WebSocketGateway({ cors: { origin: ['http://localhost:4200'] } })
 export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
@@ -16,6 +17,10 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleConnection(client: Socket) {
     console.log(`Client connected: ${client.id}`);
+    const currentDate = new Date();
+    const isoDate = currentDate.toISOString();
+
+    console.log(isoDate);
     this.server.emit('users', Object.keys(this.server.sockets.sockets).length);
   }
 
@@ -36,8 +41,25 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
 
 
   }
+
+  @SubscribeMessage('gameDetails')
+  async gameDetails(client: Socket, data: any) {
+    console.log(data as string)
+    let { userId, round }: any = data
+    let game = await this.gameModels.findOne({ round: round })
+
+    if (game) {
+      const targetClient = await this.server.sockets.sockets.get(userId);
+      if (targetClient) {
+        targetClient.emit('gameDetails', game.tokenDetails);
+      } else {
+        console.log(`Target client with ID ${userId} not found`);
+      }
+    }
+
+  }
   @SubscribeMessage('isError')
-  async isError(data: any,userId) {
+  async isError(data: any, userId) {
     const targetClient = this.server.sockets.sockets.get(userId);
     if (targetClient) {
       targetClient.emit('isError', data);
@@ -45,19 +67,29 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
       console.log(`Target client with ID ${userId} not found`);
     }
 
+  }
+
+  @SubscribeMessage('success')
+  async success(data: any, userId) {
+    const targetClient = this.server.sockets.sockets.get(userId);
+    if (targetClient) {
+      targetClient.emit('success', data);
+    } else {
+      console.log(`Target client with ID ${userId} not found`);
+    }
 
   }
   @SubscribeMessage('chat')
   async handleMessage(client: Socket, data: any) {
-    let { token, index, tokenNumber,id } = data
+    let { round, token, index, tokenNumber, id } = data
     let response: any
     let user = await this.userModels.findOne({ token: token })
     console.log(user)
     if (user) {
-      let rounds: any = 1
-      let game = await this.gameModels.findOne({ round: rounds })
+
+      let game = await this.gameModels.findOne({ round: round })
       if (game) {
-        this.server.emit('chat', user)
+        // this.server.emit('chat', user)
         let arr: any = await game.tokenDetails[index]
 
         if (!arr.isSelected) {
@@ -72,7 +104,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
             let postData = {
               number: user.number,
               message: `Details :\n
-              Rounds : ${rounds}\n
+              Rounds : ${round}\n
               Selected number : ${tokenNumber}`
             }
             const response = await axios.post('http://localhost:3001/send-otp', postData).then((res: any) => {
@@ -81,14 +113,20 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
 
             })
             await game.save()
-            this.getGame()
+            let datas={
+              status:true,
+              statusCode:201,
+              message:'Soken selected'
+            }
+            // this.getGame()
+            this.success(datas,id)
           } catch (err) {
             response = {
               status: false,
               errorCode: 401,
               message: 'Something went wrong'
             }
-            this.isError(response,id)
+            this.isError(response, id)
 
           }
 
@@ -96,20 +134,20 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
         else {
           response = {
             status: false,
-            errorCode: 401,
+            statusCode: 401,
             message: 'Token already selected',
-            
+
           }
-          this.isError(response,id)
+          this.isError(response, id)
         }
 
       } else {
         response = {
           status: false,
-          errorCode: 401,
+          statusCode: 401,
           message: 'Game not available'
         }
-        this.isError(response,id)
+        this.isError(response, id)
 
       }
 
@@ -117,11 +155,11 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
     } else {
       response = {
         status: false,
-        errorCode: 401,
+        statusCode: 401,
         message: 'User not found'
       }
-      this.isError(response,id)
+      this.isError(response, id)
     }
-   
+
   }
 }

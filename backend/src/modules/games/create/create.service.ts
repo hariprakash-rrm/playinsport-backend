@@ -9,6 +9,7 @@ export class CreateService {
 
 
     async create(data: any): Promise<any> {
+        
         let { name, prize, tokenPrice, date, maximumTokenPerUser ,totalTokenNumber} = data
         console.log(name, prize, tokenPrice, date, maximumTokenPerUser,totalTokenNumber)
         console.log(totalTokenNumber);

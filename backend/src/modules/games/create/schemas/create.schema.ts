@@ -14,9 +14,6 @@ round:string
 name:string
 
 @Prop()
-date:string
-
-@Prop()
 tokenPrice:string
 
 @Prop()
@@ -28,12 +25,14 @@ tokenDetails:object[]
 @Prop()
 prize:[]
 
-
 @Prop()
 winnerList:[]
 
 @Prop()
 maximumTokenPerUser:string
+
+@Prop({ type: Date, required: true })
+date: Date
 
 
 }
