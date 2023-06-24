@@ -6,7 +6,6 @@ import { User } from 'src/modules/auth/schemas/user.schema';
 import { Game } from '../schemas/create.schema';
 
 import axios from 'axios';
-import { subscribe } from 'diagnostics_channel';
 
 @WebSocketGateway({ cors: { origin: ['http://localhost:4200'] } })
 export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
@@ -35,45 +34,21 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   async getGame() {
 
     let rounds: any = "1"
-    let game = await this.gameModels.findOne({ round: rounds })
+    let games :any= await this.gameModels.findOne({ round: rounds })
+    games.tokenDetails.round = 2
+    
+    this.server.emit('getGame', games.tokenDetails);
 
-    this.server.emit('getGame', game.tokenDetails);
-
-
-  }
-
-  @SubscribeMessage('gameDetails')
-  async gameDetails(client: Socket, data: any) {
-    console.log(data as string)
-    let { userId, round }: any = data
-    let game = await this.gameModels.findOne({ round: round })
-
-    if (game) {
-      const targetClient = await this.server.sockets.sockets.get(userId);
-      if (targetClient) {
-        targetClient.emit('gameDetails', game.tokenDetails);
-      } else {
-        console.log(`Target client with ID ${userId} not found`);
-      }
-    }
 
   }
+
+
+
   @SubscribeMessage('isError')
   async isError(data: any, userId) {
     const targetClient = this.server.sockets.sockets.get(userId);
     if (targetClient) {
       targetClient.emit('isError', data);
-    } else {
-      console.log(`Target client with ID ${userId} not found`);
-    }
-
-  }
-
-  @SubscribeMessage('success')
-  async success(data: any, userId) {
-    const targetClient = this.server.sockets.sockets.get(userId);
-    if (targetClient) {
-      targetClient.emit('success', data);
     } else {
       console.log(`Target client with ID ${userId} not found`);
     }
@@ -89,7 +64,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
 
       let game = await this.gameModels.findOne({ round: round })
       if (game) {
-        // this.server.emit('chat', user)
+        this.server.emit('chat', user)
         let arr: any = await game.tokenDetails[index]
 
         if (!arr.isSelected) {
@@ -113,13 +88,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
 
             })
             await game.save()
-            let datas={
-              status:true,
-              statusCode:201,
-              message:'Soken selected'
-            }
-            // this.getGame()
-            this.success(datas,id)
+            this.getGame()
           } catch (err) {
             response = {
               status: false,
@@ -134,7 +103,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
         else {
           response = {
             status: false,
-            statusCode: 401,
+            errorCode: 401,
             message: 'Token already selected',
 
           }
@@ -144,7 +113,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
       } else {
         response = {
           status: false,
-          statusCode: 401,
+          errorCode: 401,
           message: 'Game not available'
         }
         this.isError(response, id)
@@ -155,7 +124,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
     } else {
       response = {
         status: false,
-        statusCode: 401,
+        errorCode: 401,
         message: 'User not found'
       }
       this.isError(response, id)
