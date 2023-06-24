@@ -12,6 +12,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(@InjectModel(User.name)
   private userModels: Model<User>, @InjectModel(Game.name) private gameModels: Model<Game>
   ) { }
+  round: any="1"
   @WebSocketServer() server: Server;
 
   handleConnection(client: Socket) {
@@ -33,10 +34,9 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('getGame')
   async getGame() {
 
-    let rounds: any = "1"
-    let games :any= await this.gameModels.findOne({ round: rounds })
-    games.tokenDetails.round = 2
-    
+    let rounds: any = this.round
+    let games: any = await this.gameModels.findOne({ round: rounds })
+
     this.server.emit('getGame', games.tokenDetails);
 
 
@@ -57,6 +57,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('chat')
   async handleMessage(client: Socket, data: any) {
     let { round, token, index, tokenNumber, id } = data
+    console.log(data)
     let response: any
     let user = await this.userModels.findOne({ token: token })
     console.log(user)
@@ -66,7 +67,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
       if (game) {
         this.server.emit('chat', user)
         let arr: any = await game.tokenDetails[index]
-
+        this.round = round
         if (!arr.isSelected) {
           try {
             let data = {
@@ -88,7 +89,8 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
 
             })
             await game.save()
-            this.getGame()
+            await this.getGame()
+            this.round='1'
           } catch (err) {
             response = {
               status: false,
