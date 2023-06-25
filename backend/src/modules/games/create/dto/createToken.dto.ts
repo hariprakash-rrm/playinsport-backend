@@ -20,5 +20,14 @@ export class createTokenDto{
 
 }
 
+export class refundDto{
+
+    @IsNotEmpty()
+    readonly round:number
+
+    @IsNotEmpty()
+    readonly token:string
+}
+
 
 

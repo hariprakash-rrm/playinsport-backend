@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CreateController } from './create.controller';
 import { CreateService } from './create.service';
-import { Game, GameSchema } from './schemas/create.schema';
+import { Game, GameDetails, GameDetailsScehema, GameSchema } from './schemas/create.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { GameGateWay } from './socket/socket.game';
@@ -24,7 +24,7 @@ import { JwtModule } from '@nestjs/jwt';
         };
       },
     }),
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema },{name:'Game',schema:GameSchema}]),],
+    MongooseModule.forFeature([{ name: 'User', schema: UserSchema },{name:'Game',schema:GameSchema},{name:'GameDetails',schema:GameDetailsScehema}]),],
   controllers: [CreateController],
   providers: [CreateService,GameGateWay]
 })

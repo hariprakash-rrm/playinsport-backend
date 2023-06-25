@@ -47,12 +47,14 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash("10", 10);
     const wallet = 0;
+    const txnHistory=[]
     try {
       var user = await this.userModel.create({
         username,
         number,
         password: hashedPassword,
         wallet,
+        txnHistory
       });
     } catch (err) {
       if (err.code == 11000) {

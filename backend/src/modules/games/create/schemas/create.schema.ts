@@ -34,7 +34,20 @@ maximumTokenPerUser:string
 @Prop({ type: Date, required: true })
 date: Date
 
+@Prop()
+isComplete:boolean
 
 }
 
 export const GameSchema = SchemaFactory.createForClass(Game)
+
+export class GameDetails{
+
+    @Prop({unique:true})
+    round:number
+
+    @Prop()
+    details:[]
+}
+
+export const GameDetailsScehema= SchemaFactory.createForClass(GameDetails)

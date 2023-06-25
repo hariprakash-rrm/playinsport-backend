@@ -21,6 +21,9 @@ export class User{
     wallet:number
 
     @Prop()
+    txnHistory :object[]
+
+    @Prop()
     token:string
 
     @Prop()
@@ -28,5 +31,8 @@ export class User{
 
     @Prop()
     verified:number
+
+    
+
 }
 export const UserSchema = SchemaFactory.createForClass(User)
