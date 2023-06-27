@@ -6,7 +6,7 @@ import {
   returnSignInDto,
   returnSignUpDto,
   returnSubmitOtpDto,
-  sendotpDto,
+  SendotpDto,
   returnOtp,
 } from "./dto/signin.dto";
 import { SigninDto } from './dto/signin.dto';

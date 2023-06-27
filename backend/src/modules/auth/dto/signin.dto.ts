@@ -29,7 +29,7 @@ export class SignupDto {
 
 }
 
-export class sendotpDto {
+export class SendotpDto {
   @IsNotEmpty()
   @IsString()
   readonly number: string;

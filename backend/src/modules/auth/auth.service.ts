@@ -19,7 +19,7 @@ import {
   returnSignUpDto,
   returnSubmitOtpDto,
   returnSetPasswordDto,
-  sendotpDto,
+  SendotpDto,
 } from "./dto/signin.dto";
 import { SigninDto, SubmitOtpDto } from "./dto/signin.dto";
 import { Client, Message } from "whatsapp-web.js";
@@ -217,11 +217,14 @@ export class AuthService {
    * @returns
    */
 
-  async sendOTP(number: any): Promise<returnSignUpDto> {
-    let user: any;
-    user = this.userModel.findOne({ number: number });
+  async sendOTP(data: any): Promise<returnSignUpDto> {
+    let { num } = data;
+    let user: any = await this.userModel.findOne({ number: num });
+    console.log(user);
     if (!user) {
-      throw new NotAcceptableException(`User not found, sign-up first`);
+      throw new NotAcceptableException(
+        `User not found. Please check the entered details`
+      );
     }
     const min = 1000; // Minimum 4-digit number
     const max = 9999; // Maximum 4-digit number
@@ -229,14 +232,14 @@ export class AuthService {
     const otp = Math.floor(Math.random() * (max - min + 1) + min);
 
     user.otp = otp;
-    user.save();
+    await user.save();
     const postData = {
-      number: number,
+      number: num,
       message: `Otp only valid for 45sec : ${otp}`,
     };
     setTimeout(async () => {
       user.otp = null;
-      user.save();
+      await user.save();
     }, 45000);
     return await this.sendOtp(postData, user);
   }
