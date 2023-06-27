@@ -141,7 +141,7 @@ export class AuthService {
     const responseData = {
       statusCode: 201,
       token: token,
-      details: userDetails,
+      data: userDetails,
       message: "Logged in",
     };
     return responseData;
@@ -179,7 +179,7 @@ export class AuthService {
     const responseData = {
       statusCode: 201,
       token: token,
-      details: userDetails,
+      data: userDetails,
       message: "Otp verified",
     };
     return responseData;

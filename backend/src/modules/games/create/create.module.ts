@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { CreateController } from './create.controller';
 import { CreateService } from './create.service';
-import { Game, GameSchema } from './schemas/create.schema';
+import { Game, GameDetails, GameDetailsScehema, GameSchema } from './schemas/create.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import { GameGateWay } from './socket/socket.game';
@@ -9,6 +9,8 @@ import { UserSchema } from 'src/modules/auth/schemas/user.schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { authenticate } from 'passport';
+import { AuthService } from 'src/modules/auth/auth.service';
 @Module({
   imports:[ConfigModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
@@ -24,8 +26,8 @@ import { JwtModule } from '@nestjs/jwt';
         };
       },
     }),
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema },{name:'Game',schema:GameSchema}]),],
+    MongooseModule.forFeature([{ name: 'User', schema: UserSchema },{name:'Game',schema:GameSchema},{name:'GameDetails',schema:GameDetailsScehema}]),],
   controllers: [CreateController],
-  providers: [CreateService,GameGateWay]
+  providers: [CreateService,GameGateWay,AuthService]
 })
 export class CreateModule {}

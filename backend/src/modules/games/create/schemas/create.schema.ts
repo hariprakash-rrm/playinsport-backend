@@ -1,41 +1,61 @@
-import { Prop,Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
 
 @Schema({
-    timestamps:true
+    timestamps: true
 })
 
-export class Game{
+export class Game {
 
-@Prop({unique:true})
-round:string
+    @Prop({ unique: true })
+    round: string
 
-@Prop()
-name:string
+    @Prop()
+    name: string
 
-@Prop()
-date:string
+    @Prop()
+    tokenPrice: string
 
-@Prop()
-tokenPrice:string
+    @Prop()
+    totalToken: object[]
 
-@Prop()
-totalToken:object[]
+    @Prop()
+    tokenDetails: object[]
 
-@Prop()
-tokenDetails:object[]
+    @Prop()
+    prize: []
 
-@Prop()
-prize:[]
+    @Prop()
+    winnerList: []
 
+    @Prop()
+    maximumTokenPerUser: string
 
-@Prop()
-winnerList:[]
+    @Prop({ type: Date, required: true })
+    date: Date
 
-@Prop()
-maximumTokenPerUser:string
-
+    @Prop()
+    isComplete: boolean
 
 }
 
 export const GameSchema = SchemaFactory.createForClass(Game)
+
+export class GameDetails {
+
+    @Prop({ unique: true })
+    round: number
+
+    @Prop()
+    details: [{
+        name: String
+        prize: [],
+        tokenPrice: Number,
+        maximumTokenPerUser: number,
+        totalTokenNumber: number,
+        date: number,
+        token: string
+    }]
+}
+
+export const GameDetailsScehema = SchemaFactory.createForClass(GameDetails)

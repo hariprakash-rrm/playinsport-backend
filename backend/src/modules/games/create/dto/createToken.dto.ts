@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { IsArray, IsBoolean,  IsNotEmpty, IsNumber,  IsString, Matches,  } from "class-validator";
 
 
 export class createTokenDto{
@@ -6,19 +6,70 @@ export class createTokenDto{
     @IsNotEmpty()
     readonly name:string
 
-    
-    readonly Prize:[string,string]
+    @IsArray()
+    readonly prize:[string,string]
 
     @IsNotEmpty()
     readonly tokenPrice:string
-
-    @IsNotEmpty()
     readonly date:string
-
-    @IsNotEmpty()
     readonly maximumTokenPerUser:string
+    readonly token:string
 
 }
 
+export class RefundDto{
 
+    @IsNotEmpty()
+    @IsNumber()
+    readonly round:number
+
+    @IsNotEmpty()
+    readonly token:string
+}
+
+export class GetUserDto{
+
+    @IsNotEmpty()
+    @Matches(/^[^\s]+$/, {
+        message: 'Username cannot contain spaces',
+      })
+    readonly username:string
+
+    @IsNotEmpty()
+    readonly token:string
+}
+
+export class UpdateUserDto{
+
+    @IsNotEmpty()
+    @Matches(/^[^\s]+$/, {
+        message: 'Username cannot contain spaces',
+      })
+    readonly username:string
+    readonly token:string
+
+    @IsNotEmpty()
+    @IsNumber()
+    readonly number : number
+    readonly wallet:number
+
+    @IsNotEmpty()
+    @IsBoolean()
+    readonly block:boolean=false
+    
+
+}
+
+export class UserWalletDto{
+
+    @IsNotEmpty()
+    @IsNumber()
+    readonly number : number
+    readonly wallet:number
+
+    @IsNotEmpty()
+    @IsString()
+    readonly token:string
+
+}
 
