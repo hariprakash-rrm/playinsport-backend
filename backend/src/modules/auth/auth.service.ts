@@ -1,10 +1,9 @@
 import {
-  Get,
-  HttpException,
+
   Injectable,
   NotAcceptableException,
   UnauthorizedException,
-  HttpServer,
+
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { User } from "./schemas/user.schema";
@@ -19,11 +18,10 @@ import {
   returnSignUpDto,
   returnSubmitOtpDto,
   returnSetPasswordDto,
-  SendotpDto,
+
 } from "./dto/signin.dto";
 import { SigninDto, SubmitOtpDto } from "./dto/signin.dto";
-import { Client, Message } from "whatsapp-web.js";
-import { env } from "process";
+import { Client } from "whatsapp-web.js";
 
 const axios = require("axios");
 const http = require("http");
