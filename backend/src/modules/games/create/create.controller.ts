@@ -17,8 +17,6 @@ export class CreateController {
         else {
             throw new UnauthorizedException(' You are not an admin')
         }
-        
-
     }
 
     @Post('/refund')
@@ -34,45 +32,6 @@ export class CreateController {
 
     }
 
-    @Get('/get-user')
-    async getUser(@Body() data: GetUserDto): Promise<any> {
-        let { token } = data
-        let isAdmin = await this.adminValidate.adminValidate(token)
-        if (isAdmin) {
-            return this.createService.getUser(data)
-        }
-        else {
-            throw new UnauthorizedException(' You are not an admin')
-        }
-
-    }
-
-    @Post('/update-user')
-    async updateUser(@Body() data: UpdateUserDto): Promise<any> {
-        let { token } = data
-        let isAdmin = await this.adminValidate.adminValidate(token)
-        if (isAdmin) {
-            return this.createService.updateUser(data)
-        }
-        else {
-            throw new UnauthorizedException(' You are not an admin')
-        }
-
-    }
-
-    @Post('/update-user-wallet')
-    async updateUserWallet(@Body() data: UserWalletDto): Promise<any> {
-        let { token } = data
-        let isAdmin = await this.adminValidate.adminValidate(token)
-        if (isAdmin) {
-            return this.createService.updateUserWallet(data)
-        }
-        else {
-            throw new UnauthorizedException(' You are not an admin')
-        }
-
-
-    }
-
-
 }
+
+

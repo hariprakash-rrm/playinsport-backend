@@ -1,10 +1,9 @@
 import {
-  Get,
-  HttpException,
+
   Injectable,
   NotAcceptableException,
   UnauthorizedException,
-  HttpServer,
+
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { User } from "./schemas/user.schema";
@@ -19,10 +18,10 @@ import {
   returnSignUpDto,
   returnSubmitOtpDto,
   returnSetPasswordDto,
-  sendotpDto,
+
 } from "./dto/signin.dto";
 import { SigninDto, SubmitOtpDto } from "./dto/signin.dto";
-import { Client, Message } from "whatsapp-web.js";
+import { Client } from "whatsapp-web.js";
 
 const axios = require("axios");
 const http = require("http");
@@ -142,7 +141,7 @@ export class AuthService {
     const responseData = {
       statusCode: 201,
       token: token,
-      details: userDetails,
+      data: userDetails,
       message: "Logged in",
     };
     return responseData;
@@ -180,7 +179,7 @@ export class AuthService {
     const responseData = {
       statusCode: 201,
       token: token,
-      details: userDetails,
+      data: userDetails,
       message: "Otp verified",
     };
     return responseData;
