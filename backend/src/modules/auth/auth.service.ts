@@ -35,7 +35,7 @@ export class AuthService {
     @InjectModel(User.name)
     private userModel: Model<User>,
     private jwtService: JwtService
-  ) {}
+  ) { }
 
   /**
    *
@@ -47,7 +47,7 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash("10", 10);
     const wallet = 0;
-    const txnHistory=[]
+    const txnHistory = []
     try {
       var user = await this.userModel.create({
         username,
@@ -220,7 +220,7 @@ export class AuthService {
    */
 
   async sendOTP(data: any): Promise<returnSignUpDto> {
-    let { number }=data
+    let { number } = data
     let user: any = await this.userModel.findOne({ number: number });
     //  console.log(user)
     if (!user) {
@@ -242,5 +242,17 @@ export class AuthService {
       user.save();
     }, 45000);
     return await this.sendOtp(postData, user);
+  }
+
+  async adminValidate(data:any) {
+    // const { token } = data;
+
+    const admin = await this.userModel.findOne({ token: data });
+console.log(admin)
+    if (!admin.isAdmin) {
+      throw new UnauthorizedException('Login as admin to access this endpoint.');
+    }
+
+    return true;
   }
 }

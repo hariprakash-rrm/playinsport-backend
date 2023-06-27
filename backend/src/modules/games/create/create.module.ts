@@ -9,6 +9,8 @@ import { UserSchema } from 'src/modules/auth/schemas/user.schema';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
+import { authenticate } from 'passport';
+import { AuthService } from 'src/modules/auth/auth.service';
 @Module({
   imports:[ConfigModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
@@ -26,6 +28,6 @@ import { JwtModule } from '@nestjs/jwt';
     }),
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema },{name:'Game',schema:GameSchema},{name:'GameDetails',schema:GameDetailsScehema}]),],
   controllers: [CreateController],
-  providers: [CreateService,GameGateWay]
+  providers: [CreateService,GameGateWay,AuthService]
 })
 export class CreateModule {}
