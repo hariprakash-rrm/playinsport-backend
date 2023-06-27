@@ -31,7 +31,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async adminValidate(payload) {
     const { token } = payload;
 
-    const admin = await this.userModel.findOne({token:token});
+    const admin = await this.userModel.findOne({ token: token });
 
     if (!admin) {
       throw new UnauthorizedException('Login as admin to access this endpoint.');

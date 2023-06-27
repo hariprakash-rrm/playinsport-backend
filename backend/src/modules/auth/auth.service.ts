@@ -23,7 +23,6 @@ import {
 } from "./dto/signin.dto";
 import { SigninDto, SubmitOtpDto } from "./dto/signin.dto";
 import { Client, Message } from "whatsapp-web.js";
-import { env } from "process";
 
 const axios = require("axios");
 const http = require("http");
@@ -244,11 +243,10 @@ export class AuthService {
     return await this.sendOtp(postData, user);
   }
 
-  async adminValidate(data:any) {
-    // const { token } = data;
+  async adminValidate(data: any) {
 
     const admin = await this.userModel.findOne({ token: data });
-console.log(admin)
+    console.log(admin)
     if (!admin.isAdmin) {
       throw new UnauthorizedException('Login as admin to access this endpoint.');
     }
