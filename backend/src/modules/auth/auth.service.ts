@@ -1,9 +1,7 @@
 import {
-
   Injectable,
   NotAcceptableException,
   UnauthorizedException,
-
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { User } from "./schemas/user.schema";
@@ -24,7 +22,6 @@ import { SigninDto, SubmitOtpDto } from "./dto/signin.dto";
 import { Client } from "whatsapp-web.js";
 
 const axios = require("axios");
-const http = require("http");
 
 @Injectable()
 export class AuthService {
@@ -249,7 +246,6 @@ export class AuthService {
     if (!admin.isAdmin) {
       throw new UnauthorizedException('Login as admin to access this endpoint.');
     }
-
     return true;
   }
 }

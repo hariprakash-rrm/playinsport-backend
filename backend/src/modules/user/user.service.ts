@@ -13,8 +13,8 @@ private gameModel: Model<Game>, @InjectModel(User.name)
     private userModel: Model<User>){}
     
     async getUser(data: any): Promise<any> {
+
         let { username } = data
-        // let admin: any = await this.userModel.findOne({ token: token })
 
         let user = await this.userModel.findOne({ username: username })
         if (user) {
@@ -27,9 +27,7 @@ private gameModel: Model<Game>, @InjectModel(User.name)
                     txnHistory: user.txnHistory
                 },
                 message: 'user retrived'
-
             }
-
             return await this.returnData(res)
         } else {
             throw new NotAcceptableException('User not found')
@@ -37,10 +35,9 @@ private gameModel: Model<Game>, @InjectModel(User.name)
     }
 
     async updateUser(data: any): Promise<any> {
+
         let { username, number, wallet, block } = data
-        // let admin=await this.userModel.findOne({token:token})
-
-
+       
         let userFromName = await this.userModel.findOne({ username: username })
         let userFromNumber = await this.userModel.findOne({ number: number })
 
@@ -70,7 +67,6 @@ private gameModel: Model<Game>, @InjectModel(User.name)
                 },
                 message: 'User details updated'
             }
-
             return await this.returnData(res)
         }
         else {
@@ -112,6 +108,11 @@ private gameModel: Model<Game>, @InjectModel(User.name)
             throw new UnauthorizedException('User not found')
         }
 
+    }
+
+    async getAllUser(){
+        let users = await this.userModel.find()
+        
     }
 
     async returnData(data: any) {
