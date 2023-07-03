@@ -1,9 +1,7 @@
 import {
-
   Injectable,
   NotAcceptableException,
   UnauthorizedException,
-
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { User } from "./schemas/user.schema";
@@ -24,7 +22,6 @@ import { SigninDto, SubmitOtpDto } from "./dto/signin.dto";
 import { Client } from "whatsapp-web.js";
 
 const axios = require("axios");
-const http = require("http");
 
 @Injectable()
 export class AuthService {
@@ -33,7 +30,7 @@ export class AuthService {
     @InjectModel(User.name)
     private userModel: Model<User>,
     private jwtService: JwtService
-  ) {}
+  ) { }
 
   /**
    *
@@ -45,12 +42,14 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash("10", 10);
     const wallet = 0;
+    const txnHistory = []
     try {
       var user = await this.userModel.create({
         username,
         number,
         password: hashedPassword,
         wallet,
+        txnHistory
       });
     } catch (err) {
       if (err.code == 11000) {
@@ -81,7 +80,7 @@ export class AuthService {
    * @param user
    * @returns
    */
-  async sendOtp(postData: any, user: any): Promise<any> {
+  async sendOtp(postData: any, user: any): Promise<returnSignUpDto> {
     let data: any;
     var users = user.number;
     try {
@@ -216,13 +215,11 @@ export class AuthService {
    */
 
   async sendOTP(data: any): Promise<returnSignUpDto> {
-    let { num } = data;
-    let user: any = await this.userModel.findOne({ number: num });
-    console.log(user);
+    let { number } = data
+    let user: any = await this.userModel.findOne({ number: number });
+    //  console.log(user)
     if (!user) {
-      throw new NotAcceptableException(
-        `User not found. Please check the entered details`
-      );
+      throw new NotAcceptableException(`User not found, sign-up first`);
     }
     const min = 1000; // Minimum 4-digit number
     const max = 9999; // Maximum 4-digit number
@@ -232,13 +229,23 @@ export class AuthService {
     user.otp = otp;
     await user.save();
     const postData = {
-      number: num,
+      number: number,
       message: `Otp only valid for 45sec : ${otp}`,
     };
     setTimeout(async () => {
       user.otp = null;
-      await user.save();
+      user.save();
     }, 45000);
     return await this.sendOtp(postData, user);
+  }
+
+  async adminValidate(data: any) {
+
+    const admin = await this.userModel.findOne({ token: data });
+    console.log(admin)
+    if (!admin.isAdmin) {
+      throw new UnauthorizedException('Login as admin to access this endpoint.');
+    }
+    return true;
   }
 }

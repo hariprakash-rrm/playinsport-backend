@@ -7,7 +7,19 @@ import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
 @Controller('user')
 export class UserController {
-    constructor(private userService: UserService, private adminValidate: AuthService){
+    constructor(private userService: UserService, private adminValidate: AuthService) {
+    }
+
+    @Get('/all-user')
+    async getAllUser(@Body() data: any): Promise<any> {
+        let { token } = data
+        let isAdmin = await this.adminValidate.adminValidate(token)
+        if (isAdmin) {
+            return this.userService.getAllUser()
+        }
+        else {
+            throw new UnauthorizedException(' You are not an admin')
+        }
     }
 
     @Get('/get-user')
