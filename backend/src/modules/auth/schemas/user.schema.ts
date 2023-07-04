@@ -40,8 +40,5 @@ export class User{
 
     @Prop()
     block:boolean=false
-
-    
-
 }
 export const UserSchema = SchemaFactory.createForClass(User)
