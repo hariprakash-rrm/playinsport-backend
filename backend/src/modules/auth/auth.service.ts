@@ -248,4 +248,31 @@ export class AuthService {
     }
     return true;
   }
+
+  async validateUser(data: any): Promise<any> {
+    let { token } = data
+    const user = await this.userModel.findOne({ token: token });
+    if (user) {
+      if (user.isAdmin) {
+        return {
+          data: {
+            isAdmin: true
+          },
+          statusCode: 201,
+          message: "User is an Admin",
+        };
+      }else{
+        return {
+          data: {
+            isAdmin: false
+          },
+          statusCode: 201,
+          message: "User is not an Admin",
+        };
+      }
+    }
+    else{
+      throw new UnauthorizedException('You are not an valid user')
+    }
+  }
 }
