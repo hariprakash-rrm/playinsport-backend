@@ -8,13 +8,13 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 export class Game {
 
     @Prop({ unique: true })
-    round: string
+    round: number
 
     @Prop()
     name: string
 
     @Prop()
-    tokenPrice: string
+    tokenPrice: number
 
     @Prop()
     totalToken: object[]
@@ -29,7 +29,7 @@ export class Game {
     winnerList: []
 
     @Prop()
-    maximumTokenPerUser: string
+    maximumTokenPerUser: number
 
     @Prop({ type: Date, required: true })
     date: Date

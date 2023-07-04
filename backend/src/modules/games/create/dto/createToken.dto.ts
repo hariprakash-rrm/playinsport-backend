@@ -10,7 +10,7 @@ export class createTokenDto{
     readonly prize:[string,string]
 
     @IsNotEmpty()
-    readonly tokenPrice:string
+    readonly tokenPrice:number
     readonly date:string
     readonly maximumTokenPerUser:string
     readonly token:string

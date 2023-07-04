@@ -15,7 +15,7 @@ import { Headers } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 @Controller("")
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   @Post("/signup")
   signUp(@Body() signupdto: SignupDto): Promise<returnSignUpDto> {
@@ -34,12 +34,17 @@ export class AuthController {
 
   @Post("/set-password")
   @UseGuards(AuthGuard())
-  setPassword(@Body() setPassword: SetPasswordDto) {
+  setPassword(@Body() setPassword: SetPasswordDto): Promise<any> {
     return this.authService.setPassword(setPassword);
   }
 
   @Post("/send-otp")
   sendOtp(@Body() number: number): Promise<returnSignUpDto> {
     return this.authService.sendOTP(number);
+  }
+
+  @Get("/validate-user")
+  validateUser(@Body() token: any): Promise<any> {
+    return this.authService.validateUser(token)
   }
 }

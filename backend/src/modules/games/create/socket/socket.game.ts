@@ -12,7 +12,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(@InjectModel(User.name)
   private userModels: Model<User>, @InjectModel(Game.name) private gameModels: Model<Game>, @InjectModel(GameDetails.name) private gameDeatilsModel: Model<GameDetails>
   ) { }
-  round: any = "1"
+  round: any = 1
   index: any = 0
   @WebSocketServer() server: Server;
 
@@ -114,7 +114,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
               user.wallet -= +game.tokenPrice
               let txnHistory: any = {
                 message: 'Token Paricipation',
-                amount: game.tokenPrice,
+                amount: `-${game.tokenPrice}`,
                 time: timestamp
               }
               user.txnHistory.push(txnHistory)
