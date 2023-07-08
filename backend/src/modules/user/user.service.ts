@@ -13,7 +13,6 @@ private gameModel: Model<Game>, @InjectModel(User.name)
     private userModel: Model<User>){}
     
     async getUser(data: any): Promise<any> {
-        console.log(data);
         let { username } = data
 
         let user = await this.userModel.findOne({ username: username })
@@ -35,7 +34,7 @@ private gameModel: Model<Game>, @InjectModel(User.name)
     }
 
     async updateUser(data: any): Promise<any> {
-
+        console.log(data);
         let { username, number, wallet, block } = data
        
         let userFromName = await this.userModel.findOne({ username: username })

@@ -25,7 +25,6 @@ export class UserController {
 
   @Get("/get-user")
   async getUser(@Query() data: GetUserDto): Promise<any> {
-    console.log(data);
     let { token } = data;
     let isAdmin = await this.adminValidate.adminValidate(token);
     if (isAdmin) {
@@ -37,6 +36,7 @@ export class UserController {
 
   @Post("/update-user")
   async updateUser(@Body() data: UpdateUserDto): Promise<any> {
+    console.log(data);
     let { token } = data;
     let isAdmin = await this.adminValidate.adminValidate(token);
     if (isAdmin) {

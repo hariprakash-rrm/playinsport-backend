@@ -27,12 +27,15 @@ export class CreateService {
                     round: count + 1
                 }
                 tokenDetails.push(data)
+                console.log("MAD")
             }
             try {
                 let count = await this.gameModel.countDocuments().exec();
+                console.log(`count${count}`)
                 var game: any = await this.gameModel.create({
                     round: count + 1, name, date, prize, tokenPrice, maximumTokenPerUser, tokenDetails, isComplete: false
                 })
+                console.log(`game${game}`);
                 game.tokenDetails.round = game.round
                 await game.save()
                 let res = {
