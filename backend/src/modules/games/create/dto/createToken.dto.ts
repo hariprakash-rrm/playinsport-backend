@@ -1,4 +1,4 @@
-import { IsArray, IsBoolean,  IsNotEmpty, IsNumber,  IsString, Matches,  } from "class-validator";
+import { IsArray, IsBoolean,  IsNotEmpty, IsNumber,  IsString, Matches, isNotEmpty,  } from "class-validator";
 
 
 export class createTokenDto{
@@ -39,6 +39,11 @@ export class GetUserDto{
     readonly token:string
 }
 
+export class GetUserDetailsDto{
+    @IsNotEmpty()
+    readonly token:string
+}
+
 export class UpdateUserDto{
 
     @IsNotEmpty()
@@ -70,6 +75,23 @@ export class UserWalletDto{
     @IsNotEmpty()
     @IsString()
     readonly token:string
+
+}
+
+export class returnUserDetailsDto{
+    @IsNotEmpty()
+    @IsNumber()
+    readonly number : number
+
+    @IsNotEmpty()
+    @IsBoolean()
+    readonly isAdmin:boolean=false
+
+    @IsNotEmpty()
+    readonly name : string
+
+    readonly wallet:number
+    readonly txnHistory: any
 
 }
 

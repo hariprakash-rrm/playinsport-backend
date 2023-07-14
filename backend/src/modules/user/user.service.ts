@@ -1,5 +1,5 @@
 import { Body, Get, Injectable, NotAcceptableException, Post, UnauthorizedException } from '@nestjs/common';
-import { GetUserDto, UpdateUserDto, UserWalletDto } from '../games/create/dto/createToken.dto';
+import { GetUserDto, UpdateUserDto, UserWalletDto, returnUserDetailsDto } from '../games/create/dto/createToken.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Game } from '../games/create/schemas/create.schema';
 import { Model } from 'mongoose';
@@ -8,10 +8,10 @@ import { User } from '../auth/schemas/user.schema';
 @Injectable()
 export class UserService {
 
-constructor(@InjectModel(Game.name)
-private gameModel: Model<Game>, @InjectModel(User.name)
-    private userModel: Model<User>){}
-    
+    constructor(@InjectModel(Game.name)
+    private gameModel: Model<Game>, @InjectModel(User.name)
+        private userModel: Model<User>) { }
+
     async getUser(data: any): Promise<any> {
         let { username } = data
 
@@ -36,7 +36,7 @@ private gameModel: Model<Game>, @InjectModel(User.name)
     async updateUser(data: any): Promise<any> {
         console.log(data);
         let { username, number, wallet, block } = data
-       
+
         let userFromName = await this.userModel.findOne({ username: username })
         let userFromNumber = await this.userModel.findOne({ number: number })
 
@@ -109,9 +109,9 @@ private gameModel: Model<Game>, @InjectModel(User.name)
 
     }
 
-    async getAllUser(){
+    async getAllUser() {
         let users = await this.userModel.find()
-        
+
     }
 
     async returnData(data: any) {
@@ -121,6 +121,33 @@ private gameModel: Model<Game>, @InjectModel(User.name)
             statusCode: 201
         }
         return retData
+    }
+
+    async getUserDetails(data: any): Promise<any> {
+        let { token } = data
+        try {
+            let user = await this.userModel.findOne({ token: token })
+            if (user) {
+                let res = {
+                    data: {
+                        username: user.username,
+                        number: user.number,
+                        wallet: user.wallet,
+                        txnHistory: user.txnHistory,
+                        isAdmin: user.isAdmin
+                    },
+                    message: 'user retrived'
+                }
+                return await this.returnData(res)
+            } else {
+                throw new NotAcceptableException('User not found')
+            }
+        } catch (err) {
+            throw new NotAcceptableException({
+                StatusCode: err.statusCode,
+                Message: err.message
+            })
+        }
     }
 
 }
