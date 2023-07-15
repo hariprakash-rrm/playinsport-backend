@@ -83,6 +83,17 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
 
       let game = await this.gameModels.findOne({ round: round })
       if (game) {
+        if(game.isComplete){
+          response = {
+            status: false,
+            errorCode: 401,
+            message: 'Error : Round completed',
+
+          }
+          this.isError(response, id)
+          return
+        }
+        
         this.server.emit('chat', user)
         let arr: any = await game.tokenDetails[index]
         this.round = round
@@ -113,9 +124,10 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
               })
               user.wallet -= +game.tokenPrice
               let txnHistory: any = {
-                message: 'Token Paricipation',
-                amount: game.tokenPrice,
-                time: timestamp
+                message: `Token Paricipation- round:${round}  Token ${tokenNumber}`,
+                amount: -game.tokenPrice,
+                time: timestamp,
+                newBalance:user.wallet
               }
               user.txnHistory.push(txnHistory)
               await game.save();

@@ -50,7 +50,8 @@ export class AuthService {
         password: hashedPassword,
         wallet,
         txnHistory,
-        isAdmin: false
+        isAdmin: false,
+        block:false
       });
     } catch (err) {
       if (err.code == 11000) {
@@ -240,12 +241,16 @@ export class AuthService {
     return await this.sendOtp(postData, user);
   }
 
-  async adminValidate(data: any) {
+  async adminValidate(data: any): Promise<any> {
 
     const admin = await this.userModel.findOne({ token: data });
-    console.log(admin)
-    if (!admin.isAdmin) {
-      throw new UnauthorizedException('Login as admin to access this endpoint.');
+    // console.log(admin)
+    if (admin) {
+      if (!admin.isAdmin) {
+        throw new UnauthorizedException('Login as admin to access this endpoint.');
+      }
+    } else {
+      throw new UnauthorizedException('User not found');
     }
     return true;
   }
@@ -262,7 +267,7 @@ export class AuthService {
           statusCode: 201,
           message: "User is an Admin",
         };
-      }else{
+      } else {
         return {
           data: {
             isAdmin: false
@@ -272,7 +277,7 @@ export class AuthService {
         };
       }
     }
-    else{
+    else {
       throw new UnauthorizedException('You are not an valid user')
     }
   }

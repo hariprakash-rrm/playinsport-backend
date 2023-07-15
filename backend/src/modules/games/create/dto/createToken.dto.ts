@@ -7,7 +7,7 @@ export class createTokenDto{
     readonly name:string
 
     @IsArray()
-    readonly prize:[string,string]
+    readonly prize:string[]
 
     @IsNotEmpty()
     readonly tokenPrice:string
@@ -20,8 +20,7 @@ export class createTokenDto{
 export class RefundDto{
 
     @IsNotEmpty()
-    @IsNumber()
-    readonly round:number
+    readonly round:string
 
     @IsNotEmpty()
     readonly token:string

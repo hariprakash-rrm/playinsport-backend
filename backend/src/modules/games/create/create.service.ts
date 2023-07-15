@@ -16,7 +16,6 @@ export class CreateService {
     async create(data: any): Promise<any> {
         try {
             let { name, prize, tokenPrice, date, maximumTokenPerUser, totalTokenNumber } = data
-
             var tokenDetails: any[] = []
             let count = await this.gameModel.countDocuments().exec();
             for (let i = 0; i < totalTokenNumber; i++) {
@@ -37,6 +36,7 @@ export class CreateService {
                 })
                 console.log(`game${game}`);
                 game.tokenDetails.round = game.round
+
                 await game.save()
                 let res = {
                     data: {
@@ -44,6 +44,7 @@ export class CreateService {
                     },
                     message: 'Game created'
                 }
+
                 return await this.returnData(res)
             } catch (err) {
                 throw new NotAcceptableException('Error while creating game')
@@ -58,37 +59,43 @@ export class CreateService {
     async refund(data: RefundDto) {
         let { round } = data
 
-        let game: any = await this.gameModel.findOne({ round: round })
+        var game: any = await this.gameModel.findOne({ round: round })
 
         if (game) {
             try {
-                const resData = []
+                var resData: any[] = []
                 const timestamp = new Date().getTime();
                 for (let i = 0; i < game.tokenDetails.length; i++) {
                     if (game.tokenDetails[i].isSelected) {
                         let partUser = await this.userModel.findOne({ number: game.tokenDetails[i].number })
                         if (partUser) {
+
                             partUser.wallet += +game.tokenPrice
                             let txnHistory: any = {
-                                message: `Round : ${game.round} refund `,
+                                message: `Round : ${game.round} Token : ${game.tokenDetails[i].tokenNumber} refund`,
                                 amount: game.tokenPrice,
-                                time: timestamp
+                                time: timestamp,
+                                newBalance: partUser.wallet
                             }
                             await partUser.txnHistory.push(txnHistory)
                             await resData.push(partUser.txnHistory)
                             await partUser.save()
                         }
                     }
-                    let res = {
-                        data: {
-                            data: resData
-                        },
-                        message: 'Round refund successful'
 
-                    }
-
-                    return await this.returnData(res)
                 }
+
+                game.isComplete =  true
+                await game.save()
+                let data = {
+                    data: {
+                        resData
+                    },
+                    message: 'Round refund successful'
+
+                }
+
+                return await this.returnData(data)
             } catch (err: any) {
                 throw new ConflictException('Refund error')
             }

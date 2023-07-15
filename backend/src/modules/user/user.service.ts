@@ -13,9 +13,13 @@ export class UserService {
         private userModel: Model<User>) { }
 
     async getUser(data: any): Promise<any> {
-        let { username } = data
-
-        let user = await this.userModel.findOne({ username: username })
+        let { username }:any = data
+        if(username>0){
+            var user = await this.userModel.findOne({ number: username })
+        }else{
+             user = await this.userModel.findOne({ username: username })
+        }
+        
         if (user) {
             let res = {
                 data: {
@@ -23,7 +27,8 @@ export class UserService {
                     number: user.number,
                     wallet: user.wallet,
                     verified: user.verified,
-                    txnHistory: user.txnHistory
+                    txnHistory: user.txnHistory,
+                    block:user.block
                 },
                 message: 'user retrived'
             }
@@ -125,21 +130,28 @@ export class UserService {
 
     async getUserDetails(data: any): Promise<any> {
         let { token } = data
-        let user = await this.userModel.findOne({ token: token })
-        if (user) {
-            let res = {
-                data: {
-                    username: user.username,
-                    number: user.number,
-                    wallet: user.wallet,
-                    txnHistory: user.txnHistory,
-                    isAdmin: user.isAdmin
-                },
-                message: 'user retrived'
+        try {
+            let user = await this.userModel.findOne({ token: token })
+            if (user) {
+                let res = {
+                    data: {
+                        username: user.username,
+                        number: user.number,
+                        wallet: user.wallet,
+                        txnHistory: user.txnHistory,
+                        isAdmin: user.isAdmin
+                    },
+                    message: 'user retrived'
+                }
+                return await this.returnData(res)
+            } else {
+                throw new NotAcceptableException('User not found')
             }
-            return await this.returnData(res)
-        } else {
-            throw new NotAcceptableException('User not found')
+        } catch (err) {
+            throw new NotAcceptableException({
+                StatusCode: err.statusCode,
+                Message: err.message
+            })
         }
     }
 
