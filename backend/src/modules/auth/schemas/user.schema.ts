@@ -36,7 +36,7 @@ export class User{
     verified:number
 
     @Prop()
-    isAdmin:boolean=false
+    isAdmin:boolean
 
     @Prop()
     block:boolean=false

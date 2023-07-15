@@ -125,28 +125,21 @@ export class UserService {
 
     async getUserDetails(data: any): Promise<any> {
         let { token } = data
-        try {
-            let user = await this.userModel.findOne({ token: token })
-            if (user) {
-                let res = {
-                    data: {
-                        username: user.username,
-                        number: user.number,
-                        wallet: user.wallet,
-                        txnHistory: user.txnHistory,
-                        isAdmin: user.isAdmin
-                    },
-                    message: 'user retrived'
-                }
-                return await this.returnData(res)
-            } else {
-                throw new NotAcceptableException('User not found')
+        let user = await this.userModel.findOne({ token: token })
+        if (user) {
+            let res = {
+                data: {
+                    username: user.username,
+                    number: user.number,
+                    wallet: user.wallet,
+                    txnHistory: user.txnHistory,
+                    isAdmin: user.isAdmin
+                },
+                message: 'user retrived'
             }
-        } catch (err) {
-            throw new NotAcceptableException({
-                StatusCode: err.statusCode,
-                Message: err.message
-            })
+            return await this.returnData(res)
+        } else {
+            throw new NotAcceptableException('User not found')
         }
     }
 

@@ -49,7 +49,8 @@ export class AuthService {
         number,
         password: hashedPassword,
         wallet,
-        txnHistory
+        txnHistory,
+        isAdmin: false
       });
     } catch (err) {
       if (err.code == 11000) {
