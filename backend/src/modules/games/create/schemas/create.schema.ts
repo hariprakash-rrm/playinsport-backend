@@ -37,6 +37,9 @@ export class Game {
     @Prop()
     isComplete: boolean
 
+    @Prop()
+    status:string
+
 }
 
 export const GameSchema = SchemaFactory.createForClass(Game)

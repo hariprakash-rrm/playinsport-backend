@@ -1,17 +1,55 @@
 import { ConflictException, Injectable, MethodNotAllowedException, NotAcceptableException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Game } from './schemas/create.schema';
-import mongoose, { Model } from 'mongoose';
+import { Model } from 'mongoose';
 import { RefundDto } from './dto/createToken.dto';
 import { User } from 'src/modules/auth/schemas/user.schema';
-import { handleRetry } from '@nestjs/mongoose/dist/common/mongoose.utils';
-import { ReadStream } from 'fs';
+
 @Injectable()
 export class CreateService {
     constructor(@InjectModel(Game.name)
     private gameModel: Model<Game>, @InjectModel(User.name)
         private userModel: Model<User>) { }
 
+    async get(data: any) {
+        let round = data.data
+        try {
+            let game = await this.gameModel.findOne({ round: round })
+            console.log(game)
+            let res = {
+                data: {
+                    data: game,
+                },
+                message: 'Game fetched'
+            }
+
+            return await this.returnData(res)
+        } catch (err) {
+            throw new NotAcceptableException('Game not found')
+        }
+    }
+
+    async getGames(dates: any) {
+        // console.log(dates)
+        try {
+            const dateString = dates.dates
+            const _date: any = new Date(dateString);
+            let games = await this.gameModel.find({ date: _date });
+            console.log(games)
+            let res = {
+                data: {
+                    data: games,
+                },
+                message: 'Game retrived'
+            }
+            if (games.length == 0) {
+                throw new NotAcceptableException('game not found in this date')
+            }
+            return await this.returnData(res)
+        } catch (err) {
+            throw new NotAcceptableException('game not found in this date')
+        }
+    }
 
     async create(data: any): Promise<any> {
         try {
@@ -32,7 +70,7 @@ export class CreateService {
                 let count = await this.gameModel.countDocuments().exec();
                 console.log(`count${count}`)
                 var game: any = await this.gameModel.create({
-                    round: count + 1, name, date, prize, tokenPrice, maximumTokenPerUser, tokenDetails, isComplete: false
+                    round: count + 1, name, date, prize, tokenPrice, maximumTokenPerUser, tokenDetails, isComplete: false, status: 'live'
                 })
                 console.log(`game${game}`);
                 game.tokenDetails.round = game.round
@@ -85,7 +123,8 @@ export class CreateService {
 
                 }
 
-                game.isComplete =  true
+                game.isComplete = true
+                game.status = 'refunded'
                 await game.save()
                 let data = {
                     data: {
@@ -102,6 +141,41 @@ export class CreateService {
         } else {
             throw new NotAcceptableException('game not found')
         }
+    }
+
+    async update(datas: any): Promise<any> {
+        let { round, action } = datas
+        var game: any = await this.gameModel.findOne({ round: round })
+        if (game) {
+            try {
+                if (game.isComplete) {
+                    throw new NotAcceptableException('Round already completed')
+                }
+                else {
+                    if (action == 'finalise') {
+                        game.isComplete = true
+                        game.status = 'finalise'
+                        game.save()
+                        let data = {
+                            data: {
+                                game
+                            },
+                            message: 'Round completed'
+
+                        }
+                        return await this.returnData(data)
+                    } else if (action == 'refund') {
+                        return await this.refund(datas)
+
+                    } else {
+                        throw new NotAcceptableException('Something went wrong')
+                    }
+                }
+            } catch (err) {
+                throw new NotAcceptableException(err)
+            }
+        }
+
     }
 
     // async getUser(data: any): Promise<any> {
