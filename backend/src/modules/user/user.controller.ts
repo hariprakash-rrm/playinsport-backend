@@ -1,25 +1,28 @@
-import { Controller } from '@nestjs/common';
+import { Controller, NotAcceptableException, Res } from '@nestjs/common';
 import { Body, Query, Get, Injectable, Post, UnauthorizedException } from '@nestjs/common';
-import { GetUserDto, UpdateUserDto, UserWalletDto, GetUserDetailsDto } from '../games/create/dto/createToken.dto';
-
+import { GetUserDto, UpdateUserDto, UserWalletDto, GetUserDetailsDto, walletDto } from '../games/create/dto/createToken.dto';
 import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
+import { ExcelService } from '../shared/excelService';
+import { Response } from 'express';
+
 @Controller("user")
 export class UserController {
   constructor(
     private userService: UserService,
-    private adminValidate: AuthService
+    private adminValidate: AuthService,
+    private excelService: ExcelService
   ) { }
 
   @Get("/all-user")
   async getAllUser(@Body() data: any): Promise<any> {
-    let { token } = data;
-    let isAdmin = await this.adminValidate.adminValidate(token);
-    if (isAdmin) {
       return this.userService.getAllUser();
-    } else {
-      throw new UnauthorizedException(" You are not an admin");
-    }
+  }
+
+  @Get("/all-user-for-page")
+  async getAllUserForPage(@Query() data: any): Promise<any> {
+  
+      return this.userService.getAllUserForPage(data.currentPage, data.selectedItemsPerPage);
   }
 
   @Get("/get-user")
@@ -70,4 +73,21 @@ export class UserController {
     }
   }
 
+  @Get('/export')
+async exportUsersToExcel(@Res() res: Response): Promise<void> {
+  try {
+    return this.userService.exportUsersToExcel(res);
+  } catch (err) {
+    return err;
+  }
+}
+
+ @Post('/walletTransaction')
+ async walletTransaction(@Body() data: walletDto): Promise<void>{
+  try{
+    return this.userService.walletTransaction(data);
+  }catch(err){
+    return err;
+  }
+ }
 }

@@ -43,6 +43,15 @@ export class GetUserDetailsDto{
     readonly token:string
 }
 
+export class walletDto{
+
+    @IsNotEmpty()
+    paymentMethod: string
+     transactionid: string
+     amount: number 
+     mobileNumber: number
+}
+
 export class UpdateUserDto{
 
     @IsNotEmpty()

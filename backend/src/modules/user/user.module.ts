@@ -8,6 +8,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from '../auth/schemas/user.schema';
 import { GameDetailsScehema, GameSchema } from '../games/create/schemas/create.schema';
+import { ExcelService } from '../shared/excelService';
+import { WalletSchema } from '../auth/schemas/wallet.schema';
 
 @Module({
   imports: [
@@ -28,10 +30,11 @@ import { GameDetailsScehema, GameSchema } from '../games/create/schemas/create.s
     MongooseModule.forFeature([
       { name: "User", schema: UserSchema },
       { name: "Game", schema: GameSchema },
+      { name: "Wallet", schema: WalletSchema },
       { name: "GameDetails", schema: GameDetailsScehema },
     ]),
   ],
   controllers: [UserController],
-  providers: [UserService, AuthService],
+  providers: [ UserService, AuthService, ExcelService],
 })
-export class UserModule {}
+export class UserModule { }

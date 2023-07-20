@@ -223,8 +223,8 @@ export class AuthService {
     if (!user) {
       throw new NotAcceptableException(`User not found, sign-up first`);
     }
-    const min = 1000; // Minimum 4-digit number
-    const max = 9999; // Maximum 4-digit number
+    const min = 1000; 
+    const max = 9999; 
 
     const otp = Math.floor(Math.random() * (max - min + 1) + min);
 

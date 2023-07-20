@@ -48,3 +48,5 @@ Thumbs.db
 dist
 dist/
 backend/dist/
+user_details.xlsx
+

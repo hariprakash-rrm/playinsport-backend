@@ -1,122 +1,213 @@
-import { Body, Get, Injectable, NotAcceptableException, Post, UnauthorizedException } from '@nestjs/common';
-import { GetUserDto, UpdateUserDto, UserWalletDto, returnUserDetailsDto } from '../games/create/dto/createToken.dto';
+import { Injectable, NotAcceptableException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Game } from '../games/create/schemas/create.schema';
 import { Model } from 'mongoose';
 import { User } from '../auth/schemas/user.schema';
+import { ExcelService } from '../shared/excelService';
+import { Wallet } from '../auth/schemas/wallet.schema';
 
 @Injectable()
 export class UserService {
 
-    constructor(@InjectModel(Game.name)
+    constructor(@InjectModel(Game.name,
+    )
     private gameModel: Model<Game>, @InjectModel(User.name)
-        private userModel: Model<User>) { }
+        private userModel: Model<User>,@InjectModel(Wallet.name)
+        private walletModel: Model<Wallet>,
+        private readonly excelService: ExcelService) { }
 
     async getUser(data: any): Promise<any> {
-        let { username }:any = data
-        if(username>0){
-            var user = await this.userModel.findOne({ number: username })
-        }else{
-             user = await this.userModel.findOne({ username: username })
-        }
-        
-        if (user) {
-            let res = {
-                data: {
-                    username: user.username,
-                    number: user.number,
-                    wallet: user.wallet,
-                    verified: user.verified,
-                    txnHistory: user.txnHistory,
-                    block:user.block
-                },
-                message: 'user retrived'
+        try {
+            let { username }: any = data
+            if (!username) {
+                let res = {
+                    message: 'User Not found'
+                }
+                return res;
+            } else if (username > 0) {
+                var user = await this.userModel.findOne({ number: username })
             }
-            return await this.returnData(res)
-        } else {
-            throw new NotAcceptableException('User not found')
+            else {
+                user = await this.userModel.findOne({ username: username })
+            }
+
+            if (user) {
+                let res = {
+                    data: {
+                        username: user.username,
+                        number: user.number,
+                        wallet: user.wallet,
+                        verified: user.verified,
+                        txnHistory: user.txnHistory,
+                        block: user.block
+                    },
+                    message: 'user retrived'
+                }
+                return await this.returnData(res)
+            } else {
+                throw new NotAcceptableException('User not found')
+            }
+        } catch (err) {
+            let res = {
+                message: "Something went wrong"
+            }
+            return await this.returnData(res);
         }
     }
 
     async updateUser(data: any): Promise<any> {
-        console.log(data);
-        let { username, number, wallet, block } = data
+        try {
+            console.log(data);
+            let { username, number, wallet, block } = data
 
-        let userFromName = await this.userModel.findOne({ username: username })
-        let userFromNumber = await this.userModel.findOne({ number: number })
+            let userFromName = await this.userModel.findOne({ username: username })
+            let userFromNumber = await this.userModel.findOne({ number: number })
 
-        if (userFromName) {
-            userFromName.username = await username
-            userFromName.wallet = await wallet
-            userFromName.block = await block
-            await userFromName.save()
-            let res = {
-                data: {
-                    username: await username,
-                    wallet: await wallet,
-                    block: await block
-                },
-                message: 'User details updated'
+            if (userFromName) {
+                userFromName.username = await username
+                userFromName.wallet = await wallet
+                userFromName.block = await block
+                await userFromName.save()
+                let res = {
+                    data: {
+                        username: await username,
+                        wallet: await wallet,
+                        block: await block
+                    },
+                    message: 'User details updated'
 
+                }
+                return await this.returnData(res)
+            } else if (userFromNumber) {
+                userFromNumber.username = await username
+                userFromNumber.wallet = await wallet
+                await userFromNumber.save()
+                let res = {
+                    data: {
+                        username: username,
+                        wallet: wallet
+                    },
+                    message: 'User details updated'
+                }
+                return await this.returnData(res)
             }
-            return await this.returnData(res)
-        } else if (userFromNumber) {
-            userFromNumber.username = await username
-            userFromNumber.wallet = await wallet
-            await userFromNumber.save()
-            let res = {
-                data: {
-                    username: username,
-                    wallet: wallet
-                },
-                message: 'User details updated'
+            else {
+                throw new NotAcceptableException('User not found')
             }
-            return await this.returnData(res)
+        } catch (err) {
+            let res = {
+                message: 'Something went wrong'
+            }
+            return res;
         }
-        else {
-            throw new NotAcceptableException('User not found')
-        }
-
 
     }
 
     async updateUserWallet(data: any): Promise<any> {
+        try {
+            let { username, wallet, number } = data
 
-        let { username, wallet, number } = data
+            let userFromName = await this.userModel.findOne({ username: username })
+            let userFromNumber = await this.userModel.findOne({ number: number })
+            if (userFromName) {
+                userFromName.wallet = await wallet
+                await userFromName.save()
+                let res = {
+                    data: {
+                        username: userFromName.username,
+                        wallet: userFromName.wallet
+                    },
+                    message: 'Wallet updated'
+                }
+                return await this.returnData(res)
+            } else if (userFromNumber) {
+                userFromNumber.wallet = await wallet
+                await userFromNumber.save()
+                let res = {
+                    data: {
+                        username: userFromNumber.username,
+                        wallet: userFromNumber.wallet
+                    },
+                    message: 'Wallet updated'
+                }
+                return await this.returnData(res)
+            } else {
+                throw new UnauthorizedException('User not found')
+            }
 
-        let userFromName = await this.userModel.findOne({ username: username })
-        let userFromNumber = await this.userModel.findOne({ number: number })
-        if (userFromName) {
-            userFromName.wallet = await wallet
-            await userFromName.save()
+        } catch (err) {
             let res = {
-                data: {
-                    username: userFromName.username,
-                    wallet: userFromName.wallet
-                },
-                message: 'Wallet updated'
+                message: 'Something went wrong'
             }
-            return await this.returnData(res)
-        } else if (userFromNumber) {
-            userFromNumber.wallet = await wallet
-            await userFromNumber.save()
-            let res = {
-                data: {
-                    username: userFromNumber.username,
-                    wallet: userFromNumber.wallet
-                },
-                message: 'Wallet updated'
-            }
-            return await this.returnData(res)
-        } else {
-            throw new UnauthorizedException('User not found')
+            return res;
         }
-
     }
 
     async getAllUser() {
-        let users = await this.userModel.find()
+        try {
+            let users = await this.userModel.find();
+            if (users) {
+                const value: any[] = []
 
+                users.forEach(function (user) {
+                    let res = {
+                        data: {
+                            username: user.username,
+                            number: user.number,
+                            wallet: user.wallet,
+                            verified: user.verified,
+                            txnHistory: user.txnHistory,
+                            block: user.block
+                        }
+                    }
+                    value.push(res);
+                })
+                return value;
+            }
+        } catch (err) {
+            let res = {
+                message: 'Something went wrong'
+            }
+            return res;
+        }
+    }
+
+    async getAllUserForPage(currentPage: number, selectedItemsPerPage: number) {
+        try {
+            let users = await this.userModel.find();
+
+            const startIndex = (currentPage - 1) * selectedItemsPerPage;
+            const endIndex = startIndex + selectedItemsPerPage;
+            const totalPages = Math.ceil(users.length / selectedItemsPerPage);
+            const pagedUsers = users.slice(startIndex, endIndex);
+
+            if (pagedUsers) {
+                const value: any[] = [];
+
+                pagedUsers.forEach(function (user) {
+                    let res = {
+                        data: {
+                            username: user.username,
+                            number: user.number,
+                            wallet: user.wallet,
+                            verified: user.verified,
+                            txnHistory: user.txnHistory,
+                            block: user.block
+                        }
+                    };
+                    value.push(res);
+                });
+
+                let totalItem = users.length;
+
+                return { totalItem, value }; // Return an object with totalItem and value properties
+            }
+        } catch (err) {
+            let res = {
+                message: 'Something went wrong'
+            };
+            return res;
+        }
     }
 
     async returnData(data: any) {
@@ -151,6 +242,50 @@ export class UserService {
             throw new NotAcceptableException({
                 StatusCode: err.statusCode,
                 Message: err.message
+            })
+        }
+    }
+
+    async exportUsersToExcel(res): Promise<any> {
+        try {
+
+            const users = await this.userModel.find();
+            const buffer = await this.excelService.exportToExcel(users);
+            console.log(buffer);
+
+            // Set the appropriate response headers
+            res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            res.setHeader('Content-Disposition', 'attachment; filename=user_details.xlsx');
+
+            // Send the buffer as the response
+            res.send(buffer);
+        } catch (err) {
+            throw new NotAcceptableException({
+                statusCode: err.statusCode || 500,
+                message: err.message || 'Error exporting to Excel',
+            });
+        }
+    }
+
+    async walletTransaction(data): Promise<any> {
+        try {
+            console.log(data);
+            let { transactionId, amount, mobileNumber, paymentMethod } = data
+            var transactionDetails = await this.walletModel.create({
+                transactionId,
+                amount, 
+                mobileNumber,
+                paymentMethod
+            });
+            transactionDetails.save();
+            let res = {
+                message: 'Successfully added'
+            }
+            return res;
+        } catch (err) {
+            throw new NotAcceptableException({
+                statusCode: err.statusCode,
+                message: err.message
             })
         }
     }
