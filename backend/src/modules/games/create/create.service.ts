@@ -15,7 +15,6 @@ export class CreateService {
         let round = data.data
         try {
             let game = await this.gameModel.findOne({ round: round })
-            console.log(game)
             let res = {
                 data: {
                     data: game,
@@ -30,12 +29,10 @@ export class CreateService {
     }
 
     async getGames(dates: any) {
-        // console.log(dates)
         try {
             const dateString = dates.dates
             const _date: any = new Date(dateString);
             let games = await this.gameModel.find({ date: _date });
-            console.log(games)
             let res = {
                 data: {
                     data: games,
@@ -53,7 +50,7 @@ export class CreateService {
 
     async create(data: any): Promise<any> {
         try {
-            let { name, prize, tokenPrice, date, maximumTokenPerUser, totalTokenNumber } = data
+            let { name, prize, tokenPrice, date, maximumTokenPerUser, totalTokenNumber, youtubeLink, facebookLink } = data
             var tokenDetails: any[] = []
             let count = await this.gameModel.countDocuments().exec();
             for (let i = 0; i < totalTokenNumber; i++) {
@@ -61,18 +58,16 @@ export class CreateService {
                     tokenNumber: i + 1,
                     selectedBy: '',
                     isSelected: false,
-                    round: count + 1
+                    round: count + 1,
                 }
                 tokenDetails.push(data)
-                console.log("MAD")
             }
             try {
                 let count = await this.gameModel.countDocuments().exec();
                 console.log(`count${count}`)
                 var game: any = await this.gameModel.create({
-                    round: count + 1, name, date, prize, tokenPrice, maximumTokenPerUser, tokenDetails, isComplete: false, status: 'live'
+                    round: count + 1, name, date, prize, tokenPrice, maximumTokenPerUser, tokenDetails, isComplete: false, status: 'live', youtubeLink, facebookLink
                 })
-                console.log(`game${game}`);
                 game.tokenDetails.round = game.round
 
                 await game.save()

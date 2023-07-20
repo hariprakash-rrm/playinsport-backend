@@ -9,6 +9,7 @@ export class CreateController {
 
     @Post('/create')
     async create(@Body() data: createTokenDto): Promise<any> {
+
         let { token } = data
         let isAdmin = await this.adminValidate.adminValidate(token)
         if (isAdmin) {

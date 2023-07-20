@@ -13,8 +13,12 @@ export class Wallet {
 
     @Prop()
     amount: number
+
+    @Prop()
     mobileNumber: number
 
+    @Prop()
+    userPhoneNumber: number
 
     @Prop({
         enum: ['pending', 'success', 'declined'],

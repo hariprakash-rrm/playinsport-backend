@@ -270,16 +270,22 @@ export class UserService {
     async walletTransaction(data): Promise<any> {
         try {
             console.log(data);
-            let { transactionId, amount, mobileNumber, paymentMethod } = data
+            
+            let { transactionId, amount, mobileNumber, paymentMethod, userPhoneNumber } = data
+            console.log(data);
             var transactionDetails = await this.walletModel.create({
                 transactionId,
                 amount, 
                 mobileNumber,
-                paymentMethod
+                paymentMethod,
+                userPhoneNumber
             });
+            
+            console.log(transactionDetails);
             transactionDetails.save();
             let res = {
-                message: 'Successfully added'
+                message: 'Submitted',
+                statusCode: 201
             }
             return res;
         } catch (err) {

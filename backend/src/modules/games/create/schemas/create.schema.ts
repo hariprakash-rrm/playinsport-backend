@@ -40,6 +40,18 @@ export class Game {
     @Prop()
     status:string
 
+    @Prop()
+    youtubeLink: string
+
+    @Prop()
+    facebookLink: string
+
+    @Prop()
+    facebookLiveLink: string
+
+    @Prop()
+    youtubeLiveLink: string
+
 }
 
 export const GameSchema = SchemaFactory.createForClass(Game)
@@ -57,7 +69,11 @@ export class GameDetails {
         maximumTokenPerUser: number,
         totalTokenNumber: number,
         date: number,
-        token: string
+        token: string,
+        youtubeLink: string,
+        youtubeLiveLink : string,
+        facebookLink: string,
+        facebookLiveLink: string
     }]
 }
 

@@ -14,6 +14,8 @@ export class createTokenDto{
     readonly date:string
     readonly maximumTokenPerUser:string
     readonly token:string
+    readonly facebookLink:string
+    readonly youtubeLink: string
 
 }
 
@@ -50,6 +52,9 @@ export class walletDto{
      transactionid: string
      amount: number 
      mobileNumber: number
+
+    @IsNotEmpty()
+     userPhoneNumber: number
 }
 
 export class UpdateUserDto{
