@@ -67,7 +67,7 @@ export class AuthService {
 
     user.otp = otp;
     user.verified = 0;
-    user.save();
+    await user.save();
     const postData = {
       // Data to be sent in the request body
       number: number,
@@ -131,11 +131,12 @@ export class AuthService {
     }
     const token = this.jwtService.sign({ id: user._id });
     user.token = token;
-    user.save();
+    await user.save();
     let userDetails = {
       name: user.username,
       number: user.number,
       wallet: user.wallet,
+      isAdmin:user.isAdmin
     };
     const responseData = {
       statusCode: 201,
@@ -169,7 +170,7 @@ export class AuthService {
     user.token = token;
     user.verified = 1;
     user.otp = null;
-    user.save();
+    await user.save();
     let userDetails = {
       name: user.username,
       number: user.number,
@@ -202,7 +203,7 @@ export class AuthService {
       throw new UnauthorizedException("number is not valid");
     }
     user.password = hashedPassword;
-    user.save();
+    await user.save();
 
     return {
       statusCode: 201,
@@ -236,7 +237,7 @@ export class AuthService {
     };
     setTimeout(async () => {
       user.otp = null;
-      user.save();
+      await user.save();
     }, 45000);
     return await this.sendOtp(postData, user);
   }
@@ -259,23 +260,24 @@ export class AuthService {
     let { token } = data
     const user = await this.userModel.findOne({ token: token });
     if (user) {
-      if (user.isAdmin) {
-        return {
-          data: {
-            isAdmin: true
-          },
-          statusCode: 201,
-          message: "User is an Admin",
-        };
-      } else {
-        return {
-          data: {
-            isAdmin: false
-          },
-          statusCode: 201,
-          message: "User is not an Admin",
-        };
-      }
+      // if (user.isAdmin) {
+      //   return {
+      //     data: {
+      //       isAdmin: true
+      //     },
+      //     statusCode: 201,
+      //     message: "User is an Admin",
+      //   };
+      // } else {
+      //   return {
+      //     data: {
+      //       isAdmin: false
+      //     },
+      //     statusCode: 201,
+      //     message: "User is not an Admin",
+      //   };
+      // }
+      return true
     }
     else {
       throw new UnauthorizedException('You are not an valid user')

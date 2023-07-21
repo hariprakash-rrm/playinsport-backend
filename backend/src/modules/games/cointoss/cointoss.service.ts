@@ -29,7 +29,9 @@ export class CointossService  {
             if(user.wallet-amount <0){
                 throw new NotAcceptableException('not enough balance')
             }
-            user.save()
+            else{
+            await user.save()
+            }
         }
 
         let users = user.username

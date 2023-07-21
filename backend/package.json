@@ -30,6 +30,7 @@
     "@nestjs/platform-socket.io": "^10.0.2",
     "@nestjs/swagger": "^6.3.0",
     "@nestjs/websockets": "^10.0.1",
+    "@types/xlsx": "0.0.36",
     "axios": "^1.4.0",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
@@ -45,7 +46,8 @@
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
     "socket.io": "^4.6.2",
-    "whatsapp-web.js": "^1.21.0"
+    "whatsapp-web.js": "^1.21.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

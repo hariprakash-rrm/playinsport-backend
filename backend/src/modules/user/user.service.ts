@@ -1,10 +1,11 @@
-import { Injectable, NotAcceptableException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NotAcceptableException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Game } from '../games/create/schemas/create.schema';
 import { Model } from 'mongoose';
 import { User } from '../auth/schemas/user.schema';
 import { ExcelService } from '../shared/excelService';
 import { Wallet } from '../auth/schemas/wallet.schema';
+import { promises } from 'dns';
 
 @Injectable()
 export class UserService {
@@ -12,7 +13,7 @@ export class UserService {
     constructor(@InjectModel(Game.name,
     )
     private gameModel: Model<Game>, @InjectModel(User.name)
-        private userModel: Model<User>,@InjectModel(Wallet.name)
+        private userModel: Model<User>, @InjectModel(Wallet.name)
         private walletModel: Model<Wallet>,
         private readonly excelService: ExcelService) { }
 
@@ -268,32 +269,61 @@ export class UserService {
     }
 
     async walletTransaction(data): Promise<any> {
+        let { transactionId } = data
+        let isId = await this.walletModel.findOne({ transactionId: transactionId })
+        if (isId) {
+            throw new NotAcceptableException('duplicate id found')
+        }
         try {
-            console.log(data);
-            
-            let { transactionId, amount, mobileNumber, paymentMethod, userPhoneNumber } = data
+
+            let { transactionId, amount, mobileNumber, paymentMethod, userPhoneNumber, message } = data
             console.log(data);
             var transactionDetails = await this.walletModel.create({
                 transactionId,
-                amount, 
+                amount,
                 mobileNumber,
                 paymentMethod,
-                userPhoneNumber
+                userPhoneNumber,
+                message
             });
-            
-            console.log(transactionDetails);
-            transactionDetails.save();
+
+            await transactionDetails.save();
+
             let res = {
+                data: {
+                    data: transactionDetails
+                },
                 message: 'Submitted',
-                statusCode: 201
             }
-            return res;
+            return await this.returnData(res)
+
         } catch (err) {
             throw new NotAcceptableException({
                 statusCode: err.statusCode,
                 message: err.message
             })
         }
+    }
+
+    async getUserWalletTxn(data: any): Promise<any> {
+        let { userPhoneNumber } = data
+        let userTxn = await this.walletModel.find({ userPhoneNumber: userPhoneNumber })
+            .sort({ _id: -1 })
+            .limit(50)
+            .exec();
+
+        if (!userTxn || data.userTxn === 0) {
+            throw new NotFoundException('No data found for the given number.');
+        }
+
+        let _data = {
+            data: {
+                data: userTxn
+            },
+            message: 'Data retrived'
+        }
+
+        this.returnData(_data)
     }
 
 }

@@ -139,7 +139,7 @@ export class CreateService {
     }
 
     async update(datas: any): Promise<any> {
-        let { round, action } = datas
+        let { round, action, youtubeLink, youtubeLiveLink, facebookLink, facebookLiveLink } = datas
         var game: any = await this.gameModel.findOne({ round: round })
         if (game) {
             try {
@@ -150,7 +150,7 @@ export class CreateService {
                     if (action == 'finalise') {
                         game.isComplete = true
                         game.status = 'finalise'
-                        game.save()
+                        await game.save()
                         let data = {
                             data: {
                                 game
@@ -162,7 +162,24 @@ export class CreateService {
                     } else if (action == 'refund') {
                         return await this.refund(datas)
 
-                    } else {
+                    } else if (action === 'linkUpdate') {
+                        game.youtubeLink = youtubeLink,
+                            game.youtubeLiveLink = youtubeLiveLink,
+                            game.facebookLink = facebookLink,
+                            game.facebookLiveLink = facebookLiveLink
+
+                        await game.sae()
+
+                        let data = {
+                            data: {
+                                game
+                            },
+                            message: 'Round link updated'
+
+                        }
+                        return await this.returnData(data)
+                    }
+                    else {
                         throw new NotAcceptableException('Something went wrong')
                     }
                 }

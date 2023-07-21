@@ -14,16 +14,11 @@ export class UserController {
     private excelService: ExcelService
   ) { }
 
-  @Get("/all-user")
-  async getAllUser(@Body() data: any): Promise<any> {
-      return this.userService.getAllUser();
-  }
+  // @Get("/all-user")
+  // async getAllUser(@Body() data: any): Promise<any> {
+  //   return this.userService.getAllUser();
+  // }
 
-  @Get("/all-user-for-page")
-  async getAllUserForPage(@Query() data: any): Promise<any> {
-  
-      return this.userService.getAllUserForPage(data.currentPage, data.selectedItemsPerPage);
-  }
 
   @Get("/get-user")
   async getUser(@Query() data: GetUserDto): Promise<any> {
@@ -65,6 +60,7 @@ export class UserController {
    */
   @Get("/get-user-details")
   async getUserDetails(@Query() data: GetUserDetailsDto): Promise<any> {
+
     try {
       console.log(data);
       return this.userService.getUserDetails(data);
@@ -74,20 +70,47 @@ export class UserController {
   }
 
   @Get('/export')
-async exportUsersToExcel(@Res() res: Response): Promise<void> {
-  try {
-    return this.userService.exportUsersToExcel(res);
-  } catch (err) {
-    return err;
+  async exportUsersToExcel(@Body() data: any, @Res() res: Response): Promise<void> {
+    let { token } = data;
+    let isAdmin = await this.adminValidate.adminValidate(token);
+    if (isAdmin) {
+      try {
+        return this.userService.exportUsersToExcel(res);
+      } catch (err) {
+        return err;
+      }
+    }
+    else {
+      throw new UnauthorizedException(" You are not an admin");
+    }
   }
-}
 
- @Post('/walletTransaction')
- async walletTransaction(@Body() data: walletDto): Promise<void>{
-  try{
-    return this.userService.walletTransaction(data);
-  }catch(err){
-    return err;
+  @Post('/walletTransaction')
+  async walletTransaction(@Body() data: walletDto): Promise<void> {
+    let { token } = data;
+    let isUser = await this.adminValidate.validateUser(token);
+    if (isUser) {
+      try {
+        return this.userService.walletTransaction(data);
+      } catch (err) {
+        return err;
+      }
+    } else {
+      throw new UnauthorizedException(" You are not a valid user");
+    }
+
   }
- }
+
+  @Get('/getUserWalletTxn')
+  async getUserWalletTxn(@Query() data: GetUserDetailsDto):Promise<any>{
+    let { token } = data;
+    let isUser = await this.adminValidate.validateUser(token);
+    if (isUser) {
+    return await this.userService.getUserWalletTxn(data)
+    }
+    else {
+      throw new UnauthorizedException(" You are not a valid user");
+    }
+
+  }
 }

@@ -1,109 +1,109 @@
-import { IsArray, IsBoolean,  IsNotEmpty, IsNumber,  IsString, Matches, isNotEmpty,  } from "class-validator";
+import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsString, Matches, isNotEmpty, } from "class-validator";
 
 
-export class createTokenDto{
+export class createTokenDto {
 
     @IsNotEmpty()
-    readonly name:string
+    readonly name: string
 
     @IsArray()
-    readonly prize:string[]
+    readonly prize: string[]
 
     @IsNotEmpty()
-    readonly tokenPrice:string
-    readonly date:string
-    readonly maximumTokenPerUser:string
-    readonly token:string
-    readonly facebookLink:string
+    readonly tokenPrice: string
+    readonly date: string
+    readonly maximumTokenPerUser: string
+    readonly token: string
+    readonly facebookLink: string
     readonly youtubeLink: string
 
 }
 
-export class RefundDto{
+export class RefundDto {
 
     @IsNotEmpty()
-    readonly round:string
+    readonly round: string
 
     @IsNotEmpty()
-    readonly token:string
+    readonly token: string
 }
 
-export class GetUserDto{
+export class GetUserDto {
 
     @IsNotEmpty()
     @Matches(/^[^\s]+$/, {
         message: 'Username cannot contain spaces',
-      })
-    readonly username:string
+    })
+    readonly username: string
 
     @IsNotEmpty()
-    readonly token:string
+    readonly token: string
 }
 
-export class GetUserDetailsDto{
+export class GetUserDetailsDto {
     @IsNotEmpty()
-    readonly token:string
+    readonly token: string
 }
 
-export class walletDto{
+export class walletDto {
 
     @IsNotEmpty()
     paymentMethod: string
-     transactionid: string
-     amount: number 
-     mobileNumber: number
-
-    @IsNotEmpty()
-     userPhoneNumber: number
+    transactionid: string
+    amount: number
+    mobileNumber: number
+    userPhoneNumber: number
+    token:string
+   
 }
 
-export class UpdateUserDto{
+export class UpdateUserDto {
 
     @IsNotEmpty()
     @Matches(/^[^\s]+$/, {
         message: 'Username cannot contain spaces',
-      })
-    readonly username:string
-    readonly token:string
+    })
+    readonly username: string
+    readonly token: string
 
     @IsNotEmpty()
     @IsNumber()
-    readonly number : number
-    readonly wallet:number
+    readonly number: number
+    readonly wallet: number
 
     @IsNotEmpty()
     @IsBoolean()
-    readonly block:boolean=false
-    
+    readonly block: boolean = false
+
 
 }
 
-export class UserWalletDto{
+export class UserWalletDto {
 
     @IsNotEmpty()
     @IsNumber()
-    readonly number : number
-    readonly wallet:number
+    readonly number: number
+    readonly wallet: number
 
     @IsNotEmpty()
     @IsString()
-    readonly token:string
+    readonly token: string
 
 }
 
-export class returnUserDetailsDto{
+export class returnUserDetailsDto {
     @IsNotEmpty()
     @IsNumber()
-    readonly number : number
+    readonly number: number
 
     @IsNotEmpty()
     @IsBoolean()
-    readonly isAdmin:boolean=false
+    readonly isAdmin: boolean = false
 
     @IsNotEmpty()
-    readonly name : string
+    readonly name: string
 
-    readonly wallet:number
+    readonly wallet: number
     readonly txnHistory: any
 
 }
