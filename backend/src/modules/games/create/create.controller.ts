@@ -44,6 +44,7 @@ export class CreateController {
 
     @Post('/update')
     async update(@Body() data: any) {
+        console.log(data);
         let { token } = data
         let isAdmin = await this.adminValidate.adminValidate(token)
         if (isAdmin) {

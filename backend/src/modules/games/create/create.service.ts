@@ -12,9 +12,16 @@ export class CreateService {
         private userModel: Model<User>) { }
 
     async get(data: any) {
+        console.log(data);
         let round = data.data
+        console.log(round);
         try {
+
             let game = await this.gameModel.findOne({ round: round })
+            if (!game) {
+                throw new NotAcceptableException('Game not found')
+            }
+            console.log(game);
             let res = {
                 data: {
                     data: game,
@@ -139,50 +146,54 @@ export class CreateService {
     }
 
     async update(datas: any): Promise<any> {
+        console.log("******************************************")
+        console.log(datas);
         let { round, action, youtubeLink, youtubeLiveLink, facebookLink, facebookLiveLink } = datas
         var game: any = await this.gameModel.findOne({ round: round })
         if (game) {
             try {
-                if (game.isComplete) {
-                    throw new NotAcceptableException('Round already completed')
+                // if (game.isComplete) {
+                //     throw new NotAcceptableException('Round already completed')
+                // }
+                // else {
+                if (action == 'finalise') {
+                    game.isComplete = true
+                    game.status = 'finalise'
+                    await game.save()
+                    let data = {
+                        data: {
+                            game
+                        },
+                        message: 'Round completed'
+
+                    }
+                    return await this.returnData(data)
+                } else if (action == 'refund') {
+                    return await this.refund(datas)
+
+                } else if (action === 'linkUpdate') {
+                    console.log()
+                       game.youtubeLink = youtubeLink,
+                        game.youtubeLiveLink = youtubeLiveLink,
+                        game.facebookLink = facebookLink,
+                        game.facebookLiveLink = facebookLiveLink
+
+                    await game.save()
+                    console.log(game);
+
+                    let data = {
+                        data: {
+                            game
+                        },
+                        message: 'Round link updated'
+
+                    }
+                    return await this.returnData(data)
                 }
                 else {
-                    if (action == 'finalise') {
-                        game.isComplete = true
-                        game.status = 'finalise'
-                        await game.save()
-                        let data = {
-                            data: {
-                                game
-                            },
-                            message: 'Round completed'
-
-                        }
-                        return await this.returnData(data)
-                    } else if (action == 'refund') {
-                        return await this.refund(datas)
-
-                    } else if (action === 'linkUpdate') {
-                        game.youtubeLink = youtubeLink,
-                            game.youtubeLiveLink = youtubeLiveLink,
-                            game.facebookLink = facebookLink,
-                            game.facebookLiveLink = facebookLiveLink
-
-                        await game.sae()
-
-                        let data = {
-                            data: {
-                                game
-                            },
-                            message: 'Round link updated'
-
-                        }
-                        return await this.returnData(data)
-                    }
-                    else {
-                        throw new NotAcceptableException('Something went wrong')
-                    }
+                    throw new NotAcceptableException('Something went wrong')
                 }
+
             } catch (err) {
                 throw new NotAcceptableException(err)
             }
