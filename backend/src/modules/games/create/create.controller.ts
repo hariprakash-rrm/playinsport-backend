@@ -21,7 +21,8 @@ export class CreateController {
     }
 
     @Get('/get')
-    async get(@Query() round: string): Promise<any> {
+    async get(@Query() round: any): Promise<any> {
+        console.log(round)
         return this.createService.get(round)
     }
 

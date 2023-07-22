@@ -11,13 +11,12 @@ export class CreateService {
     private gameModel: Model<Game>, @InjectModel(User.name)
         private userModel: Model<User>) { }
 
-    async get(data: any) {
-        console.log(data);
-        let round = data.data
-        console.log(round);
+    async get(_data: any) {
+       
+       let {data}:any = _data
         try {
 
-            let game = await this.gameModel.findOne({ round: round })
+            let game = await this.gameModel.findOne({ round: +data })
             if (!game) {
                 throw new NotAcceptableException('Game not found')
             }
@@ -97,11 +96,14 @@ export class CreateService {
     }
 
     async refund(data: RefundDto) {
-        let { round } = data
+        let { round }:any = data
 
-        var game: any = await this.gameModel.findOne({ round: round })
+        var game: any = await this.gameModel.findOne({ round: +round })
 
         if (game) {
+            if (game.isComplete) {
+                throw new NotAcceptableException('Round already completed')
+            }
             try {
                 var resData: any[] = []
                 const timestamp = new Date().getTime();
@@ -152,10 +154,10 @@ export class CreateService {
         var game: any = await this.gameModel.findOne({ round: round })
         if (game) {
             try {
-                // if (game.isComplete) {
-                //     throw new NotAcceptableException('Round already completed')
-                // }
-                // else {
+                if (game.isComplete) {
+                    throw new NotAcceptableException('Round already completed')
+                }
+                else {
                 if (action == 'finalise') {
                     game.isComplete = true
                     game.status = 'finalise'
@@ -168,7 +170,8 @@ export class CreateService {
 
                     }
                     return await this.returnData(data)
-                } else if (action == 'refund') {
+                }
+                 else if (action == 'refund') {
                     return await this.refund(datas)
 
                 } else if (action === 'linkUpdate') {
@@ -193,6 +196,7 @@ export class CreateService {
                 else {
                     throw new NotAcceptableException('Something went wrong')
                 }
+            }
 
             } catch (err) {
                 throw new NotAcceptableException(err)

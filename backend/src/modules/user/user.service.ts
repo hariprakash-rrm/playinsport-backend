@@ -4,7 +4,7 @@ import { Game } from '../games/create/schemas/create.schema';
 import { LeanDocument, Model } from 'mongoose';
 import { User } from '../auth/schemas/user.schema';
 import { ExcelService } from '../shared/excelService';
-import { DepositWallet, WithdrawWallet } from '../auth/schemas/wallet.schema';
+import { DepositWallet, TotalSupply, WithdrawWallet } from '../auth/schemas/wallet.schema';
 
 
 @Injectable()
@@ -17,6 +17,9 @@ export class UserService {
         private depositWallet: Model<DepositWallet>,
         @InjectModel(WithdrawWallet.name)
         private withdrawWalletModel: Model<WithdrawWallet>,
+
+        @InjectModel(TotalSupply.name)
+        private TotalSupplyModel: Model<TotalSupply>,
         private readonly excelService: ExcelService) { }
 
     async getUser(data: any): Promise<any> {
@@ -328,6 +331,7 @@ export class UserService {
                     }
                 }
             }
+            else{
             try {
                 console.log(data);
                 let { amount, userPhoneNumber, method } = data
@@ -339,29 +343,37 @@ export class UserService {
                     message: 'WIthdraw In progress...'
                 });
 
-                try {
-                    let user = await this.userModel.findOne({ number: userPhoneNumber })
-                    if (user) {
+
+                let user = await this.userModel.findOne({ number: userPhoneNumber })
+                if (user) {
+                    if ( user.wallet - amount < 0) {
+                        throw new NotAcceptableException('Try with lower amount')
+
+                    }
+                     else {
                         user.wallet -= amount
                         await _transactionDetails.save();
                         await user.save()
+                        let res = {
+                            data: {
+                                data: _transactionDetails
+                            },
+                            message: 'Submitted',
+                        }
+                        return await this.returnData(res)
                     }
-                } catch (error) {
-                    throw new NotAcceptableException('Something went wrong')
-
+                }else{
+                    throw new UnauthorizedException('user not found')
                 }
+            } catch (error) {
+                console.log(error)
+                throw new NotAcceptableException('Something went wrong')
 
-                let res = {
-                    data: {
-                        data: _transactionDetails
-                    },
-                    message: 'Submitted',
-                }
-                return await this.returnData(res)
             }
-            catch (err) {
-                throw new NotAcceptableException('no methods found')
-            }
+        }
+
+     } else {
+            throw new NotAcceptableException('NO methods found')
         }
 
     }
@@ -406,7 +418,7 @@ export class UserService {
     async getDepositPayment(data: any): Promise<any> {
         let { method } = data
         let userPayment = await this.depositWallet.find({ status: method })
-        if(userPayment.length==0){
+        if (userPayment.length == 0) {
             throw new NotAcceptableException('No data found')
         }
         if (userPayment) {
@@ -428,7 +440,7 @@ export class UserService {
     async getWithdrawPayment(data: any): Promise<any> {
         let { method } = data
         let userPayment = await this.withdrawWalletModel.find({ status: method })
-        if(userPayment.length==0){
+        if (userPayment.length == 0) {
             throw new NotAcceptableException('No data found')
         }
         if (userPayment) {
@@ -452,36 +464,38 @@ export class UserService {
         const timestamp = new Date().getTime();
         let { method, userPhoneNumber, amount, message } = data
         let user = await this.userModel.findOne({ number: userPhoneNumber })
+
         if (method == 'deposit') {
             // let user = await this.userModel.findOne({ number: userPhoneNumber })
             if (user) {
 
                 let depositUserTxn = await this.depositWallet.find({ userPhoneNumber: userPhoneNumber })
-                    .sort({ createdAt: -1 })
-                    
-                console.log(depositUserTxn)
+                    .sort({ createdAt: -1 }).exec()
+
+                console.log(depositUserTxn, 'popopopopopopopo')
                 user.wallet += depositUserTxn[0].amount
                 if (+amount != +depositUserTxn[0].amount) {
                     throw new NotAcceptableException('Amount mismatched')
                 }
-                
+
                 let txnHistory: any = {
                     message: `Deposited`,
                     amount: +depositUserTxn[0].amount,
                     time: timestamp,
                     newBalance: user.wallet
                 }
-                if (depositUserTxn[0].status== 'pending') {
+                if (depositUserTxn[0].status == 'pending') {
                     user.txnHistory.push(txnHistory)
                     depositUserTxn[0].status = 'deposited'
                     depositUserTxn[0].message = message
+
                     await depositUserTxn[0].save()
                     await user.save()
 
                     let _data = {
                         data: {
                             data:
-                            depositUserTxn[0]
+                                depositUserTxn[0]
                         },
                         message: 'Deposited'
                     }
@@ -498,7 +512,7 @@ export class UserService {
         else if (method == 'declineDeposit') {
             let depositUserTxn = await this.depositWallet.find({ userPhoneNumber: userPhoneNumber })
                 .sort({ createdAt: -1 })
-                
+
             console.log(depositUserTxn)
             let txnHistory: any = {
                 message: message,
@@ -506,29 +520,29 @@ export class UserService {
                 time: timestamp,
                 newBalance: user.wallet
             }
-            if(depositUserTxn[0].status=='pending'){
-            depositUserTxn[0].status = 'declined'
-            depositUserTxn[0].message = message
-            user.txnHistory.push(txnHistory)
-            await user.save()
-            await depositUserTxn[0].save()
+            if (depositUserTxn[0].status == 'pending') {
+                depositUserTxn[0].status = 'declined'
+                depositUserTxn[0].message = message
+                user.txnHistory.push(txnHistory)
+                await user.save()
+                await depositUserTxn[0].save()
 
-            let _data = {
-                data: {
-                    data:
-                    depositUserTxn[0]
-                },
-                message: 'dEPOSIT DECLINED'
-            }
-            return this.returnData(_data)
-            }else{
+                let _data = {
+                    data: {
+                        data:
+                            depositUserTxn[0]
+                    },
+                    message: 'dEPOSIT DECLINED'
+                }
+                return this.returnData(_data)
+            } else {
                 throw new NotAcceptableException('Already declined')
             }
         } else if (method == 'withdraw') {
 
             let withdrawUserTxn = await this.withdrawWalletModel.find({ userPhoneNumber: userPhoneNumber })
                 .sort({ createdAt: -1 })
-                
+
             console.log(withdrawUserTxn)
 
             let txnHistory: any = {
@@ -547,7 +561,7 @@ export class UserService {
                 let _data = {
                     data: {
                         data:
-                        withdrawUserTxn[0]
+                            withdrawUserTxn[0]
                     },
                     message: 'withdraw success'
                 }
@@ -559,7 +573,7 @@ export class UserService {
             // let user = await this.userModel.findOne({ number: userPhoneNumber })
             let withdrawUserTxn = await this.withdrawWalletModel.find({ userPhoneNumber: userPhoneNumber })
                 .sort({ createdAt: -1 })
-                
+
             console.log(withdrawUserTxn)
             user.wallet += withdrawUserTxn[0].amount
             let txnHistory: any = {
@@ -580,7 +594,7 @@ export class UserService {
                 let _data = {
                     data: {
                         data:
-                        withdrawUserTxn[0]
+                            withdrawUserTxn[0]
                     },
                     message: 'withdraw declined'
                 }

@@ -22,7 +22,7 @@ export class createTokenDto {
 export class RefundDto {
 
     @IsNotEmpty()
-    readonly round: string
+    readonly round: number
 
     @IsNotEmpty()
     readonly token: string

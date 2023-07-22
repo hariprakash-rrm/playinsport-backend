@@ -9,7 +9,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from '../auth/schemas/user.schema';
 import { GameDetailsScehema, GameSchema } from '../games/create/schemas/create.schema';
 import { ExcelService } from '../shared/excelService';
-import { DepositWalletSchema, WithdrawWalletSchema } from '../auth/schemas/wallet.schema';
+import { DepositWalletSchema, TotalSupplySchema, WithdrawWalletSchema } from '../auth/schemas/wallet.schema';
 
 @Module({
   imports: [
@@ -32,7 +32,8 @@ import { DepositWalletSchema, WithdrawWalletSchema } from '../auth/schemas/walle
       { name: "Game", schema: GameSchema },
       { name: "DepositWallet", schema: DepositWalletSchema },
       { name: "GameDetails", schema: GameDetailsScehema },
-      { name: "WithdrawWallet", schema: WithdrawWalletSchema }
+      { name: "WithdrawWallet", schema: WithdrawWalletSchema },
+      { name: "TotalSupply", schema: TotalSupplySchema }
     ]),
   ],
   controllers: [UserController],

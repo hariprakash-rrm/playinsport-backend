@@ -63,5 +63,19 @@ export class WithdrawWallet {
     message: string
 
 }
+
+
+@Schema({
+    timestamps: true
+})
+export class TotalSupply{
+    @Prop()
+    totalDeposit:number
+
+    @Prop()
+    totalWithdraw:number
+}
+
 export const DepositWalletSchema = SchemaFactory.createForClass(DepositWallet)
 export const WithdrawWalletSchema = SchemaFactory.createForClass(WithdrawWallet)
+export const TotalSupplySchema = SchemaFactory.createForClass(TotalSupply)
