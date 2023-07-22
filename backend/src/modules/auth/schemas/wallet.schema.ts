@@ -5,7 +5,7 @@ import { IsNotEmpty, IsString, Matches } from 'class-validator';
     timestamps: true
 })
 
-export class Wallet {
+export class DepositWallet {
 
 
     @Prop({ unique: true })
@@ -30,7 +30,37 @@ export class Wallet {
     paymentMethod: string
 
     @Prop()
+    method:string
+
+    @Prop()
     message: string
 
 }
-export const WalletSchema = SchemaFactory.createForClass(Wallet)
+
+@Schema({
+    timestamps: true
+})
+
+export class WithdrawWallet {
+
+    @Prop()
+    amount: number
+
+    @Prop()
+    userPhoneNumber: number
+
+    @Prop({
+        enum: ['pending', 'success', 'declined'],
+        default: 'pending',
+    })
+    status: string = 'pending';
+
+    @Prop()
+    method:string
+
+    @Prop()
+    message: string
+
+}
+export const DepositWalletSchema = SchemaFactory.createForClass(DepositWallet)
+export const WithdrawWalletSchema = SchemaFactory.createForClass(WithdrawWallet)

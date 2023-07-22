@@ -85,13 +85,13 @@ export class UserController {
     }
   }
 
-  @Post('/walletTransaction')
+  @Post('/deposit')
   async walletTransaction(@Body() data: walletDto): Promise<void> {
-    let { token } = data;
-    let isUser = await this.adminValidate.validateUser(token);
+    
+    let isUser = await this.adminValidate.validateUser(data);
     if (isUser) {
       try {
-        return this.userService.walletTransaction(data);
+        return this.userService.deposit(data);
       } catch (err) {
         return err;
       }
@@ -103,8 +103,8 @@ export class UserController {
 
   @Get('/getUserWalletTxn')
   async getUserWalletTxn(@Query() data: GetUserDetailsDto):Promise<any>{
-    let { token } = data;
-    let isUser = await this.adminValidate.validateUser(token);
+    console.log(data,'khjghf')
+    let isUser = await this.adminValidate.validateUser(data);
     if (isUser) {
     return await this.userService.getUserWalletTxn(data)
     }

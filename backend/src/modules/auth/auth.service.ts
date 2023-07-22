@@ -259,6 +259,7 @@ export class AuthService {
   async validateUser(data: any): Promise<any> {
     let { token } = data
     const user = await this.userModel.findOne({ token: token });
+    console.log(user,token)
     if (user) {
       // if (user.isAdmin) {
       //   return {

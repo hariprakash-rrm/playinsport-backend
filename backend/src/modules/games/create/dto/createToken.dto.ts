@@ -43,6 +43,7 @@ export class GetUserDto {
 export class GetUserDetailsDto {
     @IsNotEmpty()
     readonly token: string
+    readonly userPhoneNumber:number
 }
 
 export class walletDto {

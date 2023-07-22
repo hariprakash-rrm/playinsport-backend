@@ -57,7 +57,7 @@ export class CreateService {
 
     async create(data: any): Promise<any> {
         try {
-            let { name, prize, tokenPrice, date, maximumTokenPerUser, totalTokenNumber, youtubeLink, facebookLink } = data
+            let { name, prize, tokenPrice, date, maximumTokenPerUser, totalTokenNumber, youtubeLink, facebookLink,youtubeLiveLink,facebookLiveLink } = data
             var tokenDetails: any[] = []
             let count = await this.gameModel.countDocuments().exec();
             for (let i = 0; i < totalTokenNumber; i++) {
@@ -73,7 +73,7 @@ export class CreateService {
                 let count = await this.gameModel.countDocuments().exec();
                 console.log(`count${count}`)
                 var game: any = await this.gameModel.create({
-                    round: count + 1, name, date, prize, tokenPrice, maximumTokenPerUser, tokenDetails, isComplete: false, status: 'live', youtubeLink, facebookLink
+                    round: count + 1, name, date, prize, tokenPrice, maximumTokenPerUser, tokenDetails, isComplete: false, status: 'live', youtubeLink, facebookLink,youtubeLiveLink,facebookLiveLink
                 })
                 game.tokenDetails.round = game.round
 

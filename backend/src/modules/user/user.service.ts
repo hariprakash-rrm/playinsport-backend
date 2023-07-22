@@ -4,8 +4,8 @@ import { Game } from '../games/create/schemas/create.schema';
 import { Model } from 'mongoose';
 import { User } from '../auth/schemas/user.schema';
 import { ExcelService } from '../shared/excelService';
-import { Wallet } from '../auth/schemas/wallet.schema';
-import { promises } from 'dns';
+import { DepositWallet, WithdrawWallet } from '../auth/schemas/wallet.schema';
+
 
 @Injectable()
 export class UserService {
@@ -13,8 +13,10 @@ export class UserService {
     constructor(@InjectModel(Game.name,
     )
     private gameModel: Model<Game>, @InjectModel(User.name)
-        private userModel: Model<User>, @InjectModel(Wallet.name)
-        private walletModel: Model<Wallet>,
+        private userModel: Model<User>, @InjectModel(DepositWallet.name)
+        private depositWallet: Model<DepositWallet>,
+        @InjectModel(WithdrawWallet.name)
+        private withdrawWalletModel: Model<WithdrawWallet>,
         private readonly excelService: ExcelService) { }
 
     async getUser(data: any): Promise<any> {
@@ -215,7 +217,7 @@ export class UserService {
         let retData = {
             message: data.message,
             data: data.data,
-            statusCode: 201
+            statusCode: data?.statusCode ?? 201
         }
         return retData
     }
@@ -268,62 +270,123 @@ export class UserService {
         }
     }
 
-    async walletTransaction(data): Promise<any> {
+    async deposit(data): Promise<any> {
         let { transactionId } = data
-        let isId = await this.walletModel.findOne({ transactionId: transactionId })
-        if (isId) {
-            throw new NotAcceptableException('duplicate id found')
-        }
-        try {
-
-            let { transactionId, amount, mobileNumber, paymentMethod, userPhoneNumber, message } = data
-            console.log(data);
-            var transactionDetails = await this.walletModel.create({
-                transactionId,
-                amount,
-                mobileNumber,
-                paymentMethod,
-                userPhoneNumber,
-                message
-            });
-
-            await transactionDetails.save();
-
-            let res = {
-                data: {
-                    data: transactionDetails
-                },
-                message: 'Submitted',
+        let { userPhoneNumber } = data
+        if (data.method == 'deposit') {
+            let isId = await this.depositWallet.findOne({ transactionId: transactionId })
+            if (isId) {
+                throw new NotAcceptableException('duplicate id found')
             }
-            return await this.returnData(res)
+            let userTxn = await this.depositWallet.find({ userPhoneNumber: userPhoneNumber })
+                .sort({ _id: -1 })
+                .limit(1)
+                .exec();
+            if (userTxn) {
+                if (userTxn[0]?.method == 'deposit' ) {
+                    if (userTxn[0]?.status == 'pending' ) {
+                        throw new NotAcceptableException('Previous deposit pending')
+                    }
+                }
+            }
+            try {
+                let { transactionId, amount, mobileNumber, paymentMethod, userPhoneNumber, message, method } = data
+                console.log(data);
+                let transactionDetails = await this.depositWallet.create({
+                    transactionId,
+                    amount,
+                    mobileNumber,
+                    method,
+                    paymentMethod,
+                    userPhoneNumber,
+                    message: 'Deposit In progress...'
+                });
+                await transactionDetails.save();
+                let res = {
+                    data: {
+                        data: transactionDetails
+                    },
+                    message: 'Submitted',
+                }
+                return await this.returnData(res)
+            } catch (err) {
+                throw new NotAcceptableException({
+                    statusCode: err.statusCode,
+                    message: err.message
+                })
+            }
+        } else if (data.method == 'withdraw') {
 
-        } catch (err) {
-            throw new NotAcceptableException({
-                statusCode: err.statusCode,
-                message: err.message
-            })
+            let userTxn = await this.withdrawWalletModel.find({ userPhoneNumber: userPhoneNumber })
+                .sort({ _id: -1 })
+                .limit(1)
+                .exec();
+            if (userTxn) {
+                if (userTxn[0]?.method == 'withdraw' ) {
+                    if (userTxn[0]?.status == 'pending') {
+                        throw new NotAcceptableException('Previous withdraw pending')
+                    }
+                }
+            }
+            try {
+                console.log(data);
+                let { amount, userPhoneNumber, method } = data
+                console.log(amount)
+                let _transactionDetails = await this.withdrawWalletModel.create({
+                    amount: amount,
+                    method: method,
+                    userPhoneNumber: userPhoneNumber,
+                    message: 'WIthdraw In progress...'
+                });
+
+                try {
+                    const savedTransaction = await _transactionDetails.save();
+                    console.log('Transaction saved successfully:', savedTransaction);
+                  } catch (error) {
+                    console.error('Error saving transaction:', error);
+                  }
+                let res = {
+                    data: {
+                        data: _transactionDetails
+                    },
+                    message: 'Submitted',
+                }
+                return await this.returnData(res)
+            }
+            catch (err) {
+                throw new NotAcceptableException('no methods found')
+            }
         }
+
     }
 
     async getUserWalletTxn(data: any): Promise<any> {
         let { userPhoneNumber } = data
-        let userTxn = await this.walletModel.find({ userPhoneNumber: userPhoneNumber })
-            .sort({ _id: -1 })
-            .limit(50)
-            .exec();
-
-        if (!userTxn || data.userTxn === 0) {
-            throw new NotFoundException('No data found for the given number.');
+        try {
+            var userTxn = await this.depositWallet.find({ userPhoneNumber: userPhoneNumber })
+                .sort({ _id: -1 })
+                .limit(50)
+                .exec();
+            console.log(userTxn)
+            if (!userTxn || data.userTxn === 0) {
+                throw new NotFoundException('No data found for the given number.');
+            }
+            let _data = {
+                data: {
+                    data: userTxn
+                },
+                message: 'Data retrived'
+            }
+            return this.returnData(_data)
+        } catch {
+            let _data = {
+                data: {
+                    data: []
+                },
+                message: 'NO data found'
+            }
+            return this.returnData(_data)
         }
-
-        let _data = {
-            data: {
-                data: userTxn
-            },
-            message: 'Data retrived'
-        }
-
-        this.returnData(_data)
     }
 
 }
