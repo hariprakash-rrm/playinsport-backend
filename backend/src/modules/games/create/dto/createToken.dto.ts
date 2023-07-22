@@ -43,7 +43,7 @@ export class GetUserDto {
 export class GetUserDetailsDto {
     @IsNotEmpty()
     readonly token: string
-    readonly userPhoneNumber:number
+    readonly userPhoneNumber: number
 }
 
 export class walletDto {
@@ -54,8 +54,8 @@ export class walletDto {
     amount: number
     mobileNumber: number
     userPhoneNumber: number
-    token:string
-   
+    token: string
+
 }
 
 export class UpdateUserDto {
@@ -109,3 +109,12 @@ export class returnUserDetailsDto {
 
 }
 
+export class UpdatePaymentDto {
+
+    @IsNotEmpty()
+    token: string
+    method: string
+    userPhoneNumber: number
+    amount: number
+    message: string
+}

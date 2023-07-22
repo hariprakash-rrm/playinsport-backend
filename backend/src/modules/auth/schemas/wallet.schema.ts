@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { IsNotEmpty, IsString, Matches } from 'class-validator';
+import { Date } from "mongoose";
 
 @Schema({
     timestamps: true
@@ -21,7 +22,7 @@ export class DepositWallet {
     userPhoneNumber: number
 
     @Prop({
-        enum: ['pending', 'success', 'declined'],
+        enum: ['pending', 'deposited', 'declined'],
         default: 'pending',
     })
     status: string = 'pending';
@@ -50,7 +51,7 @@ export class WithdrawWallet {
     userPhoneNumber: number
 
     @Prop({
-        enum: ['pending', 'success', 'declined'],
+        enum: ['pending', 'deposited', 'declined','withdrawn'],
         default: 'pending',
     })
     status: string = 'pending';

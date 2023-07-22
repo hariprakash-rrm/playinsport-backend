@@ -1,10 +1,10 @@
 import { Controller, NotAcceptableException, Res } from '@nestjs/common';
 import { Body, Query, Get, Injectable, Post, UnauthorizedException } from '@nestjs/common';
-import { GetUserDto, UpdateUserDto, UserWalletDto, GetUserDetailsDto, walletDto } from '../games/create/dto/createToken.dto';
+import { GetUserDto, UpdateUserDto, UserWalletDto, GetUserDetailsDto, walletDto, UpdatePaymentDto } from '../games/create/dto/createToken.dto';
 import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
 import { ExcelService } from '../shared/excelService';
-import { Response } from 'express';
+import { Response, query } from 'express';
 
 @Controller("user")
 export class UserController {
@@ -87,7 +87,7 @@ export class UserController {
 
   @Post('/deposit')
   async walletTransaction(@Body() data: walletDto): Promise<void> {
-    
+
     let isUser = await this.adminValidate.validateUser(data);
     if (isUser) {
       try {
@@ -102,15 +102,44 @@ export class UserController {
   }
 
   @Get('/getUserWalletTxn')
-  async getUserWalletTxn(@Query() data: GetUserDetailsDto):Promise<any>{
-    console.log(data,'khjghf')
+  async getUserWalletTxn(@Query() data: GetUserDetailsDto): Promise<any> {
+
     let isUser = await this.adminValidate.validateUser(data);
     if (isUser) {
-    return await this.userService.getUserWalletTxn(data)
+      return await this.userService.getUserWalletTxn(data)
     }
     else {
       throw new UnauthorizedException(" You are not a valid user");
     }
 
+  }
+
+  @Post('/updatePayment')
+  async updatePayment(@Body() data: UpdatePaymentDto): Promise<any> {
+    let { token } = data;
+    let isAdmin = await this.adminValidate.adminValidate(token);
+    if (isAdmin) {
+      return await this.userService.updatePayment(data)
+    }
+    throw new UnauthorizedException(" You are not a valid user");
+  }
+
+  @Get('/getDepositPayment')
+  async getDepositPayment(@Query() data:{method:string;token:string}):Promise<any>{
+    let { token } = data;
+    let isAdmin = await this.adminValidate.adminValidate(token);
+    if (isAdmin) {
+      return await this.userService.getDepositPayment(data)
+    }
+    throw new UnauthorizedException(" You are not a valid user");
+  }
+  @Get('/getWithdrawPayment')
+  async getWithdrawPayment(@Query() data:{method:string;token:string}):Promise<any>{
+    let { token } = data;
+    let isAdmin = await this.adminValidate.adminValidate(token);
+    if (isAdmin) {
+      return await this.userService.getWithdrawPayment(data)
+    }
+    throw new UnauthorizedException(" You are not a valid user");
   }
 }

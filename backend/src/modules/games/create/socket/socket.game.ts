@@ -12,7 +12,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(@InjectModel(User.name)
   private userModels: Model<User>, @InjectModel(Game.name) private gameModels: Model<Game>, @InjectModel(GameDetails.name) private gameDeatilsModel: Model<GameDetails>
   ) { }
-  round: any = "1"
+  round: number = 1
   index: any = 0
   @WebSocketServer() server: Server;
 
@@ -64,7 +64,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('game')
-  async game(client: Socket, round: any) {
+  async game(client: Socket, round: number) {
     let rounds: any = round
     let games: any = await this.gameModels.findOne({ round: rounds })
     this.server.emit('game', games.tokenDetails);
@@ -135,7 +135,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
               await user.save()
               // await this.userBalance(Socket,token,id)
               await this.getGame()
-              this.round = '1'
+              this.round = 1
             } catch (err) {
               response = {
                 status: false,

@@ -8,7 +8,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 export class Game {
 
     @Prop({ unique: true })
-    round: string
+    round: number
 
     @Prop()
     name: string
