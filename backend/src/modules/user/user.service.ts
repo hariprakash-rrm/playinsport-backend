@@ -273,9 +273,10 @@ export class UserService {
         }
     }
 
-    async deposit(data): Promise<any> {
+    async deposit(data: any): Promise<any> {
+        console.log(data)
         let { transactionId } = data
-        let { userPhoneNumber } = data
+        var { userPhoneNumber } = data
         if (data.method == 'deposit') {
             let isId = await this.depositWallet.findOne({ transactionId: transactionId })
             if (isId) {
@@ -331,48 +332,48 @@ export class UserService {
                     }
                 }
             }
-            else{
-            try {
-                console.log(data);
-                let { amount, userPhoneNumber, method } = data
-                console.log(amount)
-                let _transactionDetails = await this.withdrawWalletModel.create({
-                    amount: amount,
-                    method: method,
-                    userPhoneNumber: userPhoneNumber,
-                    message: 'WIthdraw In progress...'
-                });
 
+            
+                // console.log(data);
+                let { amount, method } = data
+                // console.log(amount)
+                
+                console.log('pendinggggggggg')
 
                 let user = await this.userModel.findOne({ number: userPhoneNumber })
                 if (user) {
-                    if ( user.wallet - amount < 0) {
-                        throw new NotAcceptableException('Try with lower amount')
+                    try {
+                        console.log((+user.wallet - +amount) < 0)
+                        if ((+user.wallet - +amount) < 0) {
+                            throw new NotAcceptableException('Try with lower amount')
 
-                    }
-                     else {
-                        user.wallet -= amount
-                        await _transactionDetails.save();
-                        await user.save()
-                        let res = {
-                            data: {
-                                data: _transactionDetails
-                            },
-                            message: 'Submitted',
                         }
-                        return await this.returnData(res)
+                        
+                            let _transactionDetails = await this.withdrawWalletModel.create({
+                                amount: amount,
+                                method: method,
+                                userPhoneNumber: userPhoneNumber,
+                                message: 'WIthdraw In progress...'
+                            });
+                            user.wallet -= amount
+                            await _transactionDetails.save();
+                            await user.save()
+                            let res = {
+                                data: {
+                                    data: _transactionDetails
+                                },
+                                message: 'Submitted',
+                            }
+                            return await this.returnData(res)
+                        
+                    } catch (err) {
+                        throw new NotAcceptableException('contact admin')
                     }
-                }else{
+                } else {
                     throw new UnauthorizedException('user not found')
                 }
-            } catch (error) {
-                console.log(error)
-                throw new NotAcceptableException('Something went wrong')
-
-            }
-        }
-
-     } else {
+            
+        } else {
             throw new NotAcceptableException('NO methods found')
         }
 
