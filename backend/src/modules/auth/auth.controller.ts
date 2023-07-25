@@ -40,6 +40,7 @@ export class AuthController {
 
   @Post("/send-otp")
   sendOtp(@Body() number: number): Promise<returnSignUpDto> {
+    console.log(number);
     return this.authService.sendOTP(number);
   }
 }

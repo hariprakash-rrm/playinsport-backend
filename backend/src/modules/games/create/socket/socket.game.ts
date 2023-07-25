@@ -75,15 +75,44 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   async handleMessage(client: Socket, data: any) {
     const timestamp = new Date().getTime();
     let { round, token, index, tokenNumber, id } = data
-    console.log(data)
+    // console.log(data)
     let response: any
     let user = await this.userModels.findOne({ token: token })
-    console.log(user)
+    // console.log(user)
     if (user) {
 
       let game = await this.gameModels.findOne({ round: round })
+
+      console.log("TOKENDETAILS");
+
+      let totalTokenForUser:any = 0;
+      let tokenDetails = game.tokenDetails;
+
+      tokenDetails.forEach((element : any)=> {
+        if (user.username === element.selectedBy) {
+          totalTokenForUser += 1;
+        }
+      });
+
+      console.log(totalTokenForUser >= game.maximumTokenPerUser);
+      console.log(totalTokenForUser <= game.maximumTokenPerUser);
+      console.log(totalTokenForUser);
+      console.log(game.maximumTokenPerUser);
+      console.log(typeof(game.maximumTokenPerUser))
+
+      if (totalTokenForUser >= game.maximumTokenPerUser) {
+        response = {
+          status: false,
+          errorCode: 401,
+          message: `Error : Maximum token per user is ${game.maximumTokenPerUser} for this round`,
+
+        }
+        this.isError(response, id)
+        return
+      }
+
       if (game) {
-        if(game.isComplete){
+        if (game.isComplete) {
           response = {
             status: false,
             errorCode: 401,
@@ -93,13 +122,14 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
           this.isError(response, id)
           return
         }
-        
+
         this.server.emit('chat', user)
         let arr: any = await game.tokenDetails[index]
         this.round = round
 
         if (+user.wallet >= +game.tokenPrice) {
           if (!arr.isSelected) {
+
             try {
               this.index = index
               let data = {
@@ -127,7 +157,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
                 message: `Token Paricipation- round:${round}  Token ${tokenNumber}`,
                 amount: -game.tokenPrice,
                 time: timestamp,
-                newBalance:user.wallet
+                newBalance: user.wallet
               }
               user.txnHistory.push(txnHistory)
               await game.save();
@@ -135,7 +165,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
               await user.save()
               // await this.userBalance(Socket,token,id)
               await this.getGame()
-              this.round = 1
+              // this.round = round
             } catch (err) {
               response = {
                 status: false,

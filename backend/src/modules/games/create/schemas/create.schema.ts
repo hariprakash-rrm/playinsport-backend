@@ -14,7 +14,7 @@ export class Game {
     name: string
 
     @Prop()
-    tokenPrice: string
+    tokenPrice: number
 
     @Prop()
     totalToken: object[]
@@ -26,10 +26,10 @@ export class Game {
     prize: []
 
     @Prop()
-    winnerList: []
+    winnerList: number[]
 
     @Prop()
-    maximumTokenPerUser: string
+    maximumTokenPerUser: number
 
     @Prop({ type: Date, required: true })
     date: Date
@@ -38,7 +38,7 @@ export class Game {
     isComplete: boolean
 
     @Prop()
-    status:string
+    status: string
 
     @Prop()
     youtubeLink: string
@@ -51,6 +51,11 @@ export class Game {
 
     @Prop()
     youtubeLiveLink: string
+
+    @Prop({
+        enum: ['cash', 'other'],
+    })
+    rewardType: string;
 
 }
 
@@ -65,15 +70,16 @@ export class GameDetails {
     details: [{
         name: String
         prize: [],
-        tokenPrice: Number,
+        tokenPrice: number,
         maximumTokenPerUser: number,
         totalTokenNumber: number,
         date: number,
         token: string,
         youtubeLink: string,
-        youtubeLiveLink : string,
+        youtubeLiveLink: string,
         facebookLink: string,
-        facebookLiveLink: string
+        facebookLiveLink: string,
+        winnerList: []
     }]
 }
 

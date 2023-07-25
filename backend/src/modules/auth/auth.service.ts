@@ -218,9 +218,10 @@ export class AuthService {
    */
 
   async sendOTP(data: any): Promise<returnSignUpDto> {
+    console.log(data)
     let { number } = data
     let user: any = await this.userModel.findOne({ number: number });
-    //  console.log(user)
+
     if (!user) {
       throw new NotAcceptableException(`User not found, sign-up first`);
     }

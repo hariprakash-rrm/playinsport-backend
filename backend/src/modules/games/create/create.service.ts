@@ -4,6 +4,7 @@ import { Game } from './schemas/create.schema';
 import { Model } from 'mongoose';
 import { RefundDto } from './dto/createToken.dto';
 import { User } from 'src/modules/auth/schemas/user.schema';
+import { WithdrawWallet } from 'src/modules/auth/schemas/wallet.schema';
 
 @Injectable()
 export class CreateService {
@@ -12,8 +13,8 @@ export class CreateService {
         private userModel: Model<User>) { }
 
     async get(_data: any) {
-       
-       let {data}:any = _data
+
+        let { data }: any = _data
         try {
 
             let game = await this.gameModel.findOne({ round: +data })
@@ -56,7 +57,7 @@ export class CreateService {
 
     async create(data: any): Promise<any> {
         try {
-            let { name, prize, tokenPrice, date, maximumTokenPerUser, totalTokenNumber, youtubeLink, facebookLink,youtubeLiveLink,facebookLiveLink } = data
+            let { name, prize, tokenPrice, date, maximumTokenPerUser, totalTokenNumber, youtubeLink, facebookLink, youtubeLiveLink, facebookLiveLink } = data
             var tokenDetails: any[] = []
             let count = await this.gameModel.countDocuments().exec();
             for (let i = 0; i < totalTokenNumber; i++) {
@@ -72,7 +73,7 @@ export class CreateService {
                 let count = await this.gameModel.countDocuments().exec();
                 console.log(`count${count}`)
                 var game: any = await this.gameModel.create({
-                    round: count + 1, name, date, prize, tokenPrice, maximumTokenPerUser, tokenDetails, isComplete: false, status: 'live', youtubeLink, facebookLink,youtubeLiveLink,facebookLiveLink
+                    round: count + 1, name, date, prize, tokenPrice, maximumTokenPerUser, tokenDetails, isComplete: false, status: 'live', youtubeLink, facebookLink, youtubeLiveLink, facebookLiveLink
                 })
                 game.tokenDetails.round = game.round
 
@@ -96,7 +97,7 @@ export class CreateService {
     }
 
     async refund(data: RefundDto) {
-        let { round }:any = data
+        let { round }: any = data
 
         var game: any = await this.gameModel.findOne({ round: +round })
 
@@ -154,34 +155,36 @@ export class CreateService {
         var game: any = await this.gameModel.findOne({ round: round })
         if (game) {
             try {
-                if (game.isComplete) {
-                    throw new NotAcceptableException('Round already completed')
-                }
-                else {
-                if (action == 'finalise') {
-                    game.isComplete = true
-                    game.status = 'finalise'
-                    await game.save()
-                    let data = {
-                        data: {
-                            game
-                        },
-                        message: 'Round completed'
 
+
+                if (action == 'finalise') {
+                    if (game.isComplete) {
+                        throw new NotAcceptableException('Round already completed')
+                    } else {
+                        game.isComplete = true
+                        game.status = 'finalise'
+                        await game.save()
+                        let data = {
+                            data: {
+                                game
+                            },
+                            message: 'Round completed'
+
+                        }
+                        return await this.returnData(data)
                     }
-                    return await this.returnData(data)
                 }
-                 else if (action == 'refund') {
+                else if (action == 'refund') {
                     return await this.refund(datas)
 
                 } else if (action === 'linkUpdate') {
                     console.log()
-                       game.youtubeLink = youtubeLink,
+                    game.youtubeLink = youtubeLink,
                         game.youtubeLiveLink = youtubeLiveLink,
                         game.facebookLink = facebookLink,
-                        game.facebookLiveLink = facebookLiveLink
+                        game.facebookLiveLink = facebookLiveLink,
 
-                    await game.save()
+                        await game.save()
                     console.log(game);
 
                     let data = {
@@ -196,7 +199,6 @@ export class CreateService {
                 else {
                     throw new NotAcceptableException('Something went wrong')
                 }
-            }
 
             } catch (err) {
                 throw new NotAcceptableException(err)
@@ -205,108 +207,6 @@ export class CreateService {
 
     }
 
-    // async getUser(data: any): Promise<any> {
-    //     let { username } = data
-    //     // let admin: any = await this.userModel.findOne({ token: token })
-
-    //     let user = await this.userModel.findOne({ username: username })
-    //     if (user) {
-    //         let res = {
-    //             data: {
-    //                 username: user.username,
-    //                 number: user.number,
-    //                 wallet: user.wallet,
-    //                 verified: user.verified,
-    //                 txnHistory: user.txnHistory
-    //             },
-    //             message: 'user retrived'
-
-    //         }
-
-    //         return await this.returnData(res)
-    //     } else {
-    //         throw new NotAcceptableException('User not found')
-    //     }
-    // }
-
-    // async updateUser(data: any): Promise<any> {
-    //     let { username, number, wallet, block } = data
-    //     // let admin=await this.userModel.findOne({token:token})
-
-
-    //     let userFromName = await this.userModel.findOne({ username: username })
-    //     let userFromNumber = await this.userModel.findOne({ number: number })
-
-    //     if (userFromName) {
-    //         userFromName.username = await username
-    //         userFromName.wallet = await wallet
-    //         userFromName.block = await block
-    //         await userFromName.save()
-    //         let res = {
-    //             data: {
-    //                 username: await username,
-    //                 wallet: await wallet,
-    //                 block: await block
-    //             },
-    //             message: 'User details updated'
-
-    //         }
-    //         return await this.returnData(res)
-    //     } else if (userFromNumber) {
-    //         userFromNumber.username = await username
-    //         userFromNumber.wallet = await wallet
-    //         await userFromNumber.save()
-    //         let res = {
-    //             data: {
-    //                 username: username,
-    //                 wallet: wallet
-    //             },
-    //             message: 'User details updated'
-    //         }
-
-    //         return await this.returnData(res)
-    //     }
-    //     else {
-    //         throw new NotAcceptableException('User not found')
-    //     }
-
-
-    // }
-
-    // async updateUserWallet(data: any): Promise<any> {
-
-    //     let { username, wallet, number } = data
-
-    //     let userFromName = await this.userModel.findOne({ username: username })
-    //     let userFromNumber = await this.userModel.findOne({ number: number })
-    //     if (userFromName) {
-    //         userFromName.wallet = await wallet
-    //         await userFromName.save()
-    //         let res = {
-    //             data: {
-    //                 username: userFromName.username,
-    //                 wallet: userFromName.wallet
-    //             },
-    //             message: 'Wallet updated'
-    //         }
-    //         return await this.returnData(res)
-    //     } else if (userFromNumber) {
-    //         userFromNumber.wallet = await wallet
-    //         await userFromNumber.save()
-    //         let res = {
-    //             data: {
-    //                 username: userFromNumber.username,
-    //                 wallet: userFromNumber.wallet
-    //             },
-    //             message: 'Wallet updated'
-    //         }
-    //         return await this.returnData(res)
-    //     } else {
-    //         throw new UnauthorizedException('User not found')
-    //     }
-
-    // }
-
     async returnData(data: any) {
         let retData = {
             message: data.message,
@@ -314,5 +214,121 @@ export class CreateService {
             statusCode: 201
         }
         return retData
+    }
+
+    async updateRewardType(data: any) {  //need to revert the values
+        try {
+            let { round, rewardType, winnerList } = data;
+
+            var game: any = await this.gameModel.findOne({ round: round })
+
+
+            /**
+             * Need to uncommand the below code
+             * 
+             */
+            // if (game.winnerList.length > 0) {
+            //     throw new UnauthorizedException('Already reward sent');
+            // }
+
+            let prizes = game.prize;
+
+            if (game.isComplete === false) {
+                throw new UnauthorizedException('Round is not completed yet')
+            }
+
+            if (rewardType === 'other') {
+
+                if (winnerList.length <= 1) {
+                    game.rewardType = rewardType;
+                    game.save();
+                }
+                if (winnerList.length > 1) {
+                    for (let i = 1; i < prizes.length; i++) {
+                        let convertPrize = parseInt(prizes[i]);
+                        let convertWinnerList = parseInt(winnerList[i]);
+
+                        convertWinnerList -= 1;
+
+                        if (typeof (convertPrize) != 'number' || typeof (convertWinnerList) != 'number') {
+                            throw new UnauthorizedException("Prize or WinnerList type is not an number");
+                        }
+
+                        let user = await this.userModel.findOne({ username: game.tokenDetails[convertWinnerList].selectedBy });
+
+                        if (!user) {
+                            throw new UnauthorizedException("No data found for the given winner list");
+                        }
+
+                        console.log("*********************************")
+                        console.log("convertedPrice", convertPrize);
+                        console.log(user.wallet);
+
+                        user.wallet += await convertPrize;
+                        await user.save();
+                    }
+
+                    game.rewardType = rewardType;
+                    game.winnerList = winnerList;
+
+                    game.save();
+                    let data = {
+                        data: {
+                            game
+                        },
+                        message: 'Reward type is updated'
+
+                    }
+                    return await this.returnData(data);
+                }
+            }
+            else if (rewardType === 'cash') {
+                if (winnerList.length === 0) {
+                    throw new UnauthorizedException("Update winner list");
+                }
+
+                for (let i = 0; i < prizes.length; i++) {
+                    let convertPrize = parseInt(prizes[i]);
+                    let convertWinnerList = parseInt(winnerList[i]);
+
+                    convertWinnerList -= 1;
+                    console.log('convertInt')
+
+                    if (typeof (convertPrize) != 'number' || typeof (convertWinnerList) != 'number') {
+                        throw new UnauthorizedException("Prize or WinnerList type is not an number");
+                    }
+
+                    let user = await this.userModel.findOne({ username: game.tokenDetails[convertWinnerList].selectedBy });
+                    console.log("******************* USER *******************", user);
+
+                    if (!user) {
+                        throw new UnauthorizedException("No data found for the given winner list");
+                    }
+
+                    user.wallet += convertPrize;
+
+                    user.save();
+                }
+
+                game.rewardType = rewardType;
+                game.winnerList = winnerList;
+
+                game.save();
+                let data = {
+                    data: {
+                        game
+                    },
+                    message: 'Reward type is updated'
+
+                }
+                return await this.returnData(data);
+            }
+            else {
+                throw new UnauthorizedException('Check reward type');
+            }
+        } catch (err) {
+            console.log(err)
+            throw new UnauthorizedException(err);
+        }
     }
 }

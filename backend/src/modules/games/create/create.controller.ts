@@ -56,6 +56,19 @@ export class CreateController {
         }
     }
 
+    @Post('/update-reward-type')
+    async updateRewardType(@Body() data: any) {
+        console.log(data);
+        let { token } = data
+        let isAdmin = await this.adminValidate.adminValidate(token)
+        if (isAdmin) {
+            return this.createService.updateRewardType(data)
+        }
+        else {
+            throw new UnauthorizedException(' You are not an admin')
+        }
+    }
+
 }
 
 

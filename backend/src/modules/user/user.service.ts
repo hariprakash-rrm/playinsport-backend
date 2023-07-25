@@ -10,6 +10,7 @@ import { DepositWallet, TotalSupply, WithdrawWallet } from '../auth/schemas/wall
 @Injectable()
 export class UserService {
 
+
     constructor(@InjectModel(Game.name,
     )
     private gameModel: Model<Game>, @InjectModel(User.name)
@@ -63,7 +64,6 @@ export class UserService {
 
     async updateUser(data: any): Promise<any> {
         try {
-            console.log(data);
             let { username, number, wallet, block } = data
 
             let userFromName = await this.userModel.findOne({ username: username })
@@ -257,7 +257,6 @@ export class UserService {
 
             const users = await this.userModel.find();
             const buffer = await this.excelService.exportToExcel(users);
-            console.log(buffer);
 
             // Set the appropriate response headers
             res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
@@ -274,7 +273,6 @@ export class UserService {
     }
 
     async deposit(data: any): Promise<any> {
-        console.log(data)
         let { transactionId } = data
         var { userPhoneNumber } = data
         if (data.method == 'deposit') {
@@ -295,7 +293,6 @@ export class UserService {
             }
             try {
                 let { transactionId, amount, mobileNumber, paymentMethod, userPhoneNumber, message, method } = data
-                console.log(data);
                 let transactionDetails = await this.depositWallet.create({
                     transactionId,
                     amount,
@@ -332,47 +329,43 @@ export class UserService {
                     }
                 }
             }
+            // console.log(data);
+            let { amount, method } = data
+            // console.log(amount)
 
-            
-                // console.log(data);
-                let { amount, method } = data
-                // console.log(amount)
-                
-                console.log('pendinggggggggg')
+            let user = await this.userModel.findOne({ number: userPhoneNumber })
+            if (user) {
+                try {
+                    // console.log((+user.wallet - +amount) < 0)
+                    if ((+user.wallet - +amount) < 0) {
+                        throw new NotAcceptableException('Try with lower amount')
 
-                let user = await this.userModel.findOne({ number: userPhoneNumber })
-                if (user) {
-                    try {
-                        console.log((+user.wallet - +amount) < 0)
-                        if ((+user.wallet - +amount) < 0) {
-                            throw new NotAcceptableException('Try with lower amount')
-
-                        }
-                        
-                            let _transactionDetails = await this.withdrawWalletModel.create({
-                                amount: amount,
-                                method: method,
-                                userPhoneNumber: userPhoneNumber,
-                                message: 'WIthdraw In progress...'
-                            });
-                            user.wallet -= amount
-                            await _transactionDetails.save();
-                            await user.save()
-                            let res = {
-                                data: {
-                                    data: _transactionDetails
-                                },
-                                message: 'Submitted',
-                            }
-                            return await this.returnData(res)
-                        
-                    } catch (err) {
-                        throw new NotAcceptableException('contact admin')
                     }
-                } else {
-                    throw new UnauthorizedException('user not found')
+
+                    let _transactionDetails = await this.withdrawWalletModel.create({
+                        amount: amount,
+                        method: method,
+                        userPhoneNumber: userPhoneNumber,
+                        message: 'WIthdraw In progress...'
+                    });
+                    user.wallet -= amount
+                    await _transactionDetails.save();
+                    await user.save()
+                    let res = {
+                        data: {
+                            data: _transactionDetails
+                        },
+                        message: 'Submitted',
+                    }
+                    return await this.returnData(res)
+
+                } catch (err) {
+                    throw new NotAcceptableException('contact admin')
                 }
-            
+            } else {
+                throw new UnauthorizedException('user not found')
+            }
+
         } else {
             throw new NotAcceptableException('NO methods found')
         }
@@ -387,13 +380,11 @@ export class UserService {
                 .lean()
                 .limit(25)
                 .exec();
-            console.log(depositUserTxn)
             const withdrawUserTxn = await this.withdrawWalletModel.find({ userPhoneNumber: userPhoneNumber })
                 .sort({ createdAt: -1 })
                 .lean()
                 .limit(25)
                 .exec();
-            console.log(withdrawUserTxn)
 
 
             const data = [...depositUserTxn, ...withdrawUserTxn].sort((a: LeanDocument<any>, b: LeanDocument<any>) =>
@@ -462,19 +453,36 @@ export class UserService {
 
 
     async updatePayment(data: any): Promise<any> {
+        let totalSupplyModel = await this.TotalSupplyModel.find();
+    
         const timestamp = new Date().getTime();
         let { method, userPhoneNumber, amount, message } = data
         let user = await this.userModel.findOne({ number: userPhoneNumber })
 
         if (method == 'deposit') {
-            // let user = await this.userModel.findOne({ number: userPhoneNumber })
             if (user) {
 
                 let depositUserTxn = await this.depositWallet.find({ userPhoneNumber: userPhoneNumber })
                     .sort({ createdAt: -1 }).exec()
 
-                console.log(depositUserTxn, 'popopopopopopopo')
                 user.wallet += depositUserTxn[0].amount
+
+                if (totalSupplyModel.length === 0) {
+                    let totalSupply = await this.TotalSupplyModel.create({
+                        totalDeposit: depositUserTxn[0].amount,
+                        totalWithdraw: 0
+                    });
+                    console.log("********************************")
+                    console.log(totalSupply);
+                    await totalSupply.save();
+                } else {
+                    console.log(totalSupplyModel[0]);
+
+                    let value = await this.TotalSupplyModel.findOneAndUpdate({_id: totalSupplyModel[0]._id});
+                    value.totalDeposit += depositUserTxn[0].amount;
+                    await value.save();
+                }
+
                 if (+amount != +depositUserTxn[0].amount) {
                     throw new NotAcceptableException('Amount mismatched')
                 }
@@ -514,7 +522,6 @@ export class UserService {
             let depositUserTxn = await this.depositWallet.find({ userPhoneNumber: userPhoneNumber })
                 .sort({ createdAt: -1 })
 
-            console.log(depositUserTxn)
             let txnHistory: any = {
                 message: message,
                 amount: +depositUserTxn[0].amount,
@@ -544,8 +551,6 @@ export class UserService {
             let withdrawUserTxn = await this.withdrawWalletModel.find({ userPhoneNumber: userPhoneNumber })
                 .sort({ createdAt: -1 })
 
-            console.log(withdrawUserTxn)
-
             let txnHistory: any = {
                 message: `Withdrawn `,
                 amount: +withdrawUserTxn[0].amount,
@@ -558,6 +563,10 @@ export class UserService {
                 withdrawUserTxn[0].message = message
                 await withdrawUserTxn[0].save()
                 await user.save()
+
+                    let value = await this.TotalSupplyModel.findOneAndUpdate({_id: totalSupplyModel[0]._id});
+                    value.totalWithdraw += withdrawUserTxn[0].amount;
+                    await value.save();
 
                 let _data = {
                     data: {
@@ -575,7 +584,6 @@ export class UserService {
             let withdrawUserTxn = await this.withdrawWalletModel.find({ userPhoneNumber: userPhoneNumber })
                 .sort({ createdAt: -1 })
 
-            console.log(withdrawUserTxn)
             user.wallet += withdrawUserTxn[0].amount
             let txnHistory: any = {
                 message: message,
@@ -583,7 +591,6 @@ export class UserService {
                 time: timestamp,
                 newBalance: user.wallet
             }
-
 
             if (withdrawUserTxn[0].status == 'pending') {
                 user.txnHistory.push(txnHistory)
@@ -608,4 +615,21 @@ export class UserService {
         }
     }
 
+    async getTotalSupply(): Promise<any> {
+        try{
+        let totalSupplyModel = await this.TotalSupplyModel.find();
+
+        let totalSupply = totalSupplyModel[0].totalDeposit - totalSupplyModel[0].totalWithdraw;
+        let _data = {
+            data: {
+                data:
+                    totalSupply
+            },
+            message: 'withdraw declined'
+        }
+        return this.returnData(_data);
+    }catch(err){
+        throw new NotAcceptableException('Something went wrong') 
+    }
+    }
 }
