@@ -21,7 +21,6 @@ export class CreateService {
             if (!game) {
                 throw new NotAcceptableException('Game not found')
             }
-            console.log(game);
             let res = {
                 data: {
                     data: game,
@@ -71,7 +70,6 @@ export class CreateService {
             }
             try {
                 let count = await this.gameModel.countDocuments().exec();
-                console.log(`count${count}`)
                 var game: any = await this.gameModel.create({
                     round: count + 1, name, date, prize, tokenPrice, maximumTokenPerUser, tokenDetails, isComplete: false, status: 'live', youtubeLink, facebookLink, youtubeLiveLink, facebookLiveLink
                 })
@@ -144,19 +142,16 @@ export class CreateService {
                 throw new ConflictException('Refund error')
             }
         } else {
-            throw new NotAcceptableException('game not found')
+            throw new NotAcceptableException('Game not found')
         }
     }
 
     async update(datas: any): Promise<any> {
-        console.log("******************************************")
-        console.log(datas);
+
         let { round, action, youtubeLink, youtubeLiveLink, facebookLink, facebookLiveLink } = datas
         var game: any = await this.gameModel.findOne({ round: round })
         if (game) {
             try {
-
-
                 if (action == 'finalise') {
                     if (game.isComplete) {
                         throw new NotAcceptableException('Round already completed')
@@ -178,14 +173,12 @@ export class CreateService {
                     return await this.refund(datas)
 
                 } else if (action === 'linkUpdate') {
-                    console.log()
                     game.youtubeLink = youtubeLink,
                         game.youtubeLiveLink = youtubeLiveLink,
                         game.facebookLink = facebookLink,
                         game.facebookLiveLink = facebookLiveLink,
 
                         await game.save()
-                    console.log(game);
 
                     let data = {
                         data: {
@@ -237,6 +230,7 @@ export class CreateService {
                 throw new UnauthorizedException('Round is not completed yet')
             }
 
+            console.log("***********RewardType*************", rewardType);
             if (rewardType === 'other') {
 
                 if (winnerList.length <= 1) {
@@ -260,9 +254,8 @@ export class CreateService {
                             throw new UnauthorizedException("No data found for the given winner list");
                         }
 
-                        console.log("*********************************")
-                        console.log("convertedPrice", convertPrize);
-                        console.log(user.wallet);
+                        console.log("******Number**********", user.number, "WAllet", user.wallet);
+                        console.log("****CONVERTPRICE", convertPrize);
 
                         user.wallet += await convertPrize;
                         await user.save();
@@ -292,20 +285,23 @@ export class CreateService {
                     let convertWinnerList = parseInt(winnerList[i]);
 
                     convertWinnerList -= 1;
-                    console.log('convertInt')
 
                     if (typeof (convertPrize) != 'number' || typeof (convertWinnerList) != 'number') {
                         throw new UnauthorizedException("Prize or WinnerList type is not an number");
                     }
 
                     let user = await this.userModel.findOne({ username: game.tokenDetails[convertWinnerList].selectedBy });
-                    console.log("******************* USER *******************", user);
 
                     if (!user) {
                         throw new UnauthorizedException("No data found for the given winner list");
                     }
 
-                    user.wallet += convertPrize;
+                    console.log("******Number**********", user.number, "WAllet", user.wallet);
+                    console.log("****CONVERTPRICE", convertPrize);
+
+                    let userPrice = user.wallet;
+
+                    user.wallet = await userPrice + convertPrize;
 
                     user.save();
                 }

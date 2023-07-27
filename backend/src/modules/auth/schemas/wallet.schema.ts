@@ -9,6 +9,10 @@ import { Date } from "mongoose";
 export class DepositWallet {
 
 
+    @Prop()
+    DepositTransactionId: number
+
+
     @Prop({ unique: true })
     transactionId: string
 
@@ -45,6 +49,9 @@ export class DepositWallet {
 export class WithdrawWallet {
 
     @Prop()
+    withdrawTransactionId: number
+
+    @Prop()
     amount: number
 
     @Prop()
@@ -69,6 +76,7 @@ export class WithdrawWallet {
     timestamps: true
 })
 export class TotalSupply{
+
     @Prop()
     totalDeposit:number
 

@@ -75,15 +75,13 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   async handleMessage(client: Socket, data: any) {
     const timestamp = new Date().getTime();
     let { round, token, index, tokenNumber, id } = data
-    // console.log(data)
     let response: any
     let user = await this.userModels.findOne({ token: token })
-    // console.log(user)
     if (user) {
 
       let game = await this.gameModels.findOne({ round: round })
 
-      console.log("TOKENDETAILS");
+      console.log();
 
       let totalTokenForUser:any = 0;
       let tokenDetails = game.tokenDetails;
@@ -93,12 +91,6 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
           totalTokenForUser += 1;
         }
       });
-
-      console.log(totalTokenForUser >= game.maximumTokenPerUser);
-      console.log(totalTokenForUser <= game.maximumTokenPerUser);
-      console.log(totalTokenForUser);
-      console.log(game.maximumTokenPerUser);
-      console.log(typeof(game.maximumTokenPerUser))
 
       if (totalTokenForUser >= game.maximumTokenPerUser) {
         response = {
@@ -148,7 +140,6 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
               Selected number : ${tokenNumber}`
               }
               const response = await axios.post('http://localhost:3001/send-otp', postData).then((res: any) => {
-                // console.log(res)
                 data = res
 
               })
@@ -192,7 +183,6 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
             status: false,
             errorCode: 401,
             message: 'Low balance , please deposit',
-
           }
           this.isError(response, id)
         }

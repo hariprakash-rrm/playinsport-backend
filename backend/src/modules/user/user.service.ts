@@ -277,6 +277,9 @@ export class UserService {
         var { userPhoneNumber } = data
         if (data.method == 'deposit') {
             let isId = await this.depositWallet.findOne({ transactionId: transactionId })
+
+            let depositCount = await this.depositWallet.find();
+            let CountOfDeposit = depositCount.length;
             if (isId) {
                 throw new NotAcceptableException('duplicate id found')
             }
@@ -300,7 +303,8 @@ export class UserService {
                     method,
                     paymentMethod,
                     userPhoneNumber,
-                    message: 'Deposit In progress...'
+                    message: 'Deposit In progress...',
+                    DepositTransactionId: CountOfDeposit
                 });
                 await transactionDetails.save();
                 let res = {
@@ -329,7 +333,6 @@ export class UserService {
                     }
                 }
             }
-            // console.log(data);
             let { amount, method } = data
             // console.log(amount)
 
@@ -342,11 +345,17 @@ export class UserService {
 
                     }
 
+                    let withdrawCount = await this.depositWallet.find();
+                    let CountOfWithdraw = withdrawCount.length;
+
+                    console.log(CountOfWithdraw);
+
                     let _transactionDetails = await this.withdrawWalletModel.create({
                         amount: amount,
                         method: method,
                         userPhoneNumber: userPhoneNumber,
-                        message: 'WIthdraw In progress...'
+                        message: 'WIthdraw In progress...',
+                        withdrawTransactionId : CountOfWithdraw
                     });
                     user.wallet -= amount
                     await _transactionDetails.save();
@@ -422,7 +431,6 @@ export class UserService {
                 message: 'Data retrived'
             }
             return this.returnData(_data)
-
         }
         else {
             throw new NotFoundException('No deposit payments')
@@ -454,16 +462,17 @@ export class UserService {
 
     async updatePayment(data: any): Promise<any> {
         let totalSupplyModel = await this.TotalSupplyModel.find();
-    
+
         const timestamp = new Date().getTime();
         let { method, userPhoneNumber, amount, message } = data
         let user = await this.userModel.findOne({ number: userPhoneNumber })
 
         if (method == 'deposit') {
+
             if (user) {
 
                 let depositUserTxn = await this.depositWallet.find({ userPhoneNumber: userPhoneNumber })
-                    .sort({ createdAt: -1 }).exec()
+                    .sort({ createdAt: -1 }).exec();
 
                 user.wallet += depositUserTxn[0].amount
 
@@ -472,13 +481,9 @@ export class UserService {
                         totalDeposit: depositUserTxn[0].amount,
                         totalWithdraw: 0
                     });
-                    console.log("********************************")
-                    console.log(totalSupply);
                     await totalSupply.save();
                 } else {
-                    console.log(totalSupplyModel[0]);
-
-                    let value = await this.TotalSupplyModel.findOneAndUpdate({_id: totalSupplyModel[0]._id});
+                    let value = await this.TotalSupplyModel.findOneAndUpdate({ _id: totalSupplyModel[0]._id });
                     value.totalDeposit += depositUserTxn[0].amount;
                     await value.save();
                 }
@@ -493,6 +498,7 @@ export class UserService {
                     time: timestamp,
                     newBalance: user.wallet
                 }
+
                 if (depositUserTxn[0].status == 'pending') {
                     user.txnHistory.push(txnHistory)
                     depositUserTxn[0].status = 'deposited'
@@ -528,9 +534,11 @@ export class UserService {
                 time: timestamp,
                 newBalance: user.wallet
             }
+
             if (depositUserTxn[0].status == 'pending') {
                 depositUserTxn[0].status = 'declined'
                 depositUserTxn[0].message = message
+
                 user.txnHistory.push(txnHistory)
                 await user.save()
                 await depositUserTxn[0].save()
@@ -557,16 +565,18 @@ export class UserService {
                 time: timestamp,
                 newBalance: user.wallet
             }
+
             if (withdrawUserTxn[0].status == 'pending') {
                 user.txnHistory.push(txnHistory)
                 withdrawUserTxn[0].status = 'withdrawn'
                 withdrawUserTxn[0].message = message
+
                 await withdrawUserTxn[0].save()
                 await user.save()
 
-                    let value = await this.TotalSupplyModel.findOneAndUpdate({_id: totalSupplyModel[0]._id});
-                    value.totalWithdraw += withdrawUserTxn[0].amount;
-                    await value.save();
+                let value = await this.TotalSupplyModel.findOneAndUpdate({ _id: totalSupplyModel[0]._id });
+                value.totalWithdraw += withdrawUserTxn[0].amount;
+                await value.save();
 
                 let _data = {
                     data: {
@@ -580,7 +590,6 @@ export class UserService {
                 throw new NotAcceptableException('Already withdrawn')
             }
         } else if (method == 'declineWithdraw') {
-            // let user = await this.userModel.findOne({ number: userPhoneNumber })
             let withdrawUserTxn = await this.withdrawWalletModel.find({ userPhoneNumber: userPhoneNumber })
                 .sort({ createdAt: -1 })
 
@@ -592,10 +601,12 @@ export class UserService {
                 newBalance: user.wallet
             }
 
+
             if (withdrawUserTxn[0].status == 'pending') {
                 user.txnHistory.push(txnHistory)
                 withdrawUserTxn[0].status = 'declined'
                 withdrawUserTxn[0].message = message
+
                 await withdrawUserTxn[0].save()
                 await user.save()
 
@@ -616,20 +627,20 @@ export class UserService {
     }
 
     async getTotalSupply(): Promise<any> {
-        try{
-        let totalSupplyModel = await this.TotalSupplyModel.find();
+        try {
+            let totalSupplyModel = await this.TotalSupplyModel.find();
 
-        let totalSupply = totalSupplyModel[0].totalDeposit - totalSupplyModel[0].totalWithdraw;
-        let _data = {
-            data: {
-                data:
-                    totalSupply
-            },
-            message: 'withdraw declined'
+            let totalSupply = totalSupplyModel[0].totalDeposit - totalSupplyModel[0].totalWithdraw;
+            let _data = {
+                data: {
+                    data:
+                        totalSupply
+                },
+                message: 'withdraw declined'
+            }
+            return this.returnData(_data);
+        } catch (err) {
+            throw new NotAcceptableException('Something went wrong')
         }
-        return this.returnData(_data);
-    }catch(err){
-        throw new NotAcceptableException('Something went wrong') 
-    }
     }
 }
