@@ -3,7 +3,8 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
-
+import { env } from 'process';
+require("dotenv").config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
@@ -21,7 +22,7 @@ async function bootstrap() {
   // app.useWebSocketAdapter(new IoAdapter(app));
 
   const corsOptions: CorsOptions = {
-    origin: 'https://silence-vfy7.onrender.com', // Allow requests from this origin
+    origin: env.api_url, // Allow requests from this origin
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specified HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allow specified headers
     credentials: true, // Allow sending cookies and other credentials

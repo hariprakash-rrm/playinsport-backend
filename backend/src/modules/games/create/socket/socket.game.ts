@@ -6,8 +6,10 @@ import { User } from 'src/modules/auth/schemas/user.schema';
 import { Game, GameDetails } from '../schemas/create.schema';
 
 import axios from 'axios';
+import { env } from 'process';
+require("dotenv").config();
 
-@WebSocketGateway({ cors: { origin: ['http://localhost:4200'] } })
+@WebSocketGateway({ cors: { origin: [env.api_url] } })
 export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(@InjectModel(User.name)
   private userModels: Model<User>, @InjectModel(Game.name) private gameModels: Model<Game>, @InjectModel(GameDetails.name) private gameDeatilsModel: Model<GameDetails>
