@@ -230,12 +230,11 @@ export class CreateService {
                 throw new UnauthorizedException('Round is not completed yet')
             }
 
-            console.log("***********RewardType*************", rewardType);
             if (rewardType === 'other') {
 
                 if (winnerList.length <= 1) {
                     game.rewardType = rewardType;
-                    game.save();
+                    await game.save();
                 }
                 if (winnerList.length > 1) {
                     for (let i = 1; i < prizes.length; i++) {
@@ -254,9 +253,6 @@ export class CreateService {
                             throw new UnauthorizedException("No data found for the given winner list");
                         }
 
-                        console.log("******Number**********", user.number, "WAllet", user.wallet);
-                        console.log("****CONVERTPRICE", convertPrize);
-
                         user.wallet += await convertPrize;
                         await user.save();
                     }
@@ -264,7 +260,7 @@ export class CreateService {
                     game.rewardType = rewardType;
                     game.winnerList = winnerList;
 
-                    game.save();
+                    await game.save();
                     let data = {
                         data: {
                             game
@@ -296,20 +292,17 @@ export class CreateService {
                         throw new UnauthorizedException("No data found for the given winner list");
                     }
 
-                    console.log("******Number**********", user.number, "WAllet", user.wallet);
-                    console.log("****CONVERTPRICE", convertPrize);
-
                     let userPrice = user.wallet;
 
                     user.wallet = await userPrice + convertPrize;
 
-                    user.save();
+                    await user.save();
                 }
 
                 game.rewardType = rewardType;
                 game.winnerList = winnerList;
 
-                game.save();
+                await game.save();
                 let data = {
                     data: {
                         game

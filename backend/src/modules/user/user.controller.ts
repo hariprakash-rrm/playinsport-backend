@@ -138,10 +138,31 @@ export class UserController {
   }
   @Get('/getWithdrawPayment')
   async getWithdrawPayment(@Query() data: { method: string; token: string }): Promise<any> {
+    console.log("METHOD", data.method);
     let { token } = data;
     let isAdmin = await this.adminValidate.adminValidate(token);
     if (isAdmin) {
       return await this.userService.getWithdrawPayment(data)
+    }
+    throw new UnauthorizedException(" You are not a valid user");
+  }
+
+  // @Get('/getWithdrawTransaction')
+  // async getWithdrawTransaction(@Query() data: { transactionId: string; token: string }): Promise<any> {
+  //   let { token } = data;
+  //   let isAdmin = await this.adminValidate.adminValidate(token);
+  //   if (isAdmin) {
+  //     return await this.userService.getWithdrawTransaction(data)
+  //   }
+  //   throw new UnauthorizedException(" You are not a valid user");
+  // }
+
+  @Get('/search-transaction')
+  async searchTransaction(@Query() data: { method: string; transactionId: number; token: string }): Promise<any> {
+    let { token } = data;
+    let isAdmin = await this.adminValidate.adminValidate(token);
+    if (isAdmin) {
+      return await this.userService.searchTransaction(data)
     }
     throw new UnauthorizedException(" You are not a valid user");
   }

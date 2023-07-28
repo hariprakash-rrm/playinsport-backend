@@ -5,6 +5,7 @@ import { LeanDocument, Model } from 'mongoose';
 import { User } from '../auth/schemas/user.schema';
 import { ExcelService } from '../shared/excelService';
 import { DepositWallet, TotalSupply, WithdrawWallet } from '../auth/schemas/wallet.schema';
+import { promises } from 'dns';
 
 
 @Injectable()
@@ -334,12 +335,10 @@ export class UserService {
                 }
             }
             let { amount, method } = data
-            // console.log(amount)
 
             let user = await this.userModel.findOne({ number: userPhoneNumber })
             if (user) {
                 try {
-                    // console.log((+user.wallet - +amount) < 0)
                     if ((+user.wallet - +amount) < 0) {
                         throw new NotAcceptableException('Try with lower amount')
 
@@ -348,14 +347,12 @@ export class UserService {
                     let withdrawCount = await this.depositWallet.find();
                     let CountOfWithdraw = withdrawCount.length;
 
-                    console.log(CountOfWithdraw);
-
                     let _transactionDetails = await this.withdrawWalletModel.create({
                         amount: amount,
                         method: method,
                         userPhoneNumber: userPhoneNumber,
                         message: 'WIthdraw In progress...',
-                        withdrawTransactionId : CountOfWithdraw
+                        withdrawTransactionId: CountOfWithdraw
                     });
                     user.wallet -= amount
                     await _transactionDetails.save();
@@ -643,4 +640,77 @@ export class UserService {
             throw new NotAcceptableException('Something went wrong')
         }
     }
+
+    // async getDepositTransaction(data: any): Promise<any> {
+    //     let { transactionId } = data
+    //     let userPayment = await this.depositWallet.find({ DepositTransactionId: transactionId })
+    //     console.log("USer PAyMENT",userPayment);
+    //     if (userPayment.length == 0) {
+    //         throw new NotAcceptableException('No data found')
+    //     }
+    //     if (userPayment) {
+    //         let _data = {
+    //             data: {
+    //                 data:
+    //                     userPayment
+    //             },
+    //             message: 'Data retrived'
+    //         }
+    //         return this.returnData(_data)
+    //     }
+    //     else {
+    //         throw new NotFoundException('No deposit payments')
+    //     }
+    // }
+
+    async searchTransaction(data: any): Promise<any> {
+        let { transactionId, method } = data
+        console.log("data", data);
+        if (method === 'withdraw') {
+            let withdrawTransactionId = parseInt(transactionId);
+            let userPayment = await this.withdrawWalletModel.find({ withdrawTransactionId: withdrawTransactionId })
+            console.log("USer PAyMENT", userPayment);
+            if (userPayment.length == 0) {
+                throw new NotAcceptableException('No data found')
+            }
+            if (userPayment) {
+                let _data = {
+                    data: {
+                        data:
+                            userPayment
+                    },
+                    message: 'Data retrived'
+                }
+                return this.returnData(_data)
+            }
+            else {
+                throw new NotFoundException('No deposit payments')
+            }
+        } else if (method === 'deposit') {
+            let DepositTransactionId = parseInt(transactionId);
+            console.log(DepositTransactionId);
+            let userPayment = await this.depositWallet.find({ DepositTransactionId: DepositTransactionId })
+            console.log("USer PAyMENT", userPayment);
+            if (userPayment.length == 0) {
+                throw new NotAcceptableException('No data found')
+            }
+            if (userPayment) {
+                let _data = {
+                    data: {
+                        data:
+                            userPayment
+                    },
+                    message: 'Data retrived'
+                }
+                return this.returnData(_data)
+            }
+            else {
+                throw new NotFoundException('No deposit payments')
+            }
+        } else {
+            throw new NotFoundException('Method not found')
+        }
+    }
+
+
 }
