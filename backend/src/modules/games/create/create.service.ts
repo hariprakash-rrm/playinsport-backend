@@ -220,9 +220,9 @@ export class CreateService {
              * Need to uncommand the below code
              * 
              */
-            // if (game.winnerList.length > 0) {
-            //     throw new UnauthorizedException('Already reward sent');
-            // }
+            if (game.winnerList.length > 0) {
+                throw new UnauthorizedException('Already reward sent');
+            }
 
             let prizes = game.prize;
 
