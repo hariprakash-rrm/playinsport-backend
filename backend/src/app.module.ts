@@ -7,12 +7,14 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CointossModule } from './modules/games/cointoss/cointoss.module';
 import { CreateModule } from './modules/games/create/create.module';
 import { UserModule } from './modules/user/user.module';
+import { env } from 'process';
+require("dotenv").config();
 
 @Module({
   imports: [
     UserModule,
     AuthModule,
-    MongooseModule.forRoot("mongodb://localhost:27017/quiz"),
+    MongooseModule.forRoot(env.DB_URI),
     BookModule,
     CointossModule,
     CreateModule,
