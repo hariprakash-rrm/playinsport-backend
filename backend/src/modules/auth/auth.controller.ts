@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
   SetPasswordDto,
@@ -42,5 +42,19 @@ export class AuthController {
   sendOtp(@Body() number: number): Promise<returnSignUpDto> {
     console.log(number);
     return this.authService.sendOTP(number);
+  }
+
+  @Post('/qr')
+  async getQr(@Body()accessToken:any):Promise<any>{
+    console.log(accessToken,'data')
+    let {token}=accessToken
+        let isAdmin = await this.authService.adminValidate(token)
+        if (isAdmin) {
+          return this.authService.getQr()
+        }
+        else {
+            throw new UnauthorizedException(' You are not an admin')
+        }
+    
   }
 }

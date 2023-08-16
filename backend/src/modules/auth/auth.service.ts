@@ -22,6 +22,7 @@ import { SigninDto, SubmitOtpDto } from "./dto/signin.dto";
 import { Client } from "whatsapp-web.js";
 
 const axios = require("axios");
+const util = require('util');
 
 @Injectable()
 export class AuthService {
@@ -284,5 +285,20 @@ export class AuthService {
     else {
       throw new UnauthorizedException('You are not an valid user')
     }
+  }
+
+  async getQr():Promise<any>{
+    let data:any
+    const response = await axios
+    .get("http://localhost:3001/qr")
+    .then((res: any) => {
+      
+      data = res;
+    });
+    console.log(data)
+  let _data = {
+    data:data.data
+  }
+  return (_data)
   }
 }
