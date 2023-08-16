@@ -50,3 +50,4 @@ dist/
 backend/dist/
 user_details.xlsx
 
+package-lock.json
