@@ -52,3 +52,4 @@ Thumbs.db
 dist
 dist/
 backend/dist/
+.vercel
