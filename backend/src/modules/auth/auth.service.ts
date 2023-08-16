@@ -21,7 +21,6 @@ import {
 } from "./dto/signin.dto";
 import { SigninDto, SubmitOtpDto } from "./dto/signin.dto";
 import { Client } from "whatsapp-web.js";
-import { AppService } from "src/app.service";
 
 const axios = require("axios");
 const util = require('util');
@@ -32,8 +31,7 @@ export class AuthService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<User>,
-    private jwtService: JwtService,
-    private appService:AppService
+    private jwtService: JwtService
   ) { }
 
   /**
@@ -90,16 +88,12 @@ export class AuthService {
     let data: any;
     var users = user.number;
     try {
-      // const response = await axios
-      //   .post(`${env.qr_url}/send-otp`, postData)
-      //   .then((res: any) => {
-      //     // console.log(res)
-      //     data = res;
-      //   });
-      await this.appService.sendOTP(postData.number,postData.message).subscribe((res)=>{
-        console.log(res)
-        data = res;
-      })
+      const response = await axios
+        .post(`${env.qr_url}/send-otp`, postData)
+        .then((res: any) => {
+          // console.log(res)
+          data = res;
+        });
       console.log(data);
       const responseData = {
         statusCode: data.status,
