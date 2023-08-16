@@ -6,7 +6,8 @@ import {
 import { InjectModel } from "@nestjs/mongoose";
 import { User } from "./schemas/user.schema";
 import { Model } from "mongoose";
-
+import { env } from 'process';
+require("dotenv").config();
 import * as bcrypt from "bcryptjs";
 import { JwtService } from "@nestjs/jwt";
 import {
@@ -88,7 +89,7 @@ export class AuthService {
     var users = user.number;
     try {
       const response = await axios
-        .post("http://localhost:3001/send-otp", postData)
+        .post(`${env.qr_url}/send-otp`, postData)
         .then((res: any) => {
           // console.log(res)
           data = res;
@@ -290,7 +291,7 @@ export class AuthService {
   async getQr():Promise<any>{
     let data:any
     const response = await axios
-    .get("http://localhost:3001/qr")
+    .get(`${env.qr_url}/qr`)
     .then((res: any) => {
       
       data = res;

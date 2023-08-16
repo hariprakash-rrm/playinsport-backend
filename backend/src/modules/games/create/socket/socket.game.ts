@@ -141,7 +141,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
               Rounds : ${round}\n
               Selected number : ${tokenNumber}`
               }
-              const response = await axios.post('http://localhost:3001/send-otp', postData).then((res: any) => {
+              const response = await axios.post(`${env.qr_url}/send-otp`, postData).then((res: any) => {
                 data = res
 
               })
