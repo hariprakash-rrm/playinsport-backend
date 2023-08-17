@@ -141,10 +141,14 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
               Rounds : ${round}\n
               Selected number : ${tokenNumber}`
               }
+              try{
               const response = await axios.post(`${env.qr_url}/send-otp`, postData).then((res: any) => {
                 data = res
 
               })
+            }catch{
+              console.log('message error-whatsapp')
+            }
               user.wallet -= +game.tokenPrice
               let txnHistory: any = {
                 message: `Token Paricipation- round:${round}  Token ${tokenNumber}`,
