@@ -110,7 +110,7 @@ export class AuthService {
       return responseData;
     } catch (err) {
       console.log(err)
-      await this.userModel.findOneAndDelete({ number:users });
+      
       throw new NotAcceptableException(`Something went wrong, Contact admin`);
     }
   }
