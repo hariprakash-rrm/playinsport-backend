@@ -54,3 +54,4 @@ dist/
 backend/dist/
 backend/node_modules
 qr/node_modules
+.vercel
