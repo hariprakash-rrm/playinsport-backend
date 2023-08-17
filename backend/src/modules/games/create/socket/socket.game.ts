@@ -9,7 +9,7 @@ import axios from 'axios';
 import { env } from 'process';
 require("dotenv").config();
 
-@WebSocketGateway({ cors: { origin: [env.api_url] } })
+@WebSocketGateway({ cors: { origin: ["*"] } })
 export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(@InjectModel(User.name)
   private userModels: Model<User>, @InjectModel(Game.name) private gameModels: Model<Game>, @InjectModel(GameDetails.name) private gameDeatilsModel: Model<GameDetails>
