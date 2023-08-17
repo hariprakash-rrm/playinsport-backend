@@ -22,7 +22,7 @@ async function bootstrap() {
   // app.useWebSocketAdapter(new IoAdapter(app));
 
   const corsOptions: CorsOptions = {
-    origin: '*', // Allow requests from this origin
+    origin: env.api_url, // Allow requests from this origin
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allow specified HTTP methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allow specified headers
     credentials: true, // Allow sending cookies and other credentials
