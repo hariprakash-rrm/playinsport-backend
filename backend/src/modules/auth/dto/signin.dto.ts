@@ -6,7 +6,7 @@ export class SigninDto {
 
     @IsNotEmpty()
     @IsString()
-    readonly number: string
+    readonly number: number
 
     @IsNotEmpty()
     @IsString()
