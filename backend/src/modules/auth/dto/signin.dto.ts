@@ -24,21 +24,22 @@ export class SignupDto {
     readonly username: string
 
     @IsNotEmpty()
-    @IsString()
-    readonly number: string
+    @IsNumber()
+    readonly number: number
 
 }
 
 export class sendotpDto {
   @IsNotEmpty()
-  @IsString()
-  readonly number: string;
+  @IsNumber()
+  readonly number: number;
 }
 
 export class SubmitOtpDto {
 
     @IsNotEmpty()
-    readonly number: string
+    @IsNumber()
+    readonly number: number
     readonly otp: number
 
 }
