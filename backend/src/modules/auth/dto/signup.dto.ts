@@ -14,7 +14,7 @@ export class SignupDto{
 
     @IsNotEmpty()
     @IsString()
-    readonly number:string
+    readonly number:number
 
     @IsNotEmpty()
     @IsString()
