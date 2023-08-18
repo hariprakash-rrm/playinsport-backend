@@ -1,12 +1,12 @@
-import { IsNotEmpty, IsString, Length, Min, MinLength, isNotEmpty, isString } from "class-validator";
+import { IsNotEmpty,IsNumber, IsString, Length, Min, MinLength, isNotEmpty, isString } from "class-validator";
 
 
 export class SigninDto {
 
 
     @IsNotEmpty()
-    @IsString()
-    readonly number: string
+    @IsNumber()
+    readonly number: number
 
     @IsNotEmpty()
     @IsString()
@@ -24,21 +24,22 @@ export class SignupDto {
     readonly username: string
 
     @IsNotEmpty()
-    @IsString()
-    readonly number: string
+    @IsNumber()
+    readonly number: number
 
 }
 
 export class sendotpDto {
   @IsNotEmpty()
-  @IsString()
-  readonly number: string;
+  @IsNumber()
+  readonly number: number;
 }
 
 export class SubmitOtpDto {
 
     @IsNotEmpty()
-    readonly number: string
+    @IsNumber()
+    readonly number: number
     readonly otp: number
 
 }

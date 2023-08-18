@@ -9,7 +9,7 @@ import axios from 'axios';
 import { env } from 'process';
 require("dotenv").config();
 
-@WebSocketGateway({ cors: { origin: [env.api_url] } })
+@WebSocketGateway({ cors: { origin: ["http://157.245.99.18:4200"] } })
 export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(@InjectModel(User.name)
   private userModels: Model<User>, @InjectModel(Game.name) private gameModels: Model<Game>, @InjectModel(GameDetails.name) private gameDeatilsModel: Model<GameDetails>
@@ -141,10 +141,14 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
               Rounds : ${round}\n
               Selected number : ${tokenNumber}`
               }
+              try{
               const response = await axios.post(`${env.qr_url}/send-otp`, postData).then((res: any) => {
                 data = res
 
               })
+            }catch{
+              console.log('message error-whatsapp')
+            }
               user.wallet -= +game.tokenPrice
               let txnHistory: any = {
                 message: `Token Paricipation- round:${round}  Token ${tokenNumber}`,
