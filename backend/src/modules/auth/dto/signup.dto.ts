@@ -4,8 +4,8 @@ import { IsNotEmpty,IsNumber, IsString, Length, MinLength, isNotEmpty, isString 
 export class SignupDto{
 
     @IsNotEmpty()
-    @IsNumber()
-    readonly name: number;
+    @IsString()
+    readonly name: string;
 
     @IsNotEmpty()
     @IsString()
@@ -13,8 +13,8 @@ export class SignupDto{
     readonly username:string
 
     @IsNotEmpty()
-    @IsString()
-    readonly number:string
+    @IsNumber()
+    readonly number:number
 
     @IsNotEmpty()
     @IsString()
