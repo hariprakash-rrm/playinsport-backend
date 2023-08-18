@@ -239,6 +239,9 @@ export class AuthService {
       number: number,
       message: `Otp only valid for 45sec : ${otp}`,
     };
+    if(user.otp !=null){
+      throw new NotAcceptableException('Please wait 45 seconds and try again')
+    }
     setTimeout(async () => {
       user.otp = null;
       await user.save();
