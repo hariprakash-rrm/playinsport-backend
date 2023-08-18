@@ -1,11 +1,11 @@
-import { IsNotEmpty, IsString, Length, MinLength, isNotEmpty, isString } from "class-validator";
+import { IsNotEmpty,IsNumber, IsString, Length, MinLength, isNotEmpty, isString } from "class-validator";
 
 
 export class SignupDto{
 
     @IsNotEmpty()
-    @IsString()
-    readonly name: string;
+    @IsNumber()
+    readonly name: number;
 
     @IsNotEmpty()
     @IsString()
