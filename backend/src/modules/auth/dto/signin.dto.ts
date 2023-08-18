@@ -1,11 +1,11 @@
-import { IsNotEmpty, IsString, Length, Min, MinLength, isNotEmpty, isString } from "class-validator";
+import { IsNotEmpty,IsNumber, IsString, Length, Min, MinLength, isNotEmpty, isString } from "class-validator";
 
 
 export class SigninDto {
 
 
     @IsNotEmpty()
-    @IsString()
+    @IsNumber()
     readonly number: number
 
     @IsNotEmpty()
