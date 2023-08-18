@@ -234,7 +234,7 @@ export class AuthService {
     const otp = Math.floor(Math.random() * (max - min + 1) + min);
 
     user.otp = otp;
-    await user.save();
+    
     const postData = {
       number: number,
       message: `Otp only valid for 45sec : ${otp}`,
@@ -242,6 +242,7 @@ export class AuthService {
     if(user.otp !=null){
       throw new NotAcceptableException('Please wait 45 seconds and try again')
     }
+    await user.save();
     setTimeout(async () => {
       user.otp = null;
       await user.save();
