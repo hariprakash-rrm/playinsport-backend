@@ -40,7 +40,6 @@ export class AuthService {
    * @returns
    */
   async signup(signupDto: SignupDto): Promise<returnSignUpDto> {
-    console.log(signupDto.referredBy);
     const { username, number, referredBy } = signupDto;
     if (referredBy != undefined) {
       const users = await this.userModel.findOne({ number: referredBy });
@@ -112,7 +111,6 @@ export class AuthService {
           // console.log(res)
           data = res;
         });
-      console.log(data);
       const responseData = {
         statusCode: data.status,
         data: data.config.data,
@@ -127,7 +125,6 @@ export class AuthService {
 
       return responseData;
     } catch (err) {
-      console.log(err)
 
       throw new NotAcceptableException(`Something went wrong, Contact admin`);
     }
@@ -217,7 +214,6 @@ export class AuthService {
   ): Promise<returnSetPasswordDto> {
     const { token, password } = setPasswordDto;
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log(token);
     const user = await this.userModel.findOne({ token: token });
 
     if (!user) {
@@ -239,7 +235,6 @@ export class AuthService {
    */
 
   async sendOTP(data: any): Promise<returnSignUpDto> {
-    console.log(data)
     let { number } = data
     let user: any = await this.userModel.findOne({ number: number });
 
@@ -270,7 +265,6 @@ export class AuthService {
   async adminValidate(data: any): Promise<any> {
 
     const admin = await this.userModel.findOne({ token: data });
-    // console.log(admin)
     if (admin) {
       if (!admin.isAdmin) {
         throw new UnauthorizedException('Login as admin to access this endpoint.');
@@ -284,7 +278,6 @@ export class AuthService {
   async validateUser(data: any): Promise<any> {
     let { token } = data
     const user = await this.userModel.findOne({ token: token });
-    console.log(user, token)
     if (user) {
       // if (user.isAdmin) {
       //   return {
@@ -318,7 +311,6 @@ export class AuthService {
 
         data = res;
       });
-    console.log(data)
     let _data = {
       data: data.data
     }
