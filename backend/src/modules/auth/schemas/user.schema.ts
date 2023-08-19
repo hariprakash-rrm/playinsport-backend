@@ -40,5 +40,14 @@ export class User{
 
     @Prop()
     block:boolean=false
+
+    @Prop()
+    referralCode: string
+
+    @Prop()
+    referredBy: string | null
+
+    @Prop()
+    referredAddresses: string[]
 }
 export const UserSchema = SchemaFactory.createForClass(User)

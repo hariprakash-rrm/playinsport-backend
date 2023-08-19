@@ -53,3 +53,4 @@ user_details.xlsx
 
 package-lock.json
 .vercel
+backend/.env
