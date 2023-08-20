@@ -111,7 +111,7 @@ export class AuthService {
     } catch (err) {
       console.log(err)
       
-      throw new NotAcceptableException(`Something went wrong, Contact admin`);
+      throw new NotAcceptableException(`Something went wrong, Contact admin`,err);
     }
   }
 
