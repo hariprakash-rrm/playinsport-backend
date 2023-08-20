@@ -47,7 +47,7 @@ export class AuthService {
         throw new NotAcceptableException(`Reffered user is not found`);
       }
       else{
-        users.referredAddresses.push(number);
+        users.referredAddresses.push(+number);
         users.save();
       }
     }
@@ -57,7 +57,7 @@ export class AuthService {
     const txnHistory = [];
     let referralCode;
 
-    referralCode = `${env.api_url}/sign-up?/ref=${number}`;
+    referralCode = `${env.api_url}/sign-up/?ref=${number}`;
 
     try {
       var user = await this.userModel.create({
