@@ -150,8 +150,8 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
               console.log('message error-whatsapp')
             }
             if((+user.reward - game.tokenPrice) <=0){
-              user.reward=0
               let deductwallet =  +game.tokenPrice - +user.reward 
+              user.reward=0
               user.wallet -= deductwallet
             }else{
               user.reward -= game.tokenPrice
