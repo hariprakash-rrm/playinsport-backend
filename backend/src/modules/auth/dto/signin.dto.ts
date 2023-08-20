@@ -27,6 +27,8 @@ export class SignupDto {
     @IsString()
     readonly number: string
 
+    readonly referredBy: string | ''
+
 }
 
 export class sendotpDto {

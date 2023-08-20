@@ -40,11 +40,25 @@ export class AuthService {
    * @returns
    */
   async signup(signupDto: SignupDto): Promise<returnSignUpDto> {
-    const { username, number } = signupDto;
+    const { username, number, referredBy } = signupDto;
+    if (referredBy != undefined) {
+      const users = await this.userModel.findOne({ number: referredBy });
+      if (!users) {
+        throw new NotAcceptableException(`Reffered user is not found`);
+      }
+      else{
+        users.referredAddresses.push(number);
+        users.save();
+      }
+    }
 
     const hashedPassword = await bcrypt.hash("10", 10);
     const wallet = 0;
-    const txnHistory = []
+    const txnHistory = [];
+    let referralCode;
+
+    referralCode = `${env.api_url}/sign-up?/ref=${number}`;
+
     try {
       var user = await this.userModel.create({
         username,
@@ -53,7 +67,9 @@ export class AuthService {
         wallet,
         txnHistory,
         isAdmin: false,
-        block:false
+        block: false,
+        referralCode, // Assign the referralCode here
+        referredBy: referredBy || '', // Assign referredBy or an empty string if not provided
       });
     } catch (err) {
       if (err.code == 11000) {
@@ -62,6 +78,7 @@ export class AuthService {
       }
       return err;
     }
+
     const min = 1000; // Minimum 4-digit number
     const max = 9999; // Maximum 4-digit number
 
@@ -87,6 +104,12 @@ export class AuthService {
   async sendOtp(postData: any, user: any): Promise<returnSignUpDto> {
     let data: any;
     var users = user.number;
+    setTimeout(async () => {
+      const user = await this.userModel.findOne({ number: users });
+      if (user.verified == 0) {
+        await this.userModel.findOneAndDelete({ number: users });
+      }
+    }, 45000);
     try {
       const response = await axios
         .post(`${env.qr_url}/send-otp`, postData)
@@ -94,24 +117,17 @@ export class AuthService {
           // console.log(res)
           data = res;
         });
-      console.log(data);
       const responseData = {
         statusCode: data.status,
         data: data.config.data,
         message: "Otp sent ",
       };
-      setTimeout(async () => {
-        const user = await this.userModel.findOne({ number: users });
-        if (user.verified == 0) {
-          await this.userModel.findOneAndDelete({ number: users });
-        }
-      }, 45000);
+     
 
       return responseData;
     } catch (err) {
-      console.log(err)
-      
-      throw new NotAcceptableException(`Something went wrong, Contact admin`,err);
+      await this.userModel.findOneAndDelete({ number: users });
+      throw new NotAcceptableException(`Something went wrong, Contact admin`);
     }
   }
 
@@ -139,7 +155,7 @@ export class AuthService {
       name: user.username,
       number: user.number,
       wallet: user.wallet,
-      isAdmin:user.isAdmin
+      isAdmin: user.isAdmin
     };
     const responseData = {
       statusCode: 201,
@@ -199,7 +215,6 @@ export class AuthService {
   ): Promise<returnSetPasswordDto> {
     const { token, password } = setPasswordDto;
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log(token);
     const user = await this.userModel.findOne({ token: token });
 
     if (!user) {
@@ -221,15 +236,14 @@ export class AuthService {
    */
 
   async sendOTP(data: any): Promise<returnSignUpDto> {
-    console.log(data)
     let { number } = data
     let user: any = await this.userModel.findOne({ number: number });
 
     if (!user) {
       throw new NotAcceptableException(`User not found, sign-up first`);
     }
-    const min = 1000; 
-    const max = 9999; 
+    const min = 1000;
+    const max = 9999;
 
     const otp = Math.floor(Math.random() * (max - min + 1) + min);
 
@@ -237,7 +251,7 @@ export class AuthService {
       number: number,
       message: `Otp only valid for 45sec : ${otp}`,
     };
-    if(user.otp !=null){
+    if (user.otp != null) {
       throw new NotAcceptableException('Please wait 45 seconds and try again')
     }
     user.otp = otp;
@@ -252,7 +266,6 @@ export class AuthService {
   async adminValidate(data: any): Promise<any> {
 
     const admin = await this.userModel.findOne({ token: data });
-    // console.log(admin)
     if (admin) {
       if (!admin.isAdmin) {
         throw new UnauthorizedException('Login as admin to access this endpoint.');
@@ -266,7 +279,6 @@ export class AuthService {
   async validateUser(data: any): Promise<any> {
     let { token } = data
     const user = await this.userModel.findOne({ token: token });
-    console.log(user,token)
     if (user) {
       // if (user.isAdmin) {
       //   return {
@@ -292,18 +304,17 @@ export class AuthService {
     }
   }
 
-  async getQr():Promise<any>{
-    let data:any
+  async getQr(): Promise<any> {
+    let data: any
     const response = await axios
-    .get(`${env.qr_url}/qr`)
-    .then((res: any) => {
-      
-      data = res;
-    });
-    console.log(data)
-  let _data = {
-    data:data.data
-  }
-  return (_data)
+      .get(`${env.qr_url}/qr`)
+      .then((res: any) => {
+
+        data = res;
+      });
+    let _data = {
+      data: data.data
+    }
+    return (_data)
   }
 }

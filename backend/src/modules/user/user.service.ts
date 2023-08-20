@@ -237,7 +237,8 @@ export class UserService {
                         number: user.number,
                         wallet: user.wallet,
                         txnHistory: user.txnHistory,
-                        isAdmin: user.isAdmin
+                        isAdmin: user.isAdmin,
+                        referralCode: user.referralCode
                     },
                     message: 'user retrived'
                 }

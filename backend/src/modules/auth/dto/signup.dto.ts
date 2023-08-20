@@ -21,4 +21,6 @@ export class SignupDto{
     @MinLength(6)
     readonly password:string
 
+    readonly referredBy: string | ''
+
 }

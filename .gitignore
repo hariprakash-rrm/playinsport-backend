@@ -55,3 +55,9 @@ backend/dist/
 backend/node_modules
 qr/node_modules
 .vercel
+
+backend/.env
+
+qr/.env
+
+backend/.env
