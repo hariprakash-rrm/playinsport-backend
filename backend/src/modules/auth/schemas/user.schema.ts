@@ -24,6 +24,9 @@ export class User{
     wallet:number
 
     @Prop()
+    reward:number
+
+    @Prop()
     txnHistory :object[]
 
     @Prop()

@@ -65,6 +65,7 @@ export class AuthService {
         number,
         password: hashedPassword,
         wallet,
+        reward:0,
         txnHistory,
         isAdmin: false,
         block: false,

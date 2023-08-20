@@ -121,7 +121,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
         let arr: any = await game.tokenDetails[index]
         this.round = round
 
-        if (+user.wallet >= +game.tokenPrice) {
+        if ((+user.reward + +user.wallet) >= +game.tokenPrice) {
           if (!arr.isSelected) {
 
             try {
@@ -148,6 +148,13 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
               })
             }catch{
               console.log('message error-whatsapp')
+            }
+            if((+user.reward - game.tokenPrice) <=0){
+              user.reward=0
+              let deductwallet =  +game.tokenPrice - +user.reward 
+              user.wallet -= deductwallet
+            }else{
+              user.reward -= game.tokenPrice
             }
               user.wallet -= +game.tokenPrice
               let txnHistory: any = {
