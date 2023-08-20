@@ -186,6 +186,11 @@ export class AuthService {
       throw new UnauthorizedException("OTP is not valid");
     }
 
+    if(user.referredBy!=''){
+      const refAddress = await this.userModel.findOne({ number: user.referredBy });
+      refAddress.reward += 3
+      await refAddress.save()
+    }
     const token = this.jwtService.sign({ id: user._id });
     user.token = token;
     user.verified = 1;
