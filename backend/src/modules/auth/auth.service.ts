@@ -112,9 +112,33 @@ export class AuthService {
       }
       else 
         if(user.referredBy!=''){
+          try{
+          const timestamp = new Date().getTime();
           const refAddress = await this.userModel.findOne({ number: user.referredBy });
           refAddress.reward += 3
+          let txnHistory: any = {
+            message: `Referal reward`,
+            amount: 3,
+            time: timestamp,
+            newBalance: user.wallet
+          }
+          refAddress.txnHistory.push(txnHistory)
           await refAddress.save()
+          const _postData = {
+            // Data to be sent in the request body
+            number: user.referredBy,
+            message: `Referal(${user.number}) reward added`,
+          };
+          const response = await axios
+          .post(`${env.qr_url}/send-otp`, _postData)
+          .then((res: any) => {
+            // console.log(res)
+            // data = res;
+          });
+        }catch(err){
+          throw new NotAcceptableException('Something went wrong')
+        }
+          
         }
       
     }, 45000);
