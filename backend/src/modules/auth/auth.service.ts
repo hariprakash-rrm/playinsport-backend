@@ -88,8 +88,7 @@ export class AuthService {
     const postData = {
       // Data to be sent in the request body
       number: number,
-      message: `${env.signupMessage}\n
-      Otp only valid for 15sec : ${otp}`,
+      message: `Otp only valid for 15sec : ${otp}`,
     };
     return await this.sendOtp(postData, user);
   }
