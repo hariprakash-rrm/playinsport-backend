@@ -156,7 +156,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
             }else{
               user.reward -= game.tokenPrice
             }
-              user.wallet -= +game.tokenPrice
+              // user.wallet -= +game.tokenPrice
               let txnHistory: any = {
                 message: `Token Paricipation- round:${round}  Token ${tokenNumber}`,
                 amount: -game.tokenPrice,
