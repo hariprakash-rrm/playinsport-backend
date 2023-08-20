@@ -51,6 +51,6 @@ export class User{
     referredBy: string | null
 
     @Prop()
-    referredAddresses: string[]
+    referredAddresses: number[]
 }
 export const UserSchema = SchemaFactory.createForClass(User)

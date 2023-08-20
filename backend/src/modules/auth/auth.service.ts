@@ -104,12 +104,19 @@ export class AuthService {
    */
   async sendOtp(postData: any, user: any): Promise<returnSignUpDto> {
     let data: any;
-    var users = user.number;
+    var _users = user.number;
     setTimeout(async () => {
-      const user = await this.userModel.findOne({ number: users });
+      const user = await this.userModel.findOne({ number: _users });
       if (user.verified == 0) {
-        await this.userModel.findOneAndDelete({ number: users });
+        await this.userModel.findOneAndDelete({ number: _users });
       }
+      else 
+        if(user.referredBy!=''){
+          const refAddress = await this.userModel.findOne({ number: user.referredBy });
+          refAddress.reward += 3
+          await refAddress.save()
+        }
+      
     }, 45000);
     try {
       const response = await axios
@@ -186,11 +193,7 @@ export class AuthService {
       throw new UnauthorizedException("OTP is not valid");
     }
 
-    if(user.referredBy!=''){
-      const refAddress = await this.userModel.findOne({ number: user.referredBy });
-      refAddress.reward += 3
-      await refAddress.save()
-    }
+    
     const token = this.jwtService.sign({ id: user._id });
     user.token = token;
     user.verified = 1;
