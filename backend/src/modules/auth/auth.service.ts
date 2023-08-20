@@ -46,10 +46,7 @@ export class AuthService {
       if (!users) {
         throw new NotAcceptableException(`Reffered user is not found`);
       }
-      else{
-        users.referredAddresses.push(+number);
-        users.save();
-      }
+     
     }
 
     const hashedPassword = await bcrypt.hash("10", 10);
@@ -107,12 +104,17 @@ export class AuthService {
     var _users = user.number;
     setTimeout(async () => {
       const user = await this.userModel.findOne({ number: _users });
+      if(user){
       if (user.verified == 0) {
         await this.userModel.findOneAndDelete({ number: _users });
       }
       else 
         if(user.referredBy!=''){
           try{
+           
+            user.referredAddresses.push(+user.number);
+            user.save();
+            
           const timestamp = new Date().getTime();
           const refAddress = await this.userModel.findOne({ number: user.referredBy });
           refAddress.reward += 3
@@ -140,8 +142,10 @@ export class AuthService {
         }
           
         }
+      }
       
     }, 45000);
+  
     try {
       const response = await axios
         .post(`${env.qr_url}/send-otp`, postData)
