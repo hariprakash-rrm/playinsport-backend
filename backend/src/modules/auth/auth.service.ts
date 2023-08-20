@@ -120,7 +120,7 @@ export class AuthService {
             message: `Referal reward`,
             amount: 3,
             time: timestamp,
-            newBalance: user.wallet
+            newBalance: refAddress.wallet
           }
           refAddress.txnHistory.push(txnHistory)
           await refAddress.save()
