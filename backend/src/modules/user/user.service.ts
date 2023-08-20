@@ -236,6 +236,7 @@ export class UserService {
                         username: user.username,
                         number: user.number,
                         wallet: user.wallet,
+                        reward:user.reward,
                         txnHistory: user.txnHistory,
                         isAdmin: user.isAdmin,
                         referralCode: user.referralCode
