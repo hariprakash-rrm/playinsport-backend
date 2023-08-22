@@ -1,11 +1,12 @@
 import {
   Injectable,
+  NestMiddleware,
   NotAcceptableException,
   UnauthorizedException,
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { User } from "./schemas/user.schema";
-import { Model } from "mongoose";
+import { MiddlewareOptions, Model } from "mongoose";
 import { env } from 'process';
 require("dotenv").config();
 import * as bcrypt from "bcryptjs";
@@ -21,6 +22,7 @@ import {
 } from "./dto/signin.dto";
 import { SigninDto, SubmitOtpDto } from "./dto/signin.dto";
 import { Client } from "whatsapp-web.js";
+import { NextFunction } from "express";
 
 const axios = require("axios");
 const util = require('util');
@@ -354,4 +356,56 @@ export class AuthService {
     }
     return (_data)
   }
+
+  async use(req: Request, res: Response, next: NextFunction) {
+    const { token }:any = req.body;
+
+    try {
+      const admin = await this.userModel.findOne({ token });
+
+      if (!admin) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      if (!admin.isAdmin) {
+        throw new UnauthorizedException('Login as admin to access this endpoint.');
+      }
+
+      // If admin and isAdmin, continue to the next middleware/controller
+      next();
+    } catch (error) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+  }
+
+
+  
 }
+
+
+
+@Injectable()
+  export class AdminMiddleware implements NestMiddleware{
+    constructor(@InjectModel('User') private userModel: Model<User>) {}
+
+  async use(req: Request, res: Response, next: NextFunction) {
+    const { token }:any = req.body;
+
+    try {
+      const admin = await this.userModel.findOne({ token });
+
+      if (!admin) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      if (!admin.isAdmin) {
+        throw new UnauthorizedException('Login as admin to access this endpoint.');
+      }
+
+      // If admin and isAdmin, continue to the next middleware/controller
+      next();
+    } catch (error) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+  }
+  }

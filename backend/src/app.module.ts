@@ -8,6 +8,7 @@ import { CointossModule } from './modules/games/cointoss/cointoss.module';
 import { CreateModule } from './modules/games/create/create.module';
 import { UserModule } from './modules/user/user.module';
 import { env } from 'process';
+import { CouponModule } from './modules/coupon/coupon.module';
 require("dotenv").config();
 
 @Module({
@@ -18,6 +19,7 @@ require("dotenv").config();
     BookModule,
     CointossModule,
     CreateModule,
+    CouponModule
   ],
   controllers: [AppController],
   providers: [AppService],
