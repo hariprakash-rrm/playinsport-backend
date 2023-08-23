@@ -42,7 +42,8 @@ export class CouponService {
         throw new NotAcceptableException("User has already used a coupon");
       }
 
-      const isValidForUser = coupon.validFor.length === 0 || coupon.validFor.includes(user.number);
+      const isValidForUser =
+        coupon.validFor.length === 0 || coupon.validFor.includes(user.number);
 
       // If user is not eligible for the coupon, throw an exception
       if (!isValidForUser) {
@@ -61,6 +62,12 @@ export class CouponService {
       ) {
         throw new NotAcceptableException(
           "Coupon is not valid at the current time"
+        );
+      }
+
+      if (coupon.usedBy.length >= coupon.canUse) {
+        throw new NotAcceptableException(
+          "This coupon has already been claimed by the maximum number of users"
         );
       }
 
@@ -88,7 +95,7 @@ export class CouponService {
   }
 
   async createCoupon(data: any): Promise<any> {
-    let { code, validFor, validFrom, validUpto, value }: any = data;
+    let { code, validFor, validFrom, validUpto, canUse, value }: any = data;
 
     try {
       let coupon = await this.couponModel.create({
@@ -98,6 +105,7 @@ export class CouponService {
         validFrom,
         validUpto,
         usedBy: [], // Initialize an empty array for usedBy
+        canUse,
         value,
       });
 
@@ -160,14 +168,13 @@ export class CouponService {
       .find()
       .sort({ createdAt: -1 }) // Sort by createdAt in descending order to get the latest coupons
       .limit(50); // Limit the result to 50 coupons
-      let res = {
-        data: {
-          data: coupons,
-        },
-        message: "Coupon isActive updated",
-      }
-      return await this.returnData(res);
-    
+    let res = {
+      data: {
+        data: coupons,
+      },
+      message: "Coupon isActive updated",
+    };
+    return await this.returnData(res);
   }
   async returnData(data: any) {
     let retData = {

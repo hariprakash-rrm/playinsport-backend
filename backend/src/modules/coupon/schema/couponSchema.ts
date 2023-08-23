@@ -24,6 +24,9 @@ export class Coupon extends Document {
     usedBy:number[]
 
     @Prop()
+    canUse:number
+
+    @Prop()
     value: number;
 }
 
