@@ -19,27 +19,70 @@ export class CouponService {
   ) {}
 
   async claimCoupon(data: any) {
-    let { code, token } = data;
-    let user = await this.userModal.findOne({ token });
-    let coupon: any = await this.couponModel.findOne({ code });
+    const timestamp = new Date().getTime(); // Get the current timestamp
+    const { code, token } = data;
+
+    // Find the user by token and the coupon by code
+    const user = await this.userModal.findOne({ token });
+    const coupon = await this.couponModel.findOne({ code });
+
+    // If user doesn't exist, throw an exception
     if (!user) {
       throw new NotFoundException("User not found");
     }
 
+    // If coupon exists, proceed with validations and claiming
     if (coupon) {
       const isUsedByUser = await this.couponModel.findOne({
         usedBy: user.number,
       });
 
+      // If coupon is already used by the user, throw an exception
       if (isUsedByUser) {
         throw new NotAcceptableException("User has already used a coupon");
       }
 
+      const isValidForUser = coupon.validFor.length === 0 || coupon.validFor.includes(user.number);
+
+      // If user is not eligible for the coupon, throw an exception
+      if (!isValidForUser) {
+        throw new NotAcceptableException(
+          "User is not eligible for this coupon"
+        );
+      }
+      const currentTime = new Date().getTime();
+      const validFromTimestamp = new Date(coupon.validFrom).getTime();
+      const validUptoTimestamp = new Date(coupon.validUpto).getTime();
+
+      // If the current time is outside the coupon's validity range, throw an exception
+      if (
+        currentTime < validFromTimestamp ||
+        currentTime > validUptoTimestamp
+      ) {
+        throw new NotAcceptableException(
+          "Coupon is not valid at the current time"
+        );
+      }
+
+      // Update user's reward and coupon's usedBy array
       user.reward += coupon.value;
-      coupon.usedBy.push(user.number); // Push the coupon's value to the usedBy array
+      coupon.usedBy.push(user.number);
+
+      // Add transaction history for the user
+      const txnHistory = {
+        message: "Coupon Claimed",
+        amount: coupon.value,
+        time: timestamp,
+        newBalance: user.wallet,
+      };
+
+      user.txnHistory.push(txnHistory);
       await user.save();
+      await coupon.save();
+
       return user;
     } else {
+      // If coupon doesn't exist, throw an exception
       throw new NotAcceptableException("Coupon not found");
     }
   }
