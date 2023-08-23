@@ -7,6 +7,7 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from '../auth/schemas/user.schema';
+import { Coupon, CouponSchema } from './schema/couponSchema';
 
 @Module({
   imports:[ConfigModule,
@@ -23,7 +24,8 @@ import { UserSchema } from '../auth/schemas/user.schema';
         };
       },
     }),
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),],
+    MongooseModule.forFeature([{ name: 'Coupon', schema: CouponSchema },
+    { name: "User", schema: UserSchema },]),],
   controllers: [CouponController],
   providers: [CouponService,AuthService]
 })

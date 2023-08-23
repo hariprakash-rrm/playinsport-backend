@@ -1,31 +1,27 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-
-
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
 @Schema({
-    timestamps: true
+    timestamps: true,
 })
+export class Coupon extends Document {
+    @Prop({ unique: true })
+    code: string;
 
+    @Prop()
+    isActive: boolean;
 
-export class Coupon{
+    @Prop()
+    validFor: number[];
 
-@Prop({unique:true})
-code:string
+    @Prop()
+    validFrom: string;
 
-@Prop()
-isActive:boolean
+    @Prop()
+    validUpto: string;
 
-@Prop()
-validFor:number[] | ''
-
-@Prop()
-validFrom:string
-
-@Prop()
-validUpto:string
-
-@Prop()
-value:number
+    @Prop()
+    value: number;
 }
 
-export const CouponSchema = SchemaFactory.createForClass(Coupon)
+export const CouponSchema = SchemaFactory.createForClass(Coupon);
