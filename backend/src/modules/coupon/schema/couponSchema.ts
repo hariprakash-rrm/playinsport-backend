@@ -21,6 +21,9 @@ export class Coupon extends Document {
     validUpto: string;
 
     @Prop()
+    usedBy:object[]
+
+    @Prop()
     value: number;
 }
 

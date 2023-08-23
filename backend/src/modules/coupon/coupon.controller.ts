@@ -8,7 +8,7 @@ import {
 } from "@nestjs/common";
 import { AdminMiddleware, AuthService } from "../auth/auth.service";
 import { CouponService } from "./coupon.service";
-import { couponDto } from "./dto/coupon.dto";
+import { CreateCouponDto, couponDto, detailsCouponDto, isActiveCouponDto } from "./dto/coupon.dto";
 
 @Controller("coupon")
 export class CouponController {
@@ -29,7 +29,7 @@ export class CouponController {
 
   @Post("/create")
   // @UseGuards(AdminMiddleware)
-  async createCoupon(@Body() data: any) {
+  async createCoupon(@Body() data: CreateCouponDto):Promise<any> {
     let { token } = data;
     let isAdmin = await this.authService.adminValidate(token);
     if (isAdmin) {
@@ -39,12 +39,20 @@ export class CouponController {
   
   }
 
-  @Post("/delete")
-  async deleteCoupon(data: any) {}
 
   @Post("/isActive")
-  async isActiveCoupon(data: any) {}
+  async isActiveCoupon(data: isActiveCouponDto) {
+    let { token } = data;
+    let isAdmin = await this.authService.adminValidate(token);
+    if (isAdmin) {
+      return await this.couponService.createCoupon(data)
+    }
+    throw new UnauthorizedException(" You are not a valid user");
+  
+  }
 
   @Get("/detials")
-  async couponDetails(data: any) {}
+  async couponDetails(data: detailsCouponDto) {
+    return await this.couponService.details(data)
+  }
 }
