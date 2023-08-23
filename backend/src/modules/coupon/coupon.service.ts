@@ -154,6 +154,21 @@ export class CouponService {
       throw new NotAcceptableException("No coupon found");
     }
   }
+
+  async getLast50Coupons(): Promise<any> {
+    const coupons = await this.couponModel
+      .find()
+      .sort({ createdAt: -1 }) // Sort by createdAt in descending order to get the latest coupons
+      .limit(50); // Limit the result to 50 coupons
+      let res = {
+        data: {
+          data: coupons,
+        },
+        message: "Coupon isActive updated",
+      }
+      return await this.returnData(res);
+    
+  }
   async returnData(data: any) {
     let retData = {
       message: data.message,
