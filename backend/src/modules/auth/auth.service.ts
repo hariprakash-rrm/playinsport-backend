@@ -104,6 +104,7 @@ export class AuthService {
   async sendOtp(postData: any, user: any): Promise<returnSignUpDto> {
     let data: any;
     var _users = user.number;
+    if(user.verified == 0){
     setTimeout(async () => {
       const user = await this.userModel.findOne({ number: _users });
       if(user){
@@ -147,6 +148,7 @@ export class AuthService {
       }
       
     }, 45000);
+  }
   
     try {
       const response = await axios
