@@ -6,6 +6,7 @@ import { UserService } from './user.service';
 import { ExcelService } from '../shared/excelService';
 import { Response, query } from 'express';
 
+
 @Controller("user")
 export class UserController {
   constructor(
@@ -173,6 +174,17 @@ export class UserController {
     let isAdmin = await this.adminValidate.adminValidate(token);
     if (isAdmin) {
       return await this.userService.getTotalSupply()
+    }
+    throw new UnauthorizedException(" You are not a valid user");
+  }
+
+  @Get('/transaction-history')
+  async getTransactionHistory(@Query() data): Promise<any>{
+    console.log(data);
+    let { token } = data;
+    let isUser = await this.adminValidate.validateUser(data);
+        if (isUser) {
+      return await this.userService.getTransactionHistory(data)
     }
     throw new UnauthorizedException(" You are not a valid user");
   }

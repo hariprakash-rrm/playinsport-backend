@@ -236,7 +236,7 @@ export class UserService {
                         username: user.username,
                         number: user.number,
                         wallet: user.wallet,
-                        reward:user.reward,
+                        reward: user.reward,
                         txnHistory: user.txnHistory,
                         isAdmin: user.isAdmin,
                         referralCode: user.referralCode
@@ -457,6 +457,35 @@ export class UserService {
             throw new NotFoundException('no withdraw payments')
         }
     }
+
+    async getTransactionHistory(data: any): Promise<any> {
+        let { token } = data;
+        console.log(token);
+      
+        try {
+          let user = await this.userModel.findOne({ token: token });
+          console.log(user);
+      
+          if (!user || !user.txnHistory || user.txnHistory.length === 0) {
+            throw new NotFoundException('Transaction history not found');
+          }
+      
+          const txnHistoryArray = user.txnHistory;
+          const reversedTxnHistory = txnHistoryArray.reverse().slice(0, 50); // Reverse and get the last 50 elements
+      
+          let _data = {
+            data: {
+              data: reversedTxnHistory,
+            },
+            message: 'Data retrieved'
+          }
+      
+          return this.returnData(_data);
+        } catch (err) {
+          console.log(err);
+          throw new NotFoundException(err.message)
+        }
+      }      
 
 
     async updatePayment(data: any): Promise<any> {
