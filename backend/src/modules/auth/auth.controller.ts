@@ -13,6 +13,8 @@ import { SigninDto } from './dto/signin.dto';
 import { SubmitOtpDto } from './dto/signin.dto';
 import { Headers } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { AdminMiddleware } from '../shared/admin-auth/admin.guard';
+
 @Controller("")
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -22,6 +24,7 @@ export class AuthController {
     return this.authService.signup(signupdto);
   }
 
+  @UseGuards(AdminMiddleware)
   @Post("/signin")
   signin(@Body() signinDto: SigninDto): Promise<returnSignInDto> {
     return this.authService.login(signinDto);
