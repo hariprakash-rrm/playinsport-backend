@@ -12,6 +12,7 @@ export class AdminMiddleware implements NestMiddleware {
   private userModel: Model<User>,) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
+    console.log(req.body,'Reqqqqqqqqqqqqqq')
     const { token } = req.body; // You might need to adjust this depending on your request structure
 
     try {
