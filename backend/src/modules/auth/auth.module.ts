@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -8,6 +8,7 @@ import { AuthService } from './auth.service';
 // import { JwtStrategy } from './jwt.strategy';
 import { UserSchema } from './schemas/user.schema';
 import { JwtStrategy } from './jwt.strategy';
+import { AdminMiddleware } from '../shared/admin-auth/admin.guard';
 
 require("dotenv").config();
 @Module({
@@ -32,4 +33,12 @@ require("dotenv").config();
   providers: [AuthService,JwtStrategy],
   exports: [JwtStrategy, PassportModule],
 })
-export class AuthModule {}
+
+
+export class AuthModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(AdminMiddleware)
+      .forRoutes('');
+  }
+}
