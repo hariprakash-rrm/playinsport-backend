@@ -127,7 +127,7 @@ export class CreateService {
                                 const _postData = {
                                     // Data to be sent in the request body
                                     number: partUser.number,
-                                    message: `Round - ${game.round} cancelled - Rs ${game.tokenPrice} refunded to your wallet \n check here - teamquantum.in/user/transaction-history`,
+                                    message: `Round - ${game.round} cancelled - Token -${game.tokenDetails[i].tokenNumber} Rs ${game.tokenPrice} refunded to your wallet \n check here - teamquantum.in/user/transaction-history`,
                                   };
                                   const response = await axios
                                   .post(`${env.qr_url}/send-otp`, _postData)
