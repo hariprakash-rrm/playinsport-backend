@@ -35,10 +35,6 @@ require("dotenv").config();
 })
 
 
-export class AuthModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(AdminMiddleware)
-      .forRoutes('');
-  }
+export class AuthModule {
+  
 }
