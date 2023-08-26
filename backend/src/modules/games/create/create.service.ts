@@ -5,7 +5,9 @@ import { Model } from 'mongoose';
 import { RefundDto } from './dto/createToken.dto';
 import { User } from 'src/modules/auth/schemas/user.schema';
 import { WithdrawWallet } from 'src/modules/auth/schemas/wallet.schema';
-
+import axios from 'axios';
+import { env } from 'process';
+require("dotenv").config();
 @Injectable()
 export class CreateService {
     constructor(@InjectModel(Game.name)
@@ -121,6 +123,21 @@ export class CreateService {
                             await partUser.txnHistory.push(txnHistory)
                             await resData.push(partUser.txnHistory)
                             await partUser.save()
+                            try{
+                                const _postData = {
+                                    // Data to be sent in the request body
+                                    number: partUser.number,
+                                    message: `Round - ${game.round} cancelled - Rs ${game.tokenPrice} refunded to your wallet \n check here - teamquantum.in/user/transaction-history`,
+                                  };
+                                  const response = await axios
+                                  .post(`${env.qr_url}/send-otp`, _postData)
+                                  .then((res: any) => {
+                                    // console.log(res)
+                                    // data = res;
+                                  });
+                              }catch(err){
+        
+                              }
                         }
                     }
 
@@ -128,6 +145,7 @@ export class CreateService {
 
                 game.isComplete = true
                 game.status = 'refunded'
+                
                 await game.save()
                 let data = {
                     data: {
@@ -293,9 +311,30 @@ export class CreateService {
                     }
 
                     let userPrice = user.wallet;
-
+                    const timestamp = new Date().getTime();
                     user.wallet = await userPrice + convertPrize;
+                    let txnHistory: any = {
+                        message: `Round ${game.round} winner`,
+                        amount: convertPrize,
+                        time: timestamp,
+                        // newBalance: refAddress.wallet
+                      }
+                      user.txnHistory.push(txnHistory)
+                      try{
+                        const _postData = {
+                            // Data to be sent in the request body
+                            number: user.number,
+                            message: `Congrats You are the winner - Round - ${game.round} - Rs ${convertPrize} \n check here - teamquantum.in/user/transaction-history`,
+                          };
+                          const response = await axios
+                          .post(`${env.qr_url}/send-otp`, _postData)
+                          .then((res: any) => {
+                            // console.log(res)
+                            // data = res;
+                          });
+                      }catch(err){
 
+                      }
                     await user.save();
                 }
 
