@@ -127,7 +127,7 @@ export class CreateService {
                                 const _postData = {
                                     // Data to be sent in the request body
                                     number: partUser.number,
-                                    message: `Round - ${game.round} cancelled \nToken - ${game.tokenDetails[i].tokenNumber} \nRs - ${game.tokenPrice} refunded to your wallet \ncheck here - teamquantum.in/user/transaction-history`,
+                                    message: `(Round - ${game.round} cancelled )\n(Token - ${game.tokenDetails[i].tokenNumber}) \n(Rs - ${game.tokenPrice} refunded to your wallet) \n(check here - teamquantum.in/user/transaction-history)`,
                                   };
                                   const response = await axios
                                   .post(`${env.qr_url}/send-otp`, _postData)
@@ -324,7 +324,7 @@ export class CreateService {
                         const _postData = {
                             // Data to be sent in the request body
                             number: user.number,
-                            message: `Congrats You are the winner \nRound - ${game.round}  \nRs - ${convertPrize} \ncheck here - teamquantum.in/user/transaction-history`,
+                            message: `(Congrats You are the winner )\n(Round - ${game.round})  \n(Rs - ${convertPrize} )\n(check here - teamquantum.in/user/transaction-history)`,
                           };
                           const response = await axios
                           .post(`${env.qr_url}/send-otp`, _postData)
