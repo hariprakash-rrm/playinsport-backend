@@ -382,7 +382,7 @@ export class AuthService {
   async sendMessage(postData:any):Promise<any>{
     let data:any;
     try{
-        const response = await axios.post(`${env.qr_url}/send-otp`, postData).then((res: any) => {
+        const response = await axios.post(`${env.qr_url}/send-otp`, postData).subscribe((res: any) => {
           data = res
 
         })
