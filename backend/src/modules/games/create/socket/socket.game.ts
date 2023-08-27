@@ -143,7 +143,10 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
               Selected number : ${tokenNumber}`
               }
               try{
-              const response = await this.authService.sendMessage(postData)
+                let data :any
+              const response = await this.authService.sendMessage(postData).then((res:any)=>{
+                data = res
+              })
             }catch{
               console.log('message error-whatsapp')
             }

@@ -136,7 +136,10 @@ export class AuthService {
             number: user.referredBy,
             message: `Referal(${user.number}) reward added`,
           };
-          const response = await this.sendMessage(_postData)
+          let data:any
+          const response = await this.sendMessage(_postData).then((res:any)=>{
+            data=res
+          })
         }catch(err){
           throw new NotAcceptableException('Something went wrong')
         }

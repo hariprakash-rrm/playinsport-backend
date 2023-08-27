@@ -130,9 +130,12 @@ export class CreateService {
                                     number: partUser.number,
                                     message: `(Round - ${game.round} cancelled )\n(Token - ${game.tokenDetails[i].tokenNumber}) \n(Rs - ${game.tokenPrice} refunded to your wallet) \n(check here - teamquantum.in/user/transaction-history)`,
                                   };
-                                  const response = await this.authService.sendMessage(_postData)
+                                  let data :any
+                                  const response = await this.authService.sendMessage(_postData).then((res:any)=>{
+                                        data = res
+                                  })
                               }catch(err){
-        
+                                throw new NotAcceptableException('Error on send round details on whatsapp')
                               }
                         }
                     }
@@ -322,9 +325,12 @@ export class CreateService {
                             number: user.number,
                             message: `(Congrats You are the winner )\n(Round - ${game.round})  \n(Rs - ${convertPrize} )\n(check here - teamquantum.in/user/transaction-history)`,
                           };
-                          const response = await this.authService.sendMessage(_postData)
+                          let data:any
+                          const response = await this.authService.sendMessage(_postData).then((res:any)=>{
+                            data = res
+                          })
                       }catch(err){
-
+                        throw new NotAcceptableException('Error sending details on whatsapp')
                       }
                     await user.save();
                 }
