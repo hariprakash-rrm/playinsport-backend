@@ -33,10 +33,8 @@ export class CouponService {
 
     // If coupon exists, proceed with validations and claiming
     if (coupon) {
-      const isUsedByUser = await this.couponModel.findOne({
-        usedBy: user.number,
-      });
-
+      const isUsedByUser = await coupon.usedBy.includes(user.number)
+       
       // If coupon is already used by the user, throw an exception
       if (isUsedByUser) {
         throw new NotAcceptableException("User has already used a coupon");
@@ -96,7 +94,7 @@ export class CouponService {
 
   async createCoupon(data: any): Promise<any> {
     let { code, validFor, validFrom, validUpto, canUse, value }: any = data;
-    const usedBy = [];
+
     try {
       let coupon = await this.couponModel.create({
         code,
@@ -104,7 +102,7 @@ export class CouponService {
         validFor,
         validFrom,
         validUpto,
-        usedBy, // Initialize an empty array for usedBy
+        usedBy: [], // Initialize an empty array for usedBy
         canUse,
         value,
       });
@@ -155,7 +153,7 @@ export class CouponService {
         data: {
           data: coupon,
         },
-        message: "Coupon isActive updated",
+        message: "Details retrived",
       };
       return await this.returnData(res);
     } else {
