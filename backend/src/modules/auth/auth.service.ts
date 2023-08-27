@@ -148,15 +148,19 @@ export class AuthService {
   }
   
     try {
-      const response = await this.sendMessage(postData)
-      const responseData = {
+      let data :any
+      const response = await this.sendMessage(postData).then((res:any)=>{
+        data = res
+      })
+      
+      var responseData = {
         statusCode: data.status,
         data: data.config.data,
         message: "Otp sent ",
       };
-     
-
       return responseData;
+
+      
     } catch (err) {
       // await this.userModel.findOneAndDelete({ number: users });
       throw new NotAcceptableException(`Something went wrong, Contact admin`);
