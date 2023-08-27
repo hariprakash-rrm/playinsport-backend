@@ -96,7 +96,7 @@ export class CouponService {
 
   async createCoupon(data: any): Promise<any> {
     let { code, validFor, validFrom, validUpto, canUse, value }: any = data;
-
+    const usedBy = [];
     try {
       let coupon = await this.couponModel.create({
         code,
@@ -104,7 +104,7 @@ export class CouponService {
         validFor,
         validFrom,
         validUpto,
-        usedBy: [], // Initialize an empty array for usedBy
+        usedBy, // Initialize an empty array for usedBy
         canUse,
         value,
       });
