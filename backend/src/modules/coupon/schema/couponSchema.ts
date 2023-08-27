@@ -21,7 +21,7 @@ export class Coupon extends Document {
     validUpto: string;
 
     @Prop()
-    usedBy:number[]
+    usedBy:any[]
 
     @Prop()
     canUse:number
