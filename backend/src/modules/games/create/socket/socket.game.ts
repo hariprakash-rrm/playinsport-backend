@@ -7,11 +7,12 @@ import { Game, GameDetails } from '../schemas/create.schema';
 
 import axios from 'axios';
 import { env } from 'process';
+import { AuthService } from 'src/modules/auth/auth.service';
 require("dotenv").config();
 
 @WebSocketGateway({ cors: { origin: ['http://teamquantum.in','http://www.teamquantum.in'] } })
 export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(@InjectModel(User.name)
+  constructor(private authService:AuthService,@InjectModel(User.name)
   private userModels: Model<User>, @InjectModel(Game.name) private gameModels: Model<Game>, @InjectModel(GameDetails.name) private gameDeatilsModel: Model<GameDetails>
   ) { }
   round: number = 1
@@ -142,10 +143,7 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
               Selected number : ${tokenNumber}`
               }
               try{
-              const response = await axios.post(`${env.qr_url}/send-otp`, postData).then((res: any) => {
-                data = res
-
-              })
+              const response = await this.authService.sendMessage(postData)
             }catch{
               console.log('message error-whatsapp')
             }

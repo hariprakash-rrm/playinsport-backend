@@ -24,6 +24,7 @@ import { SigninDto, SubmitOtpDto } from "./dto/signin.dto";
 import { Client } from "whatsapp-web.js";
 import { NextFunction } from "express";
 
+
 const axios = require("axios");
 const util = require('util');
 
@@ -33,7 +34,8 @@ export class AuthService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<User>,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+   
   ) { }
 
   /**
@@ -134,12 +136,7 @@ export class AuthService {
             number: user.referredBy,
             message: `Referal(${user.number}) reward added`,
           };
-          const response = await axios
-          .post(`${env.qr_url}/send-otp`, _postData)
-          .then((res: any) => {
-            // console.log(res)
-            // data = res;
-          });
+          const response = await this.sendMessage(_postData)
         }catch(err){
           throw new NotAcceptableException('Something went wrong')
         }
@@ -151,12 +148,7 @@ export class AuthService {
   }
   
     try {
-      const response = await axios
-        .post(`${env.qr_url}/send-otp`, postData)
-        .then((res: any) => {
-          // console.log(res)
-          data = res;
-        });
+      const response = await this.sendMessage(postData)
       const responseData = {
         statusCode: data.status,
         data: data.config.data,
@@ -379,6 +371,18 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
   }
+
+  async sendMessage(postData:any):Promise<any>{
+    let data:any;
+    try{
+        const response = await axios.post(`${env.qr_url}/send-otp`, postData).then((res: any) => {
+          data = res
+
+        })
+      }catch{
+        console.log('message error-whatsapp')
+      }
+}
 
 
   

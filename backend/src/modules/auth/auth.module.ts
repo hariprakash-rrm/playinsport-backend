@@ -8,7 +8,7 @@ import { AuthService } from './auth.service';
 // import { JwtStrategy } from './jwt.strategy';
 import { UserSchema } from './schemas/user.schema';
 import { JwtStrategy } from './jwt.strategy';
-import { AdminMiddleware } from '../shared/admin-auth/admin.guard';
+
 
 require("dotenv").config();
 @Module({
