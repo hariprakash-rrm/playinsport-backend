@@ -41,7 +41,7 @@ export class CouponService {
       }
 
       const isValidForUser =
-        coupon.validFor.length === 0 || coupon.validFor.length == null || coupon.validFor.includes(user.number);
+        coupon.validFor.length === 0 || coupon.validFor[0] == null || coupon.validFor.includes(user.number);
 
       // If user is not eligible for the coupon, throw an exception
       if (!isValidForUser) {
