@@ -6,14 +6,25 @@ export class createTokenDto {
     @IsNotEmpty()
     readonly name: string
 
+    @IsNotEmpty()
+    readonly image: string
+
     @IsArray()
     readonly prize: string[]
 
     @IsNotEmpty()
     readonly tokenPrice: string
+
+    @IsNotEmpty()
     readonly date: string
+
+    @IsNotEmpty()
     readonly maximumTokenPerUser: string
+
+    @IsNotEmpty()
     readonly token: string
+
+
     readonly facebookLink: string
     readonly youtubeLink: string
 

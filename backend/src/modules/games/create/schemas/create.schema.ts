@@ -14,6 +14,9 @@ export class Game {
     name: string
 
     @Prop()
+    image:string
+
+    @Prop()
     tokenPrice: number
 
     @Prop()
