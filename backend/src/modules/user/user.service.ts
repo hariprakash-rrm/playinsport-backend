@@ -521,7 +521,7 @@ export class UserService {
                 }
 
                 let txnHistory: any = {
-                    message: `Deposited`,
+                    message: `Deposit Successful`,
                     amount: +depositUserTxn[0].amount,
                     time: timestamp,
                     newBalance: user.wallet
@@ -565,7 +565,7 @@ export class UserService {
 
             if (depositUserTxn[0].status == 'pending') {
                 depositUserTxn[0].status = 'declined'
-                depositUserTxn[0].message = message
+                depositUserTxn[0].message = `Deposit Declined - ${message}`
 
                 user.txnHistory.push(txnHistory)
                 await user.save()
@@ -576,7 +576,7 @@ export class UserService {
                         data:
                             depositUserTxn[0]
                     },
-                    message: 'dEPOSIT DECLINED'
+                    message: 'Deposit Declined'
                 }
                 return this.returnData(_data)
             } else {
@@ -588,7 +588,7 @@ export class UserService {
                 .sort({ createdAt: -1 })
 
             let txnHistory: any = {
-                message: `Withdrawn `,
+                message: `Withdraw Successful `,
                 amount: +withdrawUserTxn[0].amount,
                 time: timestamp,
                 newBalance: user.wallet
@@ -633,7 +633,7 @@ export class UserService {
             if (withdrawUserTxn[0].status == 'pending') {
                 user.txnHistory.push(txnHistory)
                 withdrawUserTxn[0].status = 'declined'
-                withdrawUserTxn[0].message = message
+                withdrawUserTxn[0].message = `Withdraw Declined - ${message}`
 
                 await withdrawUserTxn[0].save()
                 await user.save()

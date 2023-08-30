@@ -75,7 +75,7 @@ export class CouponService {
 
       // Add transaction history for the user
       const txnHistory = {
-        message: "Coupon Claimed",
+        message: `Rs ${coupon.value} Coupon Claimed`,
         amount: coupon.value,
         time: timestamp,
         newBalance: user.wallet,
