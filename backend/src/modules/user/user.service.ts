@@ -6,6 +6,7 @@ import { User } from '../auth/schemas/user.schema';
 import { ExcelService } from '../shared/excelService';
 import { DepositWallet, TotalSupply, WithdrawWallet } from '../auth/schemas/wallet.schema';
 import { promises } from 'dns';
+import { AuthService } from '../auth/auth.service';
 
 
 @Injectable()
@@ -22,7 +23,7 @@ export class UserService {
 
         @InjectModel(TotalSupply.name)
         private TotalSupplyModel: Model<TotalSupply>,
-        private readonly excelService: ExcelService) { }
+        private readonly excelService: ExcelService,private authService:AuthService) { }
 
     async getUser(data: any): Promise<any> {
         try {
@@ -310,19 +311,35 @@ export class UserService {
                     DepositTransactionId: CountOfDeposit
                 });
                 await transactionDetails.save();
+               
                 let res = {
                     data: {
                         data: transactionDetails
                     },
                     message: 'Submitted',
                 }
-                return await this.returnData(res)
+               
+                try{
+                    const _postData = {
+                        // Data to be sent in the request body
+                        number: userPhoneNumber,
+                        message: `Deposit request Rs - ${amount} has been initiated`,
+                      };
+                      let data:any
+                      const response = await this.authService.sendMessage(_postData).then((res:any)=>{
+                        data=res
+                      })}catch{
+                        throw new NotAcceptableException('Whatsapp error')
+                      }
+                      return await this.returnData(res)
             } catch (err) {
                 throw new NotAcceptableException({
                     statusCode: err.statusCode,
                     message: err.message
                 })
             }
+            
+            
         } else if (data.method == 'withdraw') {
 
             let userTxn = await this.withdrawWalletModel.find({ userPhoneNumber: userPhoneNumber })
@@ -365,6 +382,18 @@ export class UserService {
                         },
                         message: 'Submitted',
                     }
+                    try{
+                        const _postData = {
+                            // Data to be sent in the request body
+                            number: userPhoneNumber,
+                            message: `Withdraw request Rs - ${amount} has been initiated`,
+                          };
+                          let data:any
+                          const response = await this.authService.sendMessage(_postData).then((res:any)=>{
+                            data=res
+                          })}catch{
+                            throw new NotAcceptableException('Whatsapp error')
+                          }
                     return await this.returnData(res)
 
                 } catch (err) {
@@ -542,6 +571,18 @@ export class UserService {
                         },
                         message: 'Deposited'
                     }
+                    try{
+                        const _postData = {
+                            // Data to be sent in the request body
+                            number: userPhoneNumber,
+                            message: `Deposit request of Rs - ${amount} added in your wallet`,
+                          };
+                          let data:any
+                          const response = await this.authService.sendMessage(_postData).then((res:any)=>{
+                            data=res
+                          })}catch{
+                            throw new NotAcceptableException('Whatsapp error')
+                          }
                     return this.returnData(_data)
 
                 } else {
@@ -578,6 +619,19 @@ export class UserService {
                     },
                     message: 'Deposit Declined'
                 }
+                try{
+                    const _postData = {
+                        // Data to be sent in the request body
+                        number: userPhoneNumber,
+                        message: `Deposit request of Rs - ${amount} has been declined`,
+                      };
+                      let data:any
+                      const response = await this.authService.sendMessage(_postData).then((res:any)=>{
+                        data=res
+                      })}catch{
+                        throw new NotAcceptableException('Whatsapp error')
+                      }
+                
                 return this.returnData(_data)
             } else {
                 throw new NotAcceptableException('Already declined')
@@ -613,6 +667,19 @@ export class UserService {
                     },
                     message: 'withdraw success'
                 }
+                try{
+                    const _postData = {
+                        // Data to be sent in the request body
+                        number: userPhoneNumber,
+                        message: `Withdraw request of Rs - ${amount} transferred to your account`,
+                      };
+                      let data:any
+                      const response = await this.authService.sendMessage(_postData).then((res:any)=>{
+                        data=res
+                      })}catch{
+                        throw new NotAcceptableException('Whatsapp error')
+                      }
+                
                 return this.returnData(_data)
             } else {
                 throw new NotAcceptableException('Already withdrawn')
@@ -645,6 +712,19 @@ export class UserService {
                     },
                     message: 'withdraw declined'
                 }
+                try{
+                    const _postData = {
+                        // Data to be sent in the request body
+                        number: userPhoneNumber,
+                        message: `Withdraw request of Rs - ${amount} has been declined`,
+                      };
+                      let data:any
+                      const response = await this.authService.sendMessage(_postData).then((res:any)=>{
+                        data=res
+                      })}catch{
+                        throw new NotAcceptableException('Whatsapp error')
+                      }
+                
                 return this.returnData(_data)
             } else {
                 throw new NotAcceptableException('Already declined')
