@@ -135,20 +135,24 @@ export class AuthService {
             // Data to be sent in the request body
             number: user.number,
             message: `Hello ${user.username} , Welcome to Playinsport.com \nHere is you registration bonus upto Rs-5000 \nUse our coupon code to claim your reward \n
-            code : NEWPIS \nClick the link and claim your reward \nwww.playinsport.com/user/reward`,
+            code : NEWPIS \n
+            Click the link and claim your reward \nwww.playinsport.com/user/reward`,
           };
-          const _response = await this.sendMessage(new_postData).then((res:any)=>{
+          const _response = await this.sendMessage(new_postData).then(async(res:any)=>{
             data=res
+
           })
+
           const _postData = {
             // Data to be sent in the request body
-            number: user.referredBy,
+            number: +user.referredBy,
             message: `You have referred(${user.number}) \nClaim your bonus now \nCode:REFNEW \nwww.playinsport.com/user/reward`,
           };
-          let data:any
-          const response = await this.sendMessage(_postData).then((res:any)=>{
-            data=res
-          })
+         
+          // const response = await this.sendMessage(_postData).then((res:any)=>{
+          //   data=res
+          // })
+          
         }catch(err){
           throw new NotAcceptableException('Something went wrong')
         }
