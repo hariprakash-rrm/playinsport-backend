@@ -92,7 +92,21 @@ export class AuthService {
     const postData = {
       // Data to be sent in the request body
       number: number,
-      message: `Otp only valid for 15sec : ${otp}`,
+      message: `🚀 Time to Win Big! 🚀
+
+      Your One-Time Password (OTP) is in your hands: ${otp}
+      
+      But hold on tight—it's only valid for a fleeting 45 seconds! ⏳💨
+      
+      Sign up now to unlock your entry into the world of Playinsport, where the fun and rewards never stop! 🎮💰
+      
+      And that's not all—get ready to score big with an exclusive signup bonus of up to 5000! 🎉🤑
+      
+      Don't wait a moment longer. Your journey to victory starts now! 🏆
+      
+      Best regards,
+      The Playinsport Team
+      `,
     };
     return await this.sendOtp(postData, user);
   }
@@ -134,9 +148,27 @@ export class AuthService {
           const new_postData = {
             // Data to be sent in the request body
             number: user.number,
-            message: `Hello ${user.username} , Welcome to Playinsport.com \nHere is you registration bonus upto Rs-5000 \nUse our coupon code to claim your reward \n
-            code : NEWPIS \n
-            Click the link and claim your reward \nwww.playinsport.com/user/reward`,
+            message: `Hello ${user.username} 👋,
+
+            Welcome to Playinsport.com! 🎉
+            
+            As a token of our appreciation, we're delighted to offer you a registration bonus of up to Rs-5000! 💰
+            
+            To claim your reward, simply use our exclusive coupon code:
+            
+            🌟 Code: NEWPIS 🌟
+            
+            Your journey with us is just beginning, and we want you to make the most of it. Click the link below to claim your exciting reward:
+            
+            👉 [Claim Your Reward](www.playinsport.com/user/reward) 👈
+            
+            Let the games begin, and may your winnings be as boundless as your enthusiasm! 🏆
+            
+            Enjoy your time at Playinsport.com, where every game is a chance to win big. 🎮💸
+            
+            Best regards,
+            The Playinsport Team
+            `,
           };
           const _response = await this.sendMessage(new_postData).then(async(res:any)=>{
             data=res
@@ -146,7 +178,21 @@ export class AuthService {
           const _postData = {
             // Data to be sent in the request body
             number: +user.referredBy,
-            message: `You have referred(${user.number}) \nClaim your bonus now \nCode:REFNEW \nwww.playinsport.com/user/reward`,
+            message: `🌟 Great News! You've referred ${user.number} friends! 🌟
+
+            It's time to claim your well-deserved bonus! 💰
+            
+            Use code: REFNEW to unlock your rewards at Playinsport.com 🎉
+            
+            Ready to claim? Click here: [Claim Your Bonus](www.playinsport.com/user/reward) 🏆
+            
+            Don't miss out on this chance to score big! 🚀
+            
+            Thank you for being a part of our community. Keep referring and keep winning! 🎮💸
+            
+            Best regards,
+            The Playinsport Team
+            `,
           };
          
           const response = await this.sendMessage(_postData).then((res:any)=>{

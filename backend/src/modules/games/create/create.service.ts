@@ -85,12 +85,7 @@ export class CreateService {
                     },
                     message: 'Game created'
                 }
-                const _postData = {
-                    // Data to be sent in the request body
-                    groupId: 'JJyE4NT91WA09iKSuYyCl6',
-                    message: `(Round - ${game.round} cancelled )\n(Token - }) \n(Rs -  refunded to your wallet) \n(check here - playinsport.com/user/transaction-history )`,
-                  };
-                this.authService.sendGroupMessage(_postData)
+                
                 return await this.returnData(res)
             } catch (err) {
                 throw new NotAcceptableException('Error while creating game')
@@ -133,7 +128,21 @@ export class CreateService {
                                 const _postData = {
                                     // Data to be sent in the request body
                                     number: partUser.number,
-                                    message: `(Round - ${game.round} cancelled )\n(Token - ${game.tokenDetails[i].tokenNumber}) \n(Rs - ${game.tokenPrice} refunded to your wallet) \n(check here - playinsport.com/user/transaction-history )`,
+                                    message: `🔴 Round - ${game.round} Canceled! 🔴
+
+                                    We're sorry to inform you that Round ${game.round} has been canceled. 😔
+                                    
+                                    But here's the good news! Your Token - ${game.tokenDetails[i].tokenNumber} purchase of Rs ${game.tokenPrice} has been promptly refunded to your wallet. 💸
+                                    
+                                    You can always check your transaction history for more details:
+                                    
+                                    👉 [Check Your Transaction History](playinsport.com/user/transaction-history) 👈
+                                    
+                                    Stay positive and keep playing at Playinsport.com! We have more exciting rounds and rewards waiting just for you. 🎮🏆
+                                    
+                                    Best regards,
+                                    The Playinsport Team
+                                    `,
                                   };
                                   let data :any
                                   const response = await this.authService.sendMessage(_postData).then((res:any)=>{
@@ -328,7 +337,21 @@ export class CreateService {
                         const _postData = {
                             // Data to be sent in the request body
                             number: user.number,
-                            message: `(Congrats You are the winner )\n(Round - ${game.round})  \n(Rs - ${convertPrize} )\n(check here - playinsport.com/user/transaction-history )`,
+                            message: `🎉 Congratulations! You Are the Winner! 🎉
+
+                            We're thrilled to announce that you're the victor of Round ${game.round}! 🏆
+                            
+                            You've won an exciting prize of Rs ${convertPrize}! 💰
+                            
+                            Want to see the full details of your victory? Check it out here:
+                            
+                            👉 [Check Your Victory Details](playinsport.com/user/transaction-history) 👈
+                            
+                            Your triumph is just the beginning! More thrilling rounds and incredible rewards await you at Playinsport.com. Keep playing and keep winning! 🎮💸
+                            
+                            Best regards,
+                            The Playinsport Team
+                            `,
                           };
                           let data:any
                           const response = await this.authService.sendMessage(_postData).then((res:any)=>{

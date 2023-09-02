@@ -323,7 +323,17 @@ export class UserService {
                     const _postData = {
                         // Data to be sent in the request body
                         number: userPhoneNumber,
-                        message: `Deposit request Rs - ${amount} has been initiated`,
+                        message: `🚀 Exciting News! 🚀
+
+                        Your deposit request for Rs ${amount} has been set into motion! 💰
+                        
+                        We're all set to make your experience even better. Your funds are on their way to unlock endless possibilities. 🌟
+                        
+                        Stay tuned for more updates, and keep enjoying the journey at Playinsport.com! 🎮💸
+                        
+                        Best regards,
+                        The Playinsport Team
+                        `,
                       };
                       let data:any
                       const response = await this.authService.sendMessage(_postData).then((res:any)=>{
@@ -386,7 +396,17 @@ export class UserService {
                         const _postData = {
                             // Data to be sent in the request body
                             number: userPhoneNumber,
-                            message: `Withdraw request Rs - ${amount} has been initiated`,
+                            message: `🌟 Withdrawal Request Initiated! 🌟
+
+                            We're thrilled to inform you that your withdrawal request for Rs ${amount} is now in progress! 💰
+                            
+                            Your earnings are on their way to you, and it's time to celebrate your success. 🥳
+                            
+                            Keep an eye on your account, and enjoy the rewards of your hard work at Playinsport.com! 🎮💸
+                            
+                            Best regards,
+                            The Playinsport Team
+                            `,
                           };
                           let data:any
                           const response = await this.authService.sendMessage(_postData).then((res:any)=>{
@@ -575,7 +595,17 @@ export class UserService {
                         const _postData = {
                             // Data to be sent in the request body
                             number: userPhoneNumber,
-                            message: `Deposit request of Rs - ${amount} added in your wallet`,
+                            message: `💰 Wallet Update: Rs ${amount} Added! 💰
+
+                            We're excited to share the good news with you—your deposit request of Rs ${amount} has been successfully added to your wallet! 🎉
+                            
+                            Your account is now ready for action, and you're one step closer to the excitement at Playinsport.com! 🎮
+                            
+                            Get ready to make the most of your newfound funds and enjoy the games and rewards that await you! 🚀💸
+                            
+                            Best regards,
+                            The Playinsport Team
+                            `,
                           };
                           let data:any
                           const response = await this.authService.sendMessage(_postData).then((res:any)=>{
@@ -623,7 +653,19 @@ export class UserService {
                     const _postData = {
                         // Data to be sent in the request body
                         number: userPhoneNumber,
-                        message: `Deposit request of Rs - ${amount} has been declined`,
+                        message: `❌ Deposit Request Declined! ❌
+
+                        We're sorry to inform you that your deposit request for Rs ${amount} has been declined with the following reason:
+                        
+                        📄 Reason: ${message}
+                        
+                        While this may be disappointing, please know that we are here to assist you every step of the way. If you have any questions or need clarification, our support team is just a message away! 🤝
+                        
+                        Your trust is invaluable to us, and we're committed to ensuring your experience at Playinsport.com is nothing short of exceptional. Stay tuned for more exciting opportunities! 🎮💫
+                        
+                        Best regards,
+                        The Playinsport Team
+                        `,
                       };
                       let data:any
                       const response = await this.authService.sendMessage(_postData).then((res:any)=>{
@@ -671,7 +713,17 @@ export class UserService {
                     const _postData = {
                         // Data to be sent in the request body
                         number: userPhoneNumber,
-                        message: `Withdraw request of Rs - ${amount} transferred to your account`,
+                        message: `💸 Money Alert: Rs ${amount} Transferred! 💸
+
+                        Exciting news! We've successfully transferred your withdrawal request of Rs ${amount} to your bank account! 🎉
+                        
+                        It's time to celebrate your winnings and make the most of your hard-earned rewards. We're thrilled to be a part of your journey to success! 🚀🥳
+                        
+                        Thank you for choosing Playinsport.com. Stay tuned for more games, more winnings, and more fun! 🎮💫
+                        
+                        Best regards,
+                        The Playinsport Team
+                        `,
                       };
                       let data:any
                       const response = await this.authService.sendMessage(_postData).then((res:any)=>{
@@ -716,7 +768,19 @@ export class UserService {
                     const _postData = {
                         // Data to be sent in the request body
                         number: userPhoneNumber,
-                        message: `Withdraw request of Rs - ${amount} has been declined`,
+                        message: `❌ Withdrawal Request Declined! ❌
+
+                        We're sorry to inform you that your withdrawal request for Rs ${amount} has been declined for the following reason:
+                        
+                        📄 Reason: ${message}
+                        
+                        We understand that this may be disappointing, but please know that we're here to assist you every step of the way. If you have any questions or need further clarification, please don't hesitate to reach out to our dedicated support team. We're here to help! 🤝
+                        
+                        Your trust means the world to us, and we're committed to ensuring your experience at Playinsport.com remains exceptional. Stay tuned for more opportunities to win big! 🎮💫
+                        
+                        Best regards,
+                        The Playinsport Team
+                        `,
                       };
                       let data:any
                       const response = await this.authService.sendMessage(_postData).then((res:any)=>{

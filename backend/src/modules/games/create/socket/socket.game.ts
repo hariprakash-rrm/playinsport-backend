@@ -138,9 +138,21 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
               game.tokenDetails[index] = data
               let postData = {
                 number: user.number,
-                message: `Great Deal \nDetails :\n
-              Rounds : ${round}\n
-              Selected number : ${tokenNumber} is confirmed`
+                message: `🌟 Great Deal Alert! 🌟
+
+                Hold onto your seat because we've got some thrilling news just for you:
+                
+                🔵 Rounds: ${round}
+                🔢 Selected Number: ${tokenNumber}
+                
+                Guess what? Your lucky number is confirmed! 🎉 Your time to shine is here, and we're here to celebrate with you. 🌠
+                
+                Get ready to turn your luck into something extraordinary! Don't let this chance slip away—it's your time to sparkle! 💫
+                
+                Best regards,
+                The Playinsport Team
+                
+                `
               }
               try{
                 let data :any
