@@ -71,7 +71,7 @@ export class AuthService {
         isAdmin: false,
         block: false,
         referralCode, // Assign the referralCode here
-        referredBy: referredBy || '', // Assign referredBy or an empty string if not provided
+        referredBy: +referredBy || '', // Assign referredBy or an empty string if not provided
       });
     } catch (err) {
       if (err.code == 11000) {
@@ -149,9 +149,9 @@ export class AuthService {
             message: `You have referred(${user.number}) \nClaim your bonus now \nCode:REFNEW \nwww.playinsport.com/user/reward`,
           };
          
-          // const response = await this.sendMessage(_postData).then((res:any)=>{
-          //   data=res
-          // })
+          const response = await this.sendMessage(_postData).then((res:any)=>{
+            data=res
+          })
           
         }catch(err){
           throw new NotAcceptableException('Something went wrong')
