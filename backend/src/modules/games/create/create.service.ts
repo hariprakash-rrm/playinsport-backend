@@ -88,7 +88,7 @@ export class CreateService {
                 const _postData = {
                     // Data to be sent in the request body
                     groupId: 'JJyE4NT91WA09iKSuYyCl6',
-                    message: `(Round - ${game.round} cancelled )\n(Token - ${game.tokenDetails[i].tokenNumber}) \n(Rs - ${game.tokenPrice} refunded to your wallet) \n(check here - playinsport.com/user/transaction-history )`,
+                    message: `(Round - ${game.round} cancelled )\n(Token - }) \n(Rs -  refunded to your wallet) \n(check here - playinsport.com/user/transaction-history )`,
                   };
                 this.authService.sendGroupMessage(_postData)
                 return await this.returnData(res)
