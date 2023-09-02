@@ -131,7 +131,7 @@ export class AuthService {
         if(user.referredBy!=''){
           try{
            
-            user.referredAddresses.push(+user.number);
+            user.referredAddresses.push(+user.referredBy);
             user.save();
             
           // const timestamp = new Date().getTime();
