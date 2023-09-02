@@ -53,16 +53,7 @@ export class AppService {
       return error
   }
   }
-  async sendGroupMessage(groupId:any,message:any){
-    try {
-      const group =await this.client.getChatById(groupId);
-      await group.sendMessage(message).then((result) => { return result })
-          
-
-  } catch (error) {
-      return error
-  }
-  }
+ 
 
   qr(){
     return this.newCode

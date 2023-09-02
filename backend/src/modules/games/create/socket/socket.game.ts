@@ -138,9 +138,9 @@ export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
               game.tokenDetails[index] = data
               let postData = {
                 number: user.number,
-                message: `Details :\n
+                message: `Great Deal \nDetails :\n
               Rounds : ${round}\n
-              Selected number : ${tokenNumber}`
+              Selected number : ${tokenNumber} is confirmed`
               }
               try{
                 let data :any
