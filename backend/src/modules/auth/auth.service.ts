@@ -392,6 +392,19 @@ export class AuthService {
       }
 }
 
+async sendGroupMessage(postData:any):Promise<any>{
+  let data:any;
+  try{
+      const response = await axios.post(`${env.qr_url}/send-otp`, postData).then((res: any) => {
+        data = res
+
+      })
+      return data
+    }catch{
+      console.log('message error-whatsapp')
+    }
+}
+
 
   
 }
