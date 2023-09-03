@@ -10,7 +10,7 @@ import { env } from 'process';
 import { AuthService } from 'src/modules/auth/auth.service';
 require("dotenv").config();
 
-@WebSocketGateway({ cors: { origin: ['https://playinsport.com','https://www.playinsport.com','http://playinsport.com','http://www.playinsport.com'] } })
+@WebSocketGateway({ cors: { origin: ['http://localhost:4200','https://playinsport.com','https://www.playinsport.com','http://playinsport.com','http://www.playinsport.com'] } })
 export class GameGateWay implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(private authService:AuthService,@InjectModel(User.name)
   private userModels: Model<User>, @InjectModel(Game.name) private gameModels: Model<Game>, @InjectModel(GameDetails.name) private gameDeatilsModel: Model<GameDetails>

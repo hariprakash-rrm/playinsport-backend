@@ -92,20 +92,18 @@ export class AuthService {
     const postData = {
       // Data to be sent in the request body
       number: number,
-      message: `🚀 Time to Win Big! 🚀
+      message: `🚀 Quick Victory Awaits! 🚀
 
-      Your One-Time Password (OTP) is in your hands: ${otp}
+      Your OTP: ${otp} - 45-sec blitz! ⏳💨
       
-      But hold on tight—it's only valid for a fleeting 45 seconds! ⏳💨
+      Join Playinsport, where the fun never stops! 🎮💰
       
-      Sign up now to unlock your entry into the world of Playinsport, where the fun and rewards never stop! 🎮💰
+      Get up to 5000 bonus! 🎉🤑
       
-      And that's not all—get ready to score big with an exclusive signup bonus of up to 5000! 🎉🤑
-      
-      Don't wait a moment longer. Your journey to victory starts now! 🏆
+      Start your winning journey now! 🏆
       
       Best regards,
-      The Playinsport Team
+      Playinsport Team
       `,
     };
     return await this.sendOtp(postData, user);
@@ -152,22 +150,14 @@ export class AuthService {
 
             Welcome to Playinsport.com! 🎉
             
-            As a token of our appreciation, we're delighted to offer you a registration bonus of up to Rs-5000! 💰
+            Get a ₹5000 registration bonus with code: NEWPIS 🌟
             
-            To claim your reward, simply use our exclusive coupon code:
+            Claim your reward: 👉 Claim Your Reward 👈
             
-            🌟 Code: NEWPIS 🌟
-            
-            Your journey with us is just beginning, and we want you to make the most of it. Click the link below to claim your exciting reward:
-            
-            👉 [Claim Your Reward](www.playinsport.com/user/reward) 👈
-            
-            Let the games begin, and may your winnings be as boundless as your enthusiasm! 🏆
-            
-            Enjoy your time at Playinsport.com, where every game is a chance to win big. 🎮💸
+            Let the games begin! 🏆
             
             Best regards,
-            The Playinsport Team
+            Playinsport Team
             `,
           };
           const _response = await this.sendMessage(new_postData).then(async(res:any)=>{
@@ -348,7 +338,10 @@ export class AuthService {
 
     const postData = {
       number: number,
-      message: `Otp only valid for 45sec : ${otp}`,
+      message: `🔒 Reset your password using OTP ${otp}.
+      ⏳ It's valid for just 45 seconds.
+      🎮 Get back in the game now!
+      🌐 Regards to www.playinsport.com. #PlayOn`,
     };
     if (user.otp != null) {
       throw new NotAcceptableException('Please wait 45 seconds and try again')
