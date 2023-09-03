@@ -134,17 +134,17 @@ export class AuthService {
             user.referredAddresses.push(+user.referredBy);
             user.save();
             
-          // const timestamp = new Date().getTime();
-          // const refAddress = await this.userModel.findOne({ number: user.referredBy });
-          // refAddress.reward += 3
-          // let txnHistory: any = {
-          //   message: `Referal reward`,
-          //   amount: 3,
-          //   time: timestamp,
-          //   // newBalance: refAddress.wallet
-          // }
-          // refAddress.txnHistory.push(txnHistory)
-          // await refAddress.save()
+          const timestamp = new Date().getTime();
+          const refAddress = await this.userModel.findOne({ number: user.referredBy });
+          refAddress.reward += 10
+          let txnHistory: any = {
+            message: `Referal reward ${user.username}`,
+            amount: 3,
+            time: timestamp,
+            // newBalance: refAddress.wallet
+          }
+          refAddress.txnHistory.push(txnHistory)
+          await refAddress.save()
           const new_postData = {
             // Data to be sent in the request body
             number: user.number,
@@ -178,17 +178,15 @@ export class AuthService {
           const _postData = {
             // Data to be sent in the request body
             number: +user.referredBy,
-            message: `🌟 Great News! You've referred ${user.number} friends! 🌟
+            message: `🎉 Fantastic News! You've introduced ${user.number} friends to our incredible community! 🌟
 
-            It's time to claim your well-deserved bonus! 💰
+            Your loyalty and enthusiasm have paid off, and we're thrilled to reward you with an instant cash bonus of Rs. 10! 💰 No coupon code needed – it's already in your account!
             
-            Use code: REFNEW to unlock your rewards at Playinsport.com 🎉
+            Ready to claim your hard-earned reward? Simply log in to Playinsport.com and let the fun begin! 🏆
             
-            Ready to claim? Click here: [Claim Your Bonus](www.playinsport.com/user/reward) 🏆
+            Don't miss out on this opportunity to score big and enjoy all the exciting activities on our platform! 🚀
             
-            Don't miss out on this chance to score big! 🚀
-            
-            Thank you for being a part of our community. Keep referring and keep winning! 🎮💸
+            Thank you for being an essential part of our vibrant community. Keep spreading the word, keep winning, and keep the gaming spirit alive! 🎮💸
             
             Best regards,
             The Playinsport Team
