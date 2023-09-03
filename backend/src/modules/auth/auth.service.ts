@@ -167,7 +167,7 @@ export class AuthService {
               refAddress.reward += 10;
               let txnHistory: any = {
                 message: `Referal reward ${user.username}`,
-                amount: 3,
+                amount: 10,
                 time: timestamp,
                 // newBalance: refAddress.wallet
               };
