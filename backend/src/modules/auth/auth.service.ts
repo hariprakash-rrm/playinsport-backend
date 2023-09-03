@@ -124,11 +124,11 @@ export class AuthService {
             await this.userModel.findOneAndDelete({ number: _users });
             return;
           }
-          if (user.verified == 1) {
-            const new_postData = {
-              // Data to be sent in the request body
-              number: user.number,
-              message: `Hello ${user.username} 👋,
+
+          const new_postData = {
+            // Data to be sent in the request body
+            number: user.number,
+            message: `Hello ${user.username} 👋,
 
           Welcome to Playinsport.com! 🎉
           
@@ -149,65 +149,35 @@ export class AuthService {
           Best regards,
           The Playinsport Team
           `,
-            };
-            const _response = await this.sendMessage(new_postData).then(
-              async (res: any) => {
-                data = res;
-              }
-            );
-            if (user.referredBy != "") {
-              try {
-                user.referredAddresses.push(+user.referredBy);
-                user.save();
+          };
+          const _response = await this.sendMessage(new_postData).then(
+            async (res: any) => {
+              data = res;
+            }
+          );
+          if (user.referredBy != "") {
+            try {
+              user.referredAddresses.push(+user.referredBy);
+              user.save();
 
-                const timestamp = new Date().getTime();
-                const refAddress = await this.userModel.findOne({
-                  number: user.referredBy,
-                });
-                refAddress.reward += 10;
-                let txnHistory: any = {
-                  message: `Referal reward ${user.username}`,
-                  amount: 3,
-                  time: timestamp,
-                  // newBalance: refAddress.wallet
-                };
-                refAddress.txnHistory.push(txnHistory);
-                await refAddress.save();
-                const new_postData = {
-                  // Data to be sent in the request body
-                  number: user.number,
-                  message: `Hello ${user.username} 👋,
+              const timestamp = new Date().getTime();
+              const refAddress = await this.userModel.findOne({
+                number: user.referredBy,
+              });
+              refAddress.reward += 10;
+              let txnHistory: any = {
+                message: `Referal reward ${user.username}`,
+                amount: 3,
+                time: timestamp,
+                // newBalance: refAddress.wallet
+              };
+              refAddress.txnHistory.push(txnHistory);
+              await refAddress.save();
 
-            Welcome to Playinsport.com! 🎉
-            
-            As a token of our appreciation, we're delighted to offer you a registration bonus of up to Rs-5000! 💰
-            
-            To claim your reward, simply use our exclusive coupon code:
-            
-            🌟 Code: NEWPIS 🌟
-            
-            Your journey with us is just beginning, and we want you to make the most of it. Click the link below to claim your exciting reward:
-            
-            👉 [Claim Your Reward](www.playinsport.com/user/reward) 👈
-            
-            Let the games begin, and may your winnings be as boundless as your enthusiasm! 🏆
-            
-            Enjoy your time at Playinsport.com, where every game is a chance to win big. 🎮💸
-            
-            Best regards,
-            The Playinsport Team
-            `,
-                };
-                const _response = await this.sendMessage(new_postData).then(
-                  async (res: any) => {
-                    data = res;
-                  }
-                );
-
-                const _postData = {
-                  // Data to be sent in the request body
-                  number: +user.referredBy,
-                  message: `🎉 Fantastic News! You've introduced ${user.number} friends to our incredible community! 🌟
+              const _postData = {
+                // Data to be sent in the request body
+                number: +user.referredBy,
+                message: `🎉 Fantastic News! You've introduced ${user.number} friends to our incredible community! 🌟
 
             Your loyalty and enthusiasm have paid off, and we're thrilled to reward you with an instant cash bonus of Rs. 10! 💰 No coupon code needed – it's already in your account!
             
@@ -220,16 +190,15 @@ export class AuthService {
             Best regards,
             The Playinsport Team
             `,
-                };
+              };
 
-                const response = await this.sendMessage(_postData).then(
-                  (res: any) => {
-                    data = res;
-                  }
-                );
-              } catch (err) {
-                throw new NotAcceptableException("Something went wrong");
-              }
+              const response = await this.sendMessage(_postData).then(
+                (res: any) => {
+                  data = res;
+                }
+              );
+            } catch (err) {
+              throw new NotAcceptableException("Something went wrong");
             }
           }
         }
