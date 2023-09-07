@@ -88,7 +88,7 @@ export class AuthService {
     const postData = {
       // Data to be sent in the request body
       number: number,
-      message: `🚀 Time to Win Big! 🚀\n🔑 Your One-Time Password (OTP) is in your hands: ${otp}! Only valid for 45 seconds ⏳🏆\n💰 Enjoy your surprise signup bonus!\nBest regards, The Playinsport Team
+      message: `🚀 Time to Win Big! 🚀\n🔑 Your One-Time Password (OTP) is in your hands - otp: ${otp}! Only valid for 45 seconds ⏳🏆\n💰 Enjoy your surprise signup bonus!\nBest regards, The Playinsport Team
       `,
     };
     return await this.sendOtp(postData, user);
@@ -115,7 +115,7 @@ export class AuthService {
           const new_postData = {
             // Data to be sent in the request body
             number: user.number,
-            message: `👋 Hello [Your Username],\n🎉 Welcome to Playinsport.com!\n💰 Get ready to score big with a registration bonus up to Rs-5000!\n🌟 Use code: NEWPIS\n👉 Claim Your Reward\nBest regards,\nThe Playinsport Team
+            message: `👋 Hello [${user.username}],\n🎉 Welcome to Playinsport.com!\n💰 Get ready to score big with a registration bonus up to Rs-5000!\n🌟 Use code: NEWPIS\n👉 Claim Your Reward\nBest regards,\nThe Playinsport Team
           `,
           };
           const _response = await this.sendMessage(new_postData).then(
@@ -145,7 +145,7 @@ export class AuthService {
               const _postData = {
                 // Data to be sent in the request body
                 number: +user.referredBy,
-                message: `🎉 Exciting news! You've brought ${user.number} friends to our awesome community! 🌟\n💰 Get ready for your Rs. 10 cash bonus - no code needed.\nJust log in at Playinsport.com/user/wallet and let the fun begin! 🏆\nBest regards, The Playinsport Team
+                message: `🎉 Exciting news! You've brought ${user.username} friends to our awesome community! 🌟\n💰 Get ready for your Rs. 10 cash bonus - no code needed.\nJust log in at Playinsport.com/user/wallet and let the fun begin! 🏆\nBest regards, The Playinsport Team
             `,
               };
 
@@ -298,7 +298,7 @@ export class AuthService {
 
     const postData = {
       number: number,
-      message: `🔒 Locked out? Fear not! Your key is here! 🔑\n🔥 Reset your password with OTP: ${otp}.\n⏳ But remember, it's hotter than a sprint, only 45 seconds to use it! 🏃\n🌐 Best regards, www.playinsport.com 🌐`,
+      message: `🔒 Locked out? Fear not! Your key is here! 🔑\n🔥 Reset your password with otp: ${otp}.\n⏳ But remember, it's hotter than a sprint, only 45 seconds to use it! 🏃\n🌐 Best regards, www.playinsport.com 🌐`,
     };
     if (user.otp != null) {
       throw new NotAcceptableException("Please wait 45 seconds and try again");
