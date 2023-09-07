@@ -90,12 +90,12 @@ export class AuthService {
       number: number,
       message: `🚀 Time to Win Big! 🚀
 
-    Your One-Time Password (OTP) is in your hands: ${otp}! Only valid for 45 sec 🏆
+      🔑 Your One-Time Password (OTP) is in your hands: ${otp}! Only valid for 45 seconds ⏳🏆
       
-    Enjoy your surprise signup bonus! 💰
+      💰 Enjoy your surprise signup bonus!
       
-    Best regards,
-    The Playinsport Team
+      Best regards,
+      The Playinsport Team
       
       `,
     };
@@ -123,17 +123,17 @@ export class AuthService {
           const new_postData = {
             // Data to be sent in the request body
             number: user.number,
-            message: `"Hello ${user.username} 👋,
+            message: `👋 Hello ${user.username},
 
-          Welcome to Playinsport.com! 🎉
+            🎉 Welcome to Playinsport.com!
             
-          Get ready to score big with a registration bonus up to Rs-5000! 💰
+            💰 Get ready to score big with a registration bonus up to Rs-5000!
             
-          Use code: NEWPIS 🌟 
-          👉 [Claim Your Reward](www.playinsport.com/user/reward) 👈
+            🌟 Use code: NEWPIS
+            👉 Claim Your Reward
             
-          Best regards,
-          The Playinsport Team"
+            Best regards,
+            The Playinsport Team
           `,
           };
           const _response = await this.sendMessage(new_postData).then(
@@ -165,11 +165,11 @@ export class AuthService {
                 number: +user.referredBy,
                 message: `🎉 Exciting news! You've brought ${user.number} friends to our awesome community! 🌟
 
-              Get ready for your Rs. 10 cash bonus - no code needed.
-              Just log in at Playinsport.com/user/wallet and let the fun begin! 🏆
-                  
-              Best regards,
-              The Playinsport Team
+                💰 Get ready for your Rs. 10 cash bonus - no code needed.
+                Just log in at Playinsport.com/user/wallet and let the fun begin! 🏆
+                
+                Best regards,
+                The Playinsport Team
             `,
               };
 
@@ -324,12 +324,12 @@ export class AuthService {
       number: number,
       message: `🔒 Locked out? Fear not! Your key is here! 🔑
 
-    🔥 Reset your password with OTP: ${otp}.
-
-    But remember, it's hotter than a sprint, only 45 seconds to use it! ⏳🏃
+      🔥 Reset your password with OTP: ${otp}.
       
-    Best regards,
-    www.playinsport.com 🌐`,
+      ⏳ But remember, it's hotter than a sprint, only 45 seconds to use it! 🏃
+      
+      🌐 Best regards,
+      www.playinsport.com 🌐`,
     };
     if (user.otp != null) {
       throw new NotAcceptableException("Please wait 45 seconds and try again");
