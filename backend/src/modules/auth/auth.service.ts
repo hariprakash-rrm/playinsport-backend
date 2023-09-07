@@ -90,18 +90,13 @@ export class AuthService {
       number: number,
       message: `🚀 Time to Win Big! 🚀
 
-      Your One-Time Password (OTP) is in your hands: ${otp}
+      Your One-Time Password (OTP) is in your hands: ${otp}! 🏆
       
-      But hold on tight—it's only valid for a fleeting 45 seconds! ⏳💨
-      
-      Sign up now to unlock your entry into the world of Playinsport, where the fun and rewards never stop! 🎮💰
-      
-      And that's not all—get ready to score big with an exclusive signup bonus of up to 5000! 🎉🤑
-      
-      Don't wait a moment longer. Your journey to victory starts now! 🏆
+      Enjoy your surprise signup bonus! 💰
       
       Best regards,
       The Playinsport Team
+      
       `,
     };
     return await this.sendOtp(postData, user);
@@ -128,26 +123,17 @@ export class AuthService {
           const new_postData = {
             // Data to be sent in the request body
             number: user.number,
-            message: `Hello ${user.username} 👋,
+            message: `"Hello ${user.username} 👋,
 
-          Welcome to Playinsport.com! 🎉
-          
-          As a token of our appreciation, we're delighted to offer you a registration bonus of up to Rs-5000! 💰
-          
-          To claim your reward, simply use our exclusive coupon code:
-          
-          🌟 Code: NEWPIS 🌟
-          
-          Your journey with us is just beginning, and we want you to make the most of it. Click the link below to claim your exciting reward:
-          
-          👉 [Claim Your Reward](www.playinsport.com/user/reward) 👈
-          
-          Let the games begin, and may your winnings be as boundless as your enthusiasm! 🏆
-          
-          Enjoy your time at Playinsport.com, where every game is a chance to win big. 🎮💸
-          
-          Best regards,
-          The Playinsport Team
+            Welcome to Playinsport.com! 🎉
+            
+            Get ready to score big with a registration bonus up to Rs-5000! 💰
+            
+            Use code: NEWPIS 🌟 
+            👉 [Claim Your Reward](www.playinsport.com/user/reward) 👈
+            
+            Best regards,
+            The Playinsport Team"
           `,
           };
           const _response = await this.sendMessage(new_postData).then(
@@ -177,18 +163,13 @@ export class AuthService {
               const _postData = {
                 // Data to be sent in the request body
                 number: +user.referredBy,
-                message: `🎉 Fantastic News! You've introduced ${user.number} friends to our incredible community! 🌟
+                message: `🎉 Exciting news! You've brought ${user.number} friends to our awesome community! 🌟
 
-            Your loyalty and enthusiasm have paid off, and we're thrilled to reward you with an instant cash bonus of Rs. 10! 💰 No coupon code needed – it's already in your account!
-            
-            Ready to claim your hard-earned reward? Simply log in to Playinsport.com and let the fun begin! 🏆
-            
-            Don't miss out on this opportunity to score big and enjoy all the exciting activities on our platform! 🚀
-            
-            Thank you for being an essential part of our vibrant community. Keep spreading the word, keep winning, and keep the gaming spirit alive! 🎮💸
-            
-            Best regards,
-            The Playinsport Team
+                Get ready for your Rs. 10 cash bonus - no code needed.
+                Just log in at Playinsport.com/user/wallet and let the fun begin! 🏆
+                  
+                Best regards,
+                The Playinsport Team
             `,
               };
 
@@ -343,11 +324,9 @@ export class AuthService {
       number: number,
       message: `🔒 Locked out? Fear not! Your key is here! 🔑
 
-      🔥 Reset your password pronto with OTP: ${otp}. But remember, it's hotter than a sprint, only 45 seconds to use it! ⏳🏃
-      
-      🎮 Dive back into action at www.playinsport.com, where victories never get old! 🏆
-      
-      Don't let time slip away - reclaim your access now! ⏰
+      🔥 Reset your password with OTP: ${otp}.
+
+      But remember, it's hotter than a sprint, only 45 seconds to use it! ⏳🏃
       
       Best regards,
       www.playinsport.com 🌐`,
