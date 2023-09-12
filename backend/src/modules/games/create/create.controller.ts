@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Query, UnauthorizedException, UseGuards } 
 import { createTokenDto, GetUserDto, RefundDto, UpdateUserDto, UserWalletDto } from './dto/createToken.dto';
 import { CreateService } from './create.service';
 import { AuthService } from 'src/modules/auth/auth.service';
-import { UserAuthGuard } from 'src/modules/shared/admin-auth/admin.guard';
+import { AdminAuthGuard } from 'src/modules/shared/admin-auth/admin.guard';
 
 @Controller('token')
 export class CreateController {
@@ -22,14 +22,12 @@ export class CreateController {
     }
 
     @Get('/get')
-
     async get(@Query() round: any): Promise<any> {
         console.log(round)
         return this.createService.get(round)
     }
-
     @Get('/games')
-    @UseGuards(UserAuthGuard)
+    
     async getGame(@Query() dates: any): Promise<any> {
         return this.createService.getGames(dates)
     }
