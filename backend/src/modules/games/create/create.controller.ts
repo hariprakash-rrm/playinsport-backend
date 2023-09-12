@@ -8,23 +8,15 @@ import {
   UnauthorizedException,
   UseGuards,
 } from "@nestjs/common";
-import {
-  createTokenDto,
-  GetUserDto,
-  RefundDto,
-  UpdateUserDto,
-  UserWalletDto,
-} from "./dto/createToken.dto";
+import { createTokenDto, RefundDto } from "./dto/createToken.dto";
 import { CreateService } from "./create.service";
-import { AuthService } from "src/modules/auth/auth.service";
+
 import { AuthGuard } from "@nestjs/passport";
 
 @Controller("token")
 @UseGuards(AuthGuard())
 export class CreateController {
-  constructor(
-    private createService: CreateService,
-  ) {}
+  constructor(private createService: CreateService) {}
 
   @Post("/create")
   async create(
@@ -36,16 +28,6 @@ export class CreateController {
       throw new UnauthorizedException("You are not an admin");
     }
     return this.createService.create(data);
-  }
-
-  @Get("/get")
-  async get(@Query() round: any): Promise<any> {
-    return this.createService.get(round);
-  }
-
-  @Get("/games")
-  async getGame(@Query() dates: any): Promise<any> {
-    return this.createService.getGames(dates);
   }
 
   @Post("/refund")
@@ -73,5 +55,15 @@ export class CreateController {
       throw new UnauthorizedException("You are not an admin");
     }
     return this.createService.updateRewardType(data);
+  }
+
+  @Get("/get")
+  async get(@Query() round: any): Promise<any> {
+    return this.createService.get(round);
+  }
+
+  @Get("/games")
+  async getGame(@Query() dates: any): Promise<any> {
+    return this.createService.getGames(dates);
   }
 }

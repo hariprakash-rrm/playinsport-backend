@@ -1,10 +1,9 @@
-import { Controller, NotAcceptableException, Request, Res } from "@nestjs/common";
+import { Controller, Request, Res, UseGuards } from "@nestjs/common";
 import {
   Body,
   Query,
   Headers,
   Get,
-  Injectable,
   Post,
   UnauthorizedException,
 } from "@nestjs/common";
@@ -16,17 +15,14 @@ import {
   walletDto,
   UpdatePaymentDto,
 } from "../games/create/dto/createToken.dto";
-import { AuthService } from "../auth/auth.service";
 import { UserService } from "./user.service";
-import { ExcelService } from "../shared/excelService";
 import { Response, query } from "express";
+import { AuthGuard } from "@nestjs/passport";
 
 @Controller("user")
+@UseGuards(AuthGuard())
 export class UserController {
-  constructor(
-    private userService: UserService,
-
-  ) {}
+  constructor(private userService: UserService) {}
 
   // @Get("/all-user")
   // async getAllUser(@Body() data: any): Promise<any> {
@@ -34,7 +30,7 @@ export class UserController {
   // }
 
   @Get("/get-user")
-  async getUser(@Request() req: any,@Query() data: GetUserDto): Promise<any> {
+  async getUser(@Request() req: any, @Query() data: GetUserDto): Promise<any> {
     const user = req.user;
     if (!user.isAdmin) {
       throw new UnauthorizedException("You are not an admin");
@@ -43,7 +39,10 @@ export class UserController {
   }
 
   @Post("/update-user")
-  async updateUser(@Request() req: any,@Body() data: UpdateUserDto): Promise<any> {
+  async updateUser(
+    @Request() req: any,
+    @Body() data: UpdateUserDto
+  ): Promise<any> {
     const user = req.user;
     if (!user.isAdmin) {
       throw new UnauthorizedException("You are not an admin");
@@ -52,20 +51,22 @@ export class UserController {
   }
 
   @Post("/update-user-wallet")
-  async updateUserWallet(@Request() req: any,@Body() data: UserWalletDto): Promise<any> {
+  async updateUserWallet(
+    @Request() req: any,
+    @Body() data: UserWalletDto
+  ): Promise<any> {
     const user = req.user;
     if (!user.isAdmin) {
       throw new UnauthorizedException("You are not an admin");
     }
     return this.userService.updateUserWallet(data);
   }
-  /**
-   *
-   * @param data acesstoken
-   * @returns user details: name, wallet, transaction history, phonenumber, is admin
-   */
+
   @Get("/get-user-details")
-  async getUserDetails(@Request() req: any,@Query() data: GetUserDetailsDto): Promise<any> {
+  async getUserDetails(
+    @Request() req: any,
+    @Query() data: GetUserDetailsDto
+  ): Promise<any> {
     try {
       console.log(data);
       return this.userService.getUserDetails(data);
@@ -101,7 +102,10 @@ export class UserController {
   }
 
   @Post("/updatePayment")
-  async updatePayment(@Request() req: any,@Body() data: UpdatePaymentDto): Promise<any> {
+  async updatePayment(
+    @Request() req: any,
+    @Body() data: UpdatePaymentDto
+  ): Promise<any> {
     const user = req.user;
     if (!user.isAdmin) {
       throw new UnauthorizedException("You are not an admin");
@@ -110,17 +114,19 @@ export class UserController {
   }
 
   @Get("/getDepositPayment")
-  async getDepositPayment(@Request() req: any,
+  async getDepositPayment(
+    @Request() req: any,
     @Query() data: { method: string; token: string }
   ): Promise<any> {
-    const user = req.user;
+    const user: any = req.user;
     if (!user.isAdmin) {
       throw new UnauthorizedException("You are not an admin");
     }
     return await this.userService.getDepositPayment(data);
   }
   @Get("/getWithdrawPayment")
-  async getWithdrawPayment(@Request() req: any,
+  async getWithdrawPayment(
+    @Request() req: any,
     @Query() data: { method: string; token: string }
   ): Promise<any> {
     const user = req.user;
@@ -141,7 +147,8 @@ export class UserController {
   // }
 
   @Get("/search-transaction")
-  async searchTransaction(@Request() req: any,
+  async searchTransaction(
+    @Request() req: any,
     @Query() data: { method: string; transactionId: number; token: string }
   ): Promise<any> {
     const user = req.user;
@@ -152,7 +159,7 @@ export class UserController {
   }
 
   @Get("/totalSupply")
-  async getTotalSupply(@Request() req: any,@Query() data): Promise<any> {
+  async getTotalSupply(@Request() req: any, @Query() data): Promise<any> {
     const user = req.user;
     if (!user.isAdmin) {
       throw new UnauthorizedException("You are not an admin");
@@ -166,7 +173,7 @@ export class UserController {
   }
 
   @Get("/totalSupply")
-  async totalSupply(@Request() req: any,@Query() data): Promise<any> {
+  async totalSupply(@Request() req: any, @Query() data): Promise<any> {
     const user = req.user;
     if (!user.isAdmin) {
       throw new UnauthorizedException("You are not an admin");
