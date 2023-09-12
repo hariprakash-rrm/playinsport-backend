@@ -3,20 +3,29 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Request, Response, NextFunction } from 'express';
 import { Model } from 'mongoose';
 import { User } from 'src/modules/auth/schemas/user.schema';
-import { UserModule } from 'src/modules/user/user.module';
-
 
 @Injectable()
 export class AdminMiddleware implements NestMiddleware {
-  constructor(@InjectModel(User.name)
-  private userModel: Model<User>,) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+  ) {}
 
   async use(req: Request, res: Response, next: NextFunction) {
-    console.log(req.body,'Reqqqqqqqqqqqqqq')
-    const { token } = req.body; // You might need to adjust this depending on your request structure
-
     try {
+      const authorizationHeader = req.headers.authorization;
+      
+      if (!authorizationHeader) {
+        throw new UnauthorizedException('Authorization header missing');
+      }
+
+      const [bearer, token] = authorizationHeader.split(' ');
+
+      if (bearer !== 'Bearer' || !token) {
+        throw new UnauthorizedException('Invalid Authorization header format');
+      }
+
       const admin = await this.userModel.findOne({ token });
+
       if (!admin) {
         throw new UnauthorizedException('User not found');
       }
