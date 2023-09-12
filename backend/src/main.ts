@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common/pipes/validation.pipe';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 import { env } from 'process';
+import passport from 'passport';
 require("dotenv").config();
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -27,7 +28,7 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization'], // Allow specified headers
     credentials: true, // Allow sending cookies and other credentials
   };
- 
+  app.use(passport.initialize());
   app.enableCors(corsOptions);
   await app.listen(3000);
 }
