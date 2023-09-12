@@ -1,10 +1,11 @@
-import { Controller, NotAcceptableException, Res } from '@nestjs/common';
+import { Controller, NotAcceptableException, Res, UseGuards } from '@nestjs/common';
 import { Body, Query, Headers, Get, Injectable, Post, UnauthorizedException } from '@nestjs/common';
 import { GetUserDto, UpdateUserDto, UserWalletDto, GetUserDetailsDto, walletDto, UpdatePaymentDto } from '../games/create/dto/createToken.dto';
 import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
 import { ExcelService } from '../shared/excelService';
 import { Response, query } from 'express';
+import { RolesGuard } from '../auth/admin.role';
 
 
 @Controller("user")
@@ -22,6 +23,7 @@ export class UserController {
 
 
   @Get("/get-user")
+  @UseGuards(RolesGuard)
   async getUser(@Query() data: GetUserDto): Promise<any> {
     let { token } = data;
     let isAdmin = await this.adminValidate.adminValidate(token);

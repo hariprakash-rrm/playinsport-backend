@@ -15,6 +15,7 @@ import {
   isActiveCouponDto,
 } from "./dto/coupon.dto";
 import { promises } from "fs";
+import { AuthGuard } from "@nestjs/passport";
 
 @Controller("coupon")
 export class CouponController {
@@ -24,6 +25,7 @@ export class CouponController {
   ) {}
 
   @Post("/claim")
+  @UseGuards(AuthGuard())
   async claimCoupon(@Body() data: couponDto): Promise<any> {
     let isUser = await this.authService.validateUser(data);
     if (isUser) {
