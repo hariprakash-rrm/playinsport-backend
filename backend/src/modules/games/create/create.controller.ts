@@ -27,7 +27,7 @@ export class CreateController {
         return this.createService.get(round)
     }
     @Get('/games')
-    
+    @UseGuards(AdminAuthGuard)
     async getGame(@Query() dates: any): Promise<any> {
         return this.createService.getGames(dates)
     }
