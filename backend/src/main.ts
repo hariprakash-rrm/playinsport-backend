@@ -28,7 +28,7 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization'], // Allow specified headers
     credentials: true, // Allow sending cookies and other credentials
   };
-  app.use(passport.initialize());
+  
   app.enableCors(corsOptions);
   await app.listen(3000);
 }
