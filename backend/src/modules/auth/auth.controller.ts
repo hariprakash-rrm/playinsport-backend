@@ -50,17 +50,4 @@ export class AuthController {
     return this.authService.sendOTP(number);
   }
 
-  @Post('/qr')
-  async getQr(@Body()accessToken:any):Promise<any>{
-    console.log(accessToken,'data')
-    let {token}=accessToken
-        let isAdmin = await this.authService.adminValidate(token)
-        if (isAdmin) {
-          return this.authService.getQr()
-        }
-        else {
-            throw new UnauthorizedException(' You are not an admin')
-        }
-    
-  }
 }

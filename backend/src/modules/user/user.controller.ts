@@ -77,9 +77,14 @@ export class UserController {
 
   @Get("/export")
   async exportUsersToExcel(
+    @Request() req: any,
     @Headers() headers: any,
     @Res() res: Response
   ): Promise<void> {
+    const user = req.user;
+    if (!user.isAdmin) {
+      throw new UnauthorizedException("You are not an admin");
+    }
     try {
       return this.userService.exportUsersToExcel(res);
     } catch (err) {

@@ -312,80 +312,30 @@ export class AuthService {
     return await this.sendOtp(postData, user);
   }
 
-  async adminValidate(data: any): Promise<any> {
-    const admin = await this.userModel.findOne({ token: data });
-    if (admin) {
-      if (!admin.isAdmin) {
-        throw new UnauthorizedException(
-          "Login as admin to access this endpoint."
-        );
-      }
-    } else {
-      throw new UnauthorizedException("User not found");
-    }
-    return true;
-  }
+  // async adminValidate(data: any): Promise<any> {
+  //   const admin = await this.userModel.findOne({ token: data });
+  //   if (admin) {
+  //     if (!admin.isAdmin) {
+  //       throw new UnauthorizedException(
+  //         "Login as admin to access this endpoint."
+  //       );
+  //     }
+  //   } else {
+  //     throw new UnauthorizedException("User not found");
+  //   }
+  //   return true;
+  // }
 
-  async validateUser(data: any): Promise<any> {
-    let { token } = data;
-    const user = await this.userModel.findOne({ token: token });
-    if (user) {
-      // if (user.isAdmin) {
-      //   return {
-      //     data: {
-      //       isAdmin: true
-      //     },
-      //     statusCode: 201,
-      //     message: "User is an Admin",
-      //   };
-      // } else {
-      //   return {
-      //     data: {
-      //       isAdmin: false
-      //     },
-      //     statusCode: 201,
-      //     message: "User is not an Admin",
-      //   };
-      // }
-      return true;
-    } else {
-      throw new UnauthorizedException("You are not an valid user");
-    }
-  }
-
-  async getQr(): Promise<any> {
-    let data: any;
-    const response = await axios.get(`${env.qr_url}/qr`).then((res: any) => {
-      data = res;
-    });
-    let _data = {
-      data: data.data,
-    };
-    return _data;
-  }
-
-  async use(req: Request, res: Response, next: NextFunction) {
-    const { token }: any = req.body;
-
-    try {
-      const admin = await this.userModel.findOne({ token });
-
-      if (!admin) {
-        throw new UnauthorizedException("User not found");
-      }
-
-      if (!admin.isAdmin) {
-        throw new UnauthorizedException(
-          "Login as admin to access this endpoint."
-        );
-      }
-
-      // If admin and isAdmin, continue to the next middleware/controller
-      next();
-    } catch (error) {
-      throw new UnauthorizedException("Invalid credentials");
-    }
-  }
+  // async validateUser(data: any): Promise<any> {
+  //   let { token } = data;
+  //   const user = await this.userModel.findOne({ token: token });
+  //   if (user) {
+      
+  //     return true;
+  //   } else {
+  //     throw new UnauthorizedException("You are not an valid user");
+  //   }
+  // }
 
   async sendMessage(postData: any): Promise<any> {
     let data: any;
@@ -401,57 +351,15 @@ export class AuthService {
     }
   }
 
-  async sendGroupMessage(postData: any): Promise<any> {
-    let data: any;
-    try {
-      const response = await axios
-        .post(`${env.qr_url}/send-otp`, postData)
-        .then((res: any) => {
-          data = res;
-        });
-      return data;
-    } catch {
-      console.log("message error-whatsapp");
-    }
-  }
-
   async validateJwtUser(payload: any) {
     const token = payload.sub;
-    
-    const user = await this.userModel.findOne({ token:token } ); // Use findOne with 'where'
+
+    const user = await this.userModel.findOne({ token: token }); // Use findOne with 'where'
 
     if (!user) {
-      throw new UnauthorizedException('Invalid user');
+      throw new UnauthorizedException("Invalid user");
     }
 
     return user;
   }
 }
-
-// @Injectable()
-// export class AdminMiddleware implements NestMiddleware {
-//   constructor(@InjectModel("User") private userModel: Model<User>) {}
-
-//   async use(req: Request, res: Response, next: NextFunction) {
-//     const { token }: any = req.body;
-
-//     try {
-//       const admin = await this.userModel.findOne({ token });
-
-//       if (!admin) {
-//         throw new UnauthorizedException("User not found");
-//       }
-
-//       if (!admin.isAdmin) {
-//         throw new UnauthorizedException(
-//           "Login as admin to access this endpoint."
-//         );
-//       }
-
-//       // If admin and isAdmin, continue to the next middleware/controller
-//       next();
-//     } catch (error) {
-//       throw new UnauthorizedException("Invalid credentials");
-//     }
-//   }
-// }
