@@ -1,11 +1,15 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { InjectModel } from '@nestjs/mongoose';
+import { User } from '../schemas/user.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class AdminAuthGuard implements CanActivate {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(private readonly jwtService: JwtService,@InjectModel(User.name)
+  private userModel: Model<User>,) {}
 
-  canActivate(context: ExecutionContext): boolean {
+   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
     const authorizationHeader = request.headers['authorization'];
 
@@ -18,9 +22,8 @@ export class AdminAuthGuard implements CanActivate {
 
     // Validate the token
     try {
-      const decodedToken = this.jwtService.verify(token);
-      const user = decodedToken.user; // Assuming your user information is stored in the 'user' property of the JWT payload.
-
+        const user:any =  this.userModel.findOne({ token: token });
+     
       if (user && user.isAdmin === true) {
         // The user is an admin, so allow access.
         return true;
