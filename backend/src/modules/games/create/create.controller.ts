@@ -1,9 +1,7 @@
-import { Body, Controller, Get, Post, Query, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UnauthorizedException } from '@nestjs/common';
 import { createTokenDto, GetUserDto, RefundDto, UpdateUserDto, UserWalletDto } from './dto/createToken.dto';
 import { CreateService } from './create.service';
 import { AuthService } from 'src/modules/auth/auth.service';
-import { AdminAuthGuard } from 'src/modules/auth/roles/admin.role';
-
 
 @Controller('token')
 export class CreateController {
@@ -27,6 +25,7 @@ export class CreateController {
         console.log(round)
         return this.createService.get(round)
     }
+
     @Get('/games')
     async getGame(@Query() dates: any): Promise<any> {
         return this.createService.getGames(dates)

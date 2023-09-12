@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { UserController, _UserController } from './user.controller';
+import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { AuthService } from '../auth/auth.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -36,7 +36,7 @@ import { DepositWalletSchema, TotalSupplySchema, WithdrawWalletSchema } from '..
       { name: "TotalSupply", schema: TotalSupplySchema }
     ]),
   ],
-  controllers: [UserController,_UserController],
+  controllers: [UserController],
   providers: [UserService, AuthService, ExcelService],
 })
 export class UserModule { }
