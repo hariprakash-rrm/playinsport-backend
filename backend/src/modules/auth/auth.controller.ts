@@ -28,7 +28,7 @@ export class AuthController {
 
 
   @Post("/signin")
-  @UseGuards(UserAuthGuard)
+  
   signin(@Body() signinDto: SigninDto): Promise<returnSignInDto> {
     return this.authService.login(signinDto);
   }
