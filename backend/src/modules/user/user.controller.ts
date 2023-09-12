@@ -6,7 +6,7 @@ import { UserService } from './user.service';
 import { ExcelService } from '../shared/excelService';
 import { Response, query } from 'express';
 import { RolesGuard } from '../auth/admin.role';
-import { AdminMiddleware } from '../shared/admin-auth/admin.guard';
+// import { AdminMiddleware } from '../shared/admin-auth/admin.guard';
 
 
 @Controller("user")
@@ -24,7 +24,7 @@ export class UserController {
 
 
   @Get("/get-user")
-  @UseGuards(AdminMiddleware)
+  // @UseGuards(AdminMiddleware)
   async getUser(@Query() data: GetUserDto): Promise<any> {
     let { token } = data;
     let isAdmin = await this.adminValidate.adminValidate(token);

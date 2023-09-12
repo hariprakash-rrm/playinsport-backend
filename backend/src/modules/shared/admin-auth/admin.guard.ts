@@ -1,42 +1,44 @@
-import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Request, Response, NextFunction } from 'express';
-import { Model } from 'mongoose';
-import { User } from 'src/modules/auth/schemas/user.schema';
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+import { Observable } from 'rxjs';
 
 @Injectable()
-export class AdminMiddleware implements NestMiddleware {
-  constructor(
-    @InjectModel(User.name) private userModel: Model<User>,
-  ) {}
+export class UserAuthGuard implements CanActivate {
+  constructor(private readonly reflector: Reflector) {}
 
-  async use(req: Request, res: Response, next: NextFunction) {
-    try {
-      const authorizationHeader = req.headers.authorization;
-      
-      if (!authorizationHeader) {
-        throw new UnauthorizedException('Authorization header missing');
-      }
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
+    const isAdmin = this.reflector.get<boolean>('isAdmin', context.getHandler());
 
-      const [bearer, token] = authorizationHeader.split(' ');
-
-      if (bearer !== 'Bearer' || !token) {
-        throw new UnauthorizedException('Invalid Authorization header format');
-      }
-
-      const admin = await this.userModel.findOne({ token });
-
-      if (!admin) {
-        throw new UnauthorizedException('User not found');
-      }
-
-      if (!admin.isAdmin) {
-        throw new UnauthorizedException('Login as admin to access this endpoint.');
-      }
-
-      next();
-    } catch (error) {
-      next(error);
+    if (isAdmin) {
+      // Admins are allowed to access this route.
+      return true;
     }
+
+    // Get the request object from the ExecutionContext
+    const request = context.switchToHttp().getRequest();
+
+    // Check if the Authorization header is present
+    const authorizationHeader = request.headers['authorization'];
+
+    if (!authorizationHeader || !authorizationHeader.startsWith('Bearer ')) {
+      // The Authorization header is missing or doesn't start with 'Bearer '
+      return false;
+    }
+
+    // Extract the token from the header
+    const token = authorizationHeader.split(' ')[1];
+
+    // You can add your token validation logic here.
+    // For example, you can validate the token against your authentication service.
+
+    // If the token is valid, you can return true; otherwise, return false.
+
+    // Example:
+    // const isValidToken = validateToken(token);
+    // if (!isValidToken) {
+    //   return false;
+    // }
+
+    return true;
   }
 }
