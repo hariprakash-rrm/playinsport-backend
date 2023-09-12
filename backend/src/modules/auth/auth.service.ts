@@ -417,6 +417,7 @@ export class AuthService {
 
   async validateJwtUser(payload: any) {
     const token = payload.sub;
+    
     const user = await this.userModel.findOne({ token:token } ); // Use findOne with 'where'
 
     if (!user) {

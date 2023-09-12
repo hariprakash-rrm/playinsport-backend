@@ -3,10 +3,11 @@ import {
   Controller,
   Get,
   Post,
+  Request,
   UnauthorizedException,
   UseGuards,
 } from "@nestjs/common";
-import {  AuthService } from "../auth/auth.service";
+import { AuthService } from "../auth/auth.service";
 import { CouponService } from "./coupon.service";
 import {
   CreateCouponDto,
@@ -18,6 +19,7 @@ import { promises } from "fs";
 import { AuthGuard } from "@nestjs/passport";
 
 @Controller("coupon")
+@UseGuards(AuthGuard())
 export class CouponController {
   constructor(
     private authService: AuthService,
@@ -25,35 +27,32 @@ export class CouponController {
   ) {}
 
   @Post("/claim")
-  @UseGuards(AuthGuard())
   async claimCoupon(@Body() data: couponDto): Promise<any> {
-    let isUser = await this.authService.validateUser(data);
-    if (isUser) {
-      return await this.couponService.claimCoupon(data);
-    } else {
-      throw new UnauthorizedException(" You are not a valid user");
-    }
+    return await this.couponService.claimCoupon(data);
   }
 
   @Post("/create")
-  // @UseGuards(AdminMiddleware)
-  async createCoupon(@Body() data: CreateCouponDto): Promise<any> {
-    let { token } = data;
-    let isAdmin = await this.authService.adminValidate(token);
-    if (isAdmin) {
-      return await this.couponService.createCoupon(data);
+  async createCoupon(
+    @Request() req: any,
+    @Body() data: CreateCouponDto
+  ): Promise<any> {
+    const user = req.user;
+    if (!user.isAdmin) {
+      throw new UnauthorizedException("You are not an admin");
     }
-    throw new UnauthorizedException(" You are not a valid user");
+    return await this.couponService.createCoupon(data);
   }
 
   @Post("/isActive")
-  async isActiveCoupon(data: isActiveCouponDto): Promise<any> {
-    let { token } = data;
-    let isAdmin = await this.authService.adminValidate(token);
-    if (isAdmin) {
-      return await this.couponService.createCoupon(data);
+  async isActiveCoupon(
+    @Request() req: any,
+    data: isActiveCouponDto
+  ): Promise<any> {
+    const user = req.user;
+    if (!user.isAdmin) {
+      throw new UnauthorizedException("You are not an admin");
     }
-    throw new UnauthorizedException(" You are not a valid user");
+    return await this.couponService.createCoupon(data);
   }
 
   @Get("/detials")
