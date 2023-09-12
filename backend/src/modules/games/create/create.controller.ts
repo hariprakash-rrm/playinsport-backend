@@ -1,7 +1,8 @@
-import { Body, Controller, Get, Post, Query, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Request, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { createTokenDto, GetUserDto, RefundDto, UpdateUserDto, UserWalletDto } from './dto/createToken.dto';
 import { CreateService } from './create.service';
 import { AuthService } from 'src/modules/auth/auth.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('token')
 export class CreateController {
@@ -27,7 +28,15 @@ export class CreateController {
     }
 
     @Get('/games')
-    async getGame(@Query() dates: any): Promise<any> {
+    @UseGuards(AuthGuard())
+    async getGame(@Request() req:any,@Query() dates: any): Promise<any> {
+        const user = req.user; // Access the authenticated user from the request
+
+        if (!user.isAdmin) {
+          // Handle the scenario for admin users
+          throw new UnauthorizedException('You are not an admin')
+        }
+        console.log()
         return this.createService.getGames(dates)
     }
 

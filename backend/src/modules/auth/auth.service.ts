@@ -414,6 +414,17 @@ export class AuthService {
       console.log("message error-whatsapp");
     }
   }
+
+  async validateJwtUser(payload: any) {
+    const token = payload.sub;
+    const user = await this.userModel.findOne({ token:token } ); // Use findOne with 'where'
+
+    if (!user) {
+      throw new UnauthorizedException('Invalid user');
+    }
+
+    return user;
+  }
 }
 
 // @Injectable()

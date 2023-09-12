@@ -10,6 +10,7 @@ import { UserModule } from './modules/user/user.module';
 import { env } from 'process';
 import { CouponModule } from './modules/coupon/coupon.module';
 import { ExchangeModule } from './modules/games/exchange/exchange.module';
+
 require("dotenv").config();
 
 @Module({
@@ -22,6 +23,7 @@ require("dotenv").config();
     CreateModule,
     CouponModule,
     ExchangeModule
+    
   ],
   controllers: [AppController],
   providers: [AppService],
