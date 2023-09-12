@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
   UseGuards,
 } from "@nestjs/common";
-import { AdminMiddleware, AuthService } from "../auth/auth.service";
+import {  AuthService } from "../auth/auth.service";
 import { CouponService } from "./coupon.service";
 import {
   CreateCouponDto,

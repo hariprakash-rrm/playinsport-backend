@@ -416,30 +416,30 @@ export class AuthService {
   }
 }
 
-@Injectable()
-export class AdminMiddleware implements NestMiddleware {
-  constructor(@InjectModel("User") private userModel: Model<User>) {}
+// @Injectable()
+// export class AdminMiddleware implements NestMiddleware {
+//   constructor(@InjectModel("User") private userModel: Model<User>) {}
 
-  async use(req: Request, res: Response, next: NextFunction) {
-    const { token }: any = req.body;
+//   async use(req: Request, res: Response, next: NextFunction) {
+//     const { token }: any = req.body;
 
-    try {
-      const admin = await this.userModel.findOne({ token });
+//     try {
+//       const admin = await this.userModel.findOne({ token });
 
-      if (!admin) {
-        throw new UnauthorizedException("User not found");
-      }
+//       if (!admin) {
+//         throw new UnauthorizedException("User not found");
+//       }
 
-      if (!admin.isAdmin) {
-        throw new UnauthorizedException(
-          "Login as admin to access this endpoint."
-        );
-      }
+//       if (!admin.isAdmin) {
+//         throw new UnauthorizedException(
+//           "Login as admin to access this endpoint."
+//         );
+//       }
 
-      // If admin and isAdmin, continue to the next middleware/controller
-      next();
-    } catch (error) {
-      throw new UnauthorizedException("Invalid credentials");
-    }
-  }
-}
+//       // If admin and isAdmin, continue to the next middleware/controller
+//       next();
+//     } catch (error) {
+//       throw new UnauthorizedException("Invalid credentials");
+//     }
+//   }
+// }
