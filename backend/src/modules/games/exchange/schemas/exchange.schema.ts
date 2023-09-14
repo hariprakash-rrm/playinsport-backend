@@ -32,7 +32,7 @@ export class Exchange {
   endTime: number;
 
   @Prop()
-  details: [{}];
+  details: [];
 
   @Prop()
   isFinalized: boolean;
