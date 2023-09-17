@@ -19,11 +19,11 @@ import { AuthGuard } from "@nestjs/passport";
 import { UpdateDetailDto, UpdateExchangeDto } from "./dto/updateExchangeDto";
 
 @Controller("exchange")
+@UseGuards(AuthGuard())
 export class ExchangeController {
   constructor(private readonly exchangeService: ExchangeService) {}
 
   @Post("/create")
-  @UseGuards(AuthGuard())
   async create(@Body() createExchangeDto: CreateExchangeDto) {
     try {
       const createdExchange = await this.exchangeService.createExchange(
@@ -143,11 +143,9 @@ export class ExchangeController {
     @Param("id") id: number,
     @Body() updateExchangeDto: UpdateDetailDto
   ) {
-    const user = req.user;
-    if (!user) {
-      throw new UnauthorizedException("You are not an valid user");
-    }
-   
+    const user =await req.user;
+    
+   console.log(user,'user')
     try {
       const updatedExchange = await this.exchangeService.updateExchangeDetails(
         id,

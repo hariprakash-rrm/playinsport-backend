@@ -55,17 +55,13 @@ export class UpdateDetailDto {
     @IsNotEmpty()
     username: string;
   
-    @IsString()
+    @IsNumber()
     @IsNotEmpty()
-    usernumber: string;
+    usernumber: number;
   
     @IsNumber()
     @IsNotEmpty()
     amount: number;
-  
-    @IsNumber()
-    @IsNotEmpty()
-    timestamp: number;
   
     @IsString()
     @IsNotEmpty()
