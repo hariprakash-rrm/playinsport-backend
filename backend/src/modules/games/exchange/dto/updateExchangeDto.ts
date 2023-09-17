@@ -42,16 +42,12 @@ export class UpdateExchangeDto {
   @IsNotEmpty()
   endTime: number;
 
-  @IsArray()
-  @IsNotEmpty()
-  details: any[];
-
+  
   @IsBoolean()
   @IsNotEmpty()
   isFinalized: boolean;
 
   @IsString()
-  @IsNotEmpty()
   message: string;
 }
 export class UpdateDetailDto {
