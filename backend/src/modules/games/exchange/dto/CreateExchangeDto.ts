@@ -1,9 +1,19 @@
-import { IsString, IsNumber, IsNotEmpty, IsEnum } from 'class-validator';
+import { IsString, IsNumber, IsNotEmpty, IsEnum, isNotEmpty } from 'class-validator';
 export enum ExchangeType {
   Cricket = 'Cricket',
   Tennis = 'Tennis',
 }
+export enum ExchangeMode {
+  Toss = 'Toss',
+  Match = 'Match',
+  Lambi = 'Lambi'
+}
 export class CreateExchangeDto {
+
+  @IsNumber()
+  @IsNotEmpty()
+  id:number
+
   @IsString()
   @IsNotEmpty()
   @IsEnum(ExchangeType, { message: 'Invalid exchange type. Must be Cricket or Tennis.' })
@@ -11,6 +21,7 @@ export class CreateExchangeDto {
 
   @IsString()
   @IsNotEmpty()
+  @IsEnum(ExchangeMode, { message: 'Invalid exchange type. Must be Toss or Match or Lmabi.' })
   mode: string;
 
   @IsString()

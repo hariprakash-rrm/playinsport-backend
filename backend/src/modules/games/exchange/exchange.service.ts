@@ -28,19 +28,21 @@ export class ExchangeService {
     createExchangeDto: CreateExchangeDto
   ): Promise<Exchange> {
     try {
-      const createdExchange = new this.exchangeModel(createExchangeDto);
-      let count = await this.exchangeModel.countDocuments().exec();
-      createdExchange.id = count + 1;
-      createdExchange.details = [];
-      createdExchange.isFinalized = false;
-      createdExchange.message = "";
-      return await createdExchange.save();
+      // const createdExchange = new this.exchangeModel(createExchangeDto);
+      const exchange: any = await this.exchangeModel.findOne({ id: 1 }).exec();
+      console.log(createExchangeDto);
+      exchange.match.push(createExchangeDto);
+      return await exchange.save();
     } catch (error) {
-      throw new InternalServerErrorException(
-        "Error creating exchange",
-        error.message
-      );
+      throw new NotAcceptableException(error);
     }
+  }
+
+  async initialMatch(name: string): Promise<any> {
+    const createdExchange = new this.exchangeModel({ name });
+    let count = await this.exchangeModel.countDocuments().exec();
+    createdExchange.id = count + 1;
+    return await createdExchange.save();
   }
 
   async findById(id: number): Promise<Exchange> {
@@ -55,10 +57,7 @@ export class ExchangeService {
       return exchange;
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException(
-        "Error finding exchange",
-        error.message
-      );
+      throw new NotAcceptableException(error);
     }
   }
 
@@ -82,10 +81,7 @@ export class ExchangeService {
       return exchanges;
     } catch (error) {
       console.error(error);
-      throw new InternalServerErrorException(
-        "Error fetching exchanges by teams",
-        error.message
-      );
+      throw new NotAcceptableException(error);
     }
   }
 
@@ -97,10 +93,7 @@ export class ExchangeService {
       return exchanges;
     } catch (error) {
       console.error(error);
-      throw new NotFoundException(
-        "Error fetching not finalized exchanges",
-        error.message
-      );
+      throw new NotAcceptableException(error);
     }
   }
 
@@ -112,10 +105,26 @@ export class ExchangeService {
       return exchanges;
     } catch (error) {
       console.error(error);
-      throw new NotFoundException(
-        "Error fetching not finalized exchanges",
-        error.message
+      throw new NotAcceptableException(error);
+    }
+  }
+
+  async findExchangesByNumber(usernumber: number): Promise<any[]> {
+    console.log(usernumber);
+    try {
+      const exchange = await this.exchangeModel.findOne({ id: 1 }).exec();
+
+      if (!exchange) {
+        throw new NotFoundException(`Exchange with id  not found`);
+      }
+
+      const matchingDetails = exchange.match[0].details.filter(
+        (detail: any) => detail.usernumber === +usernumber
       );
+      return matchingDetails;
+    } catch (error) {
+      console.error(error);
+      throw new NotAcceptableException(error.message || "An error occurred");
     }
   }
 
@@ -125,10 +134,7 @@ export class ExchangeService {
       return exchanges;
     } catch (error) {
       console.error(error);
-      throw new InternalServerErrorException(
-        "Error fetching exchanges",
-        error.message
-      );
+      throw new NotAcceptableException(error);
     }
   }
 
@@ -136,6 +142,7 @@ export class ExchangeService {
     id: number,
     updateExchangeDto: UpdateExchangeDto
   ): Promise<Exchange> {
+    console.log(updateExchangeDto);
     try {
       const existingExchange: any = await this.exchangeModel
         .findOne({ id })
@@ -143,18 +150,9 @@ export class ExchangeService {
       if (!existingExchange) {
         throw new NotFoundException("Exchange not found");
       }
-
-      existingExchange.types = updateExchangeDto.types;
-      existingExchange.mode = updateExchangeDto.mode;
-      existingExchange.team1 = updateExchangeDto.team1;
-      existingExchange.team2 = updateExchangeDto.team2;
-      existingExchange.odds1 = updateExchangeDto.odds1;
-      existingExchange.odds2 = updateExchangeDto.odds2;
-      existingExchange.startTime = updateExchangeDto.startTime;
-      existingExchange.endTime = updateExchangeDto.endTime;
-      existingExchange.isFinalized = updateExchangeDto.isFinalized;
-      existingExchange.message = updateExchangeDto.message;
-
+      existingExchange.match[0] = updateExchangeDto;
+      
+      console.log(existingExchange[0]);
       const updatedExchange = await existingExchange.save();
       return updatedExchange;
     } catch (error) {
@@ -177,88 +175,72 @@ export class ExchangeService {
 
       return cricketExchanges;
     } catch (error) {
-      throw new InternalServerErrorException(
-        "Error fetching cricket exchanges",
-        error.message
-      );
+      throw new NotAcceptableException(error);
     }
   }
 
-  async updateExchangeDetails(
-    id: number,
-    updateExchangeDto: UpdateDetailDto,
-    user: any
-  ): Promise<Exchange> {
+  async updateExchangeDetails(id, updateExchangeDto: any, user) {
     try {
       const timestamp = new Date().getTime();
-      const existingExchange: any = await this.exchangeModel
-        .findOne({ id: id })
-        .exec();
-      let _user: any = await this.userModal
-        .findOne({ number: user.number })
-        .exec();
-      if (!existingExchange) {
+      const exchange: any = await this.exchangeModel.findOne({ id }).exec();
+
+      if (!exchange) {
         throw new NotFoundException("Exchange not found");
       }
 
-      if (_user.wallet + _user.reward < updateExchangeDto.amount) {
-        throw new NotAcceptableException("Not enough balance");
-      }
-      let odds: number;
-      if (+_user.reward - updateExchangeDto.amount <= 0) {
-        let deductwallet = +updateExchangeDto.amount - +_user.reward;
-        _user.reward = 0;
-        _user.wallet -= deductwallet;
-      } else {
-        _user.reward -= updateExchangeDto.amount;
+      const userToUpdate: any = await this.userModal
+        .findOne({ number: user.number })
+        .exec();
+
+      if (!userToUpdate) {
+        throw new NotFoundException("User not found");
       }
 
-      // user.wallet -= +game.tokenPrice
-      let txnHistory: any = {
-        message: `${existingExchange.types} Prediction - ${existingExchange.mode} - team : ${updateExchangeDto.team}`,
+      const { wallet, reward }: any = userToUpdate;
+
+      if (wallet + reward < updateExchangeDto.amount) {
+        throw new NotAcceptableException("Not enough balance");
+      }
+
+      let odds: any;
+
+      if (reward >= updateExchangeDto.amount) {
+        userToUpdate.reward -= updateExchangeDto.amount;
+      } else {
+        const deductWallet = updateExchangeDto.amount - reward;
+        userToUpdate.reward = 0;
+        userToUpdate.wallet -= deductWallet;
+      }
+
+      await userToUpdate.save();
+
+      const txnHistory = {
+        message: `${exchange.types} Prediction - ${exchange.mode} - team : ${updateExchangeDto.team}`,
         amount: -updateExchangeDto.amount,
         time: timestamp,
-        newBalance: _user.wallet,
+        newBalance: userToUpdate.wallet,
       };
-      _user.txnHistory.push(txnHistory);
-      let details = updateExchangeDto;
-      existingExchange.details.push(details);
-      if (existingExchange.team1 == updateExchangeDto.team) {
-        odds = existingExchange.odds1;
-      } else if (existingExchange.team2 == updateExchangeDto.team) {
-        odds = existingExchange.odds2;
+
+      userToUpdate.txnHistory.push(txnHistory);
+
+      const details: any = updateExchangeDto;
+      exchange.details.push(details);
+
+      if (exchange.team1 === updateExchangeDto.team) {
+        odds = exchange.odds1;
+      } else if (exchange.team2 === updateExchangeDto.team) {
+        odds = exchange.odds2;
       } else {
         throw new NotFoundException(
           `Team "${updateExchangeDto.team}" does not match team1 or team2`
         );
       }
-      const updatedExchange = await existingExchange.save();
-      await _user.save();
-      let postData = {
-        number: user.number,
-        message: `"Hi there! Your bet has been placed. Best of luck!"
-        ${existingExchange.types} Prediction - ${existingExchange.mode} 
-        team : ${updateExchangeDto.team}
-        Rs: ${updateExchangeDto.amount}
-        Odds: ${odds}
-        `,
-      };
-      try {
-        let data: any;
-        const response = await this.authService
-          .sendMessage(postData)
-          .then((res: any) => {
-            data = res;
-          });
-      } catch {
-        console.log("message error-whatsapp");
-      }
+
+      const updatedExchange = await exchange.save();
+
       return updatedExchange;
     } catch (error) {
-      throw new InternalServerErrorException(
-        "Error updating exchange details",
-        error.message
-      );
+      throw new NotAcceptableException(error.message || "An error occurred");
     }
   }
 
@@ -270,9 +252,11 @@ export class ExchangeService {
       if (!existingExchange) {
         throw new NotFoundException("Exchange not found");
       }
+      if (existingExchange.isFinalized) {
+        throw new NotFoundException("Exchange Already finalized");
+      }
       console.log(existingExchange, team);
       let odds: number;
-      let usernumber: string | null = null;
 
       if (existingExchange.team1 == team) {
         odds = existingExchange.odds1;
@@ -284,26 +268,68 @@ export class ExchangeService {
         );
       }
 
-      for (const detail of existingExchange.details) {
-        if (detail.team === team) {
-          usernumber = detail.usernumber;
-          break;
-        }
-      }
+      const filteredDetails = existingExchange.details
+        .filter((detail) => detail.team === team)
+        .map((detail) => ({
+          usernumber: detail?.usernumber,
+          amount: detail?.amount,
+        }));
 
-      if (usernumber === null) {
+      // usernumber now contains an array of usernumber values that meet the condition
+
+      if (filteredDetails === null) {
         throw new NotFoundException(
           "No matching team in exchange details for finalization"
         );
       }
+      const userAmounts = {};
 
-      return { usernumber, odds };
+      for (const entry of filteredDetails) {
+        const { usernumber, amount } = entry;
+
+        // Initialize the cumulative amount for the user if not already initialized
+        if (!userAmounts[usernumber]) {
+          userAmounts[usernumber] = 0;
+        }
+
+        // Accumulate the amount for the user
+        userAmounts[usernumber] += amount;
+      }
+
+      const userWallets = {};
+      const updateUserPromises = [];
+
+      for (const phoneNumber in userAmounts) {
+        if (userAmounts.hasOwnProperty(phoneNumber)) {
+          const accumulatedAmount = userAmounts[phoneNumber];
+
+          // Find the user based on their phone number
+          const user: any = await this.userModal
+            .findOne({ number: phoneNumber })
+            .exec();
+
+          if (user) {
+            // Add the accumulated amount to the user's wallet
+            user.wallet += accumulatedAmount * odds;
+
+            // Save the updated user
+            updateUserPromises.push(user.save());
+
+            console.log(
+              `User with phone number ${phoneNumber}: Wallet updated to ${user.wallet}`
+            );
+          }
+        }
+      }
+
+      // Execute the promises in parallel
+      await Promise.all(updateUserPromises);
+      // existingExchange.isFinalized = true;
+      await existingExchange.save();
+      return { userWallets, odds };
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException(
-        "Error finalizing exchange",
-        error.message
-      );
+      throw new NotAcceptableException(error);
     }
   }
 
@@ -315,16 +341,62 @@ export class ExchangeService {
       if (!existingExchange) {
         throw new NotFoundException("Exchange not found");
       }
+      if (existingExchange.isFinalized) {
+        throw new NotFoundException("Exchange Already finalized");
+      }
 
-      const allUsernumbers = existingExchange.details.map(
-        (detail) => detail.usernumber
-      );
-      return allUsernumbers;
+      const userDetails = existingExchange.details.map((detail) => ({
+        usernumber: detail.usernumber,
+        amount: detail.amount,
+      }));
+
+      const userAmounts = {};
+
+      for (const userDetail of userDetails) {
+        const { usernumber, amount } = userDetail;
+
+        // Initialize the cumulative amount for the user if not already initialized
+        if (!userAmounts[usernumber]) {
+          userAmounts[usernumber] = 0;
+        }
+
+        // Accumulate the amount for the user
+        userAmounts[usernumber] += amount;
+      }
+
+      // Find users and update their wallets
+      const updateUserPromises = [];
+
+      for (const usernumber in userAmounts) {
+        if (userAmounts.hasOwnProperty(usernumber)) {
+          const accumulatedAmount = userAmounts[usernumber];
+
+          // Find the user based on their phone number
+          const user: any = await this.userModal
+            .findOne({ number: usernumber })
+            .exec();
+
+          if (user) {
+            // Add the accumulated amount to the user's wallet
+            user.wallet += accumulatedAmount;
+
+            // Save the updated user
+            updateUserPromises.push(user.save());
+
+            console.log(
+              `User with phone number ${usernumber}: Wallet updated to ${user.wallet}`
+            );
+          }
+        }
+      }
+
+      // Execute the promises in parallel
+      await Promise.all(updateUserPromises);
+      existingExchange.isFinalized = true;
+      await existingExchange.save();
+      return userDetails;
     } catch (error) {
-      throw new InternalServerErrorException(
-        "Error refunding exchange",
-        error.message
-      );
+      throw new NotAcceptableException(error);
     }
   }
 }

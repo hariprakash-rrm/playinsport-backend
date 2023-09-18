@@ -8,37 +8,37 @@ export class Exchange {
   id: number;
 
   @Prop()
-  types: string;
+  name: string;
 
   @Prop()
-  mode: string;
+  match: [
+    {
+      id: number;
 
-  @Prop()
-  team1: string;
+      types: string;
 
-  @Prop()
-  team2: string;
+      mode: string;
 
-  @Prop()
-  odds1: number;
+      team1: string;
 
-  @Prop()
-  odds2: number;
+      team2: string;
 
-  @Prop()
-  startTime: number;
+      odds1: number;
 
-  @Prop()
-  endTime: number;
+      odds2: number;
 
-  @Prop()
-  details: [];
+      startTime: number;
 
-  @Prop()
+      endTime: number;
+
+      details: [];
+
+      isFinalized: boolean;
+
+      message: string;
+    }
+  ];
   isFinalized: boolean;
-
-  @Prop()
-  message: string;
 }
 
 export const ExchangeSchema = SchemaFactory.createForClass(Exchange);

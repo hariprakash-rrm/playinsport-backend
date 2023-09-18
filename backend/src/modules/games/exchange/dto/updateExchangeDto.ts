@@ -3,6 +3,12 @@ export enum ExchangeType {
     Cricket = 'Cricket',
     Tennis = 'Tennis',
   }
+
+  export enum ExchangeMode {
+  Toss = 'Toss',
+  Match = 'Match',
+  Lambi = 'Lambi'
+}
   
 export class UpdateExchangeDto {
   @IsNumber()
@@ -16,6 +22,7 @@ export class UpdateExchangeDto {
 
   @IsString()
   @IsNotEmpty()
+  @IsEnum(ExchangeMode, { message: 'Invalid exchange type. Must be Toss or Match or Lmabi.' })
   mode: string;
 
   @IsString()
