@@ -31,6 +31,21 @@ export class ExchangeController {
     }
   }
 
+  @Put(':id')
+  async updateExchange(@Param('id') id: number, @Body('name') name: string): Promise<any> {
+    try {
+      const updatedExchange = await this.exchangeService.updateExchange(id, name);
+
+      if (!updatedExchange) {
+        throw new NotFoundException(`Exchange with ID ${id} not found`);
+      }
+
+      return updatedExchange;
+    } catch (error) {
+      throw new NotFoundException(error.message || 'Unable to update exchange');
+    }
+  }
+
   @Get(":id")
   async findById(@Param("id") id: number): Promise<any | null> {
     try {

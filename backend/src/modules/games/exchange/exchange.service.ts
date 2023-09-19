@@ -37,6 +37,23 @@ export class ExchangeService {
     }
   }
 
+  async updateExchange(id: number, name: string): Promise<Exchange | null> {
+    try {
+      const exchange = await this.exchangeModel.findOneAndUpdate(
+        { id },
+        { name },
+      ).exec();
+
+      if (!exchange) {
+        throw new NotFoundException('Exchange not found');
+      }
+
+      return exchange;
+    } catch (error) {
+      throw new NotAcceptableException('Unable to update exchange');
+    }
+  }
+
   async findExchangeById(id: number): Promise<Exchange | null> {
     try {
       return await this.exchangeModel.findOne({ id }).exec();
