@@ -10,22 +10,58 @@ export class Exchange {
   @Prop()
   name: string;
 
+  @Prop({ type: Object })
+  match: {
+    team1: string;
+
+    team2: string;
+
+    odds1: number;
+
+    odds2: number;
+
+    startTime: number;
+
+    endTime: number;
+
+    details: [];
+
+    isFinalized: boolean;
+
+    message: string;
+  };
+
+  @Prop({ type: Object })
+  Toss: {
+    team1: string;
+
+    team2: string;
+
+    odds1: number;
+
+    odds2: number;
+
+    startTime: number;
+
+    endTime: number;
+
+    details: [];
+
+    isFinalized: boolean;
+
+    message: string;
+  };
+
   @Prop()
-  match: [
+  team1: [
     {
-      id: number;
+      team: string;
 
-      types: string;
+      over: string;
 
-      mode: string;
+      yes: number;
 
-      team1: string;
-
-      team2: string;
-
-      odds1: number;
-
-      odds2: number;
+      no: number;
 
       startTime: number;
 
