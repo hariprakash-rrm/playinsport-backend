@@ -7,21 +7,19 @@ import {
   Param,
   NotFoundException,
   Put,
-  UsePipes,
-  ValidationPipe,
-  BadRequestException,
   NotAcceptableException,
 } from "@nestjs/common";
 import { CreateMatchDto } from "./dto/CreateExchangeDto";
 import { ExchangeService } from "./exchange.service";
 import { AuthGuard } from "@nestjs/passport";
 import { UpdateMatchDto } from "./dto/updateExchangeDto";
-const userLockFlags = new Map<string, boolean>();
+
 @Controller("exchange")
 @UseGuards(AuthGuard())
 export class ExchangeController {
   constructor(private readonly exchangeService: ExchangeService) {}
 
+  // POST /exchange
   @Post()
   async create(@Body("name") name: string): Promise<any> {
     try {
@@ -31,6 +29,7 @@ export class ExchangeController {
     }
   }
 
+  // PUT /exchange/:id
   @Put(':id')
   async updateExchange(@Param('id') id: number, @Body('name') name: string): Promise<any> {
     try {
@@ -46,6 +45,18 @@ export class ExchangeController {
     }
   }
 
+  // GET /exchange/recent
+  @Get('recent')
+  async getRecent20Data(): Promise<any[]> {
+    try {
+      const recent20Data = await this.exchangeService.getRecent20Data();
+      return recent20Data;
+    } catch (error) {
+      throw new NotFoundException(error);
+    }
+  }
+
+  // GET /exchange/:id
   @Get(":id")
   async findById(@Param("id") id: number): Promise<any | null> {
     try {
@@ -59,6 +70,7 @@ export class ExchangeController {
     }
   }
 
+  // POST /exchange/:id/match
   @Post(":id/match")
   async createMatch(
     @Param("id") id: number,
@@ -71,14 +83,14 @@ export class ExchangeController {
     }
   }
 
-  @Put(':id')
+  // PUT /exchange/match/:id
+  @Put('match/:id')
   async updateMatch(@Param('id') exchangeId: number, @Body() matchData: any): Promise<any> {
     try {
       const updatedExchange = await this.exchangeService.updateMatch(exchangeId, matchData);
       return updatedExchange;
     } catch (error) {
-      // Handle errors, e.g., return an error response
-      throw new NotAcceptableException(error)
+      throw new NotAcceptableException(error);
     }
   }
 }

@@ -33,24 +33,23 @@ export class ExchangeService {
       const createdExchange = new this.exchangeModel({ id, name });
       return await createdExchange.save();
     } catch (error) {
-      throw new NotAcceptableException('Unable to create exchange');
+      throw new NotAcceptableException("Unable to create exchange");
     }
   }
 
   async updateExchange(id: number, name: string): Promise<Exchange | null> {
     try {
-      const exchange = await this.exchangeModel.findOneAndUpdate(
-        { id },
-        { name },
-      ).exec();
+      const exchange = await this.exchangeModel
+        .findOneAndUpdate({ id }, { name })
+        .exec();
 
       if (!exchange) {
-        throw new NotFoundException('Exchange not found');
+        throw new NotFoundException("Exchange not found");
       }
 
       return exchange;
     } catch (error) {
-      throw new NotAcceptableException('Unable to update exchange');
+      throw new NotAcceptableException("Unable to update exchange");
     }
   }
 
@@ -58,34 +57,53 @@ export class ExchangeService {
     try {
       return await this.exchangeModel.findOne({ id }).exec();
     } catch (error) {
-      throw new NotFoundException('Exchange not found');
+      throw new NotFoundException("Exchange not found");
+    }
+  }
+
+  async getRecent20Data(): Promise<Exchange[]> {
+    try {
+      const data = await this.exchangeModel
+        .find()
+        .sort({ timestamp: -1 })
+        .limit(1)
+        .exec();
+
+      return data;
+    } catch (error) {
+      throw new NotFoundException("Failed to fetch recent data");
     }
   }
 
   async createMatch(exchangeId: number, matchData: any): Promise<Exchange> {
     try {
-      const exchange = await this.exchangeModel.findOne({ id: exchangeId }).exec();
+      const exchange = await this.exchangeModel
+        .findOne({ id: exchangeId })
+        .exec();
 
       if (!exchange) {
-        throw new NotFoundException('Exchange not found');
+        throw new NotFoundException("Exchange not found");
       }
-    
-      exchange.match=matchData
+
+      exchange.match = matchData;
       return await exchange.save();
     } catch (error) {
-      throw new NotAcceptableException('Unable to create match');
+      throw new NotAcceptableException("Unable to create match");
     }
   }
 
   async updateMatch(exchangeId: number, matchData: any): Promise<Exchange> {
     try {
-      const existingExchange = await this.exchangeModel.findOne({id:exchangeId});
+      const existingExchange = await this.exchangeModel.findOne({
+        id: exchangeId,
+      });
 
       if (!existingExchange) {
-        throw new Error('Exchange not found');
+        throw new Error("Exchange not found");
       }
 
       // Update the "match" section of the existing exchange
+      console.log(matchData);
       existingExchange.match = matchData;
 
       // Save the updated exchange document
@@ -96,11 +114,4 @@ export class ExchangeService {
       throw new NotAcceptableException(error);
     }
   }
-  
 }
-
-
-
-
-
-
