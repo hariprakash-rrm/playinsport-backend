@@ -1,9 +1,6 @@
-import { IsNumber, IsString, IsOptional, IsBoolean, IsArray, ArrayNotEmpty } from 'class-validator';
+import { IsString, IsNumber, IsBoolean, IsArray } from 'class-validator';
 
 export class UpdateMatchDto {
-  @IsNumber()
-  id: number;
-
   @IsString()
   team1: string;
 
@@ -25,7 +22,6 @@ export class UpdateMatchDto {
   @IsBoolean()
   isFinalized: boolean;
 
-  @IsOptional()
   @IsString()
   message: string;
 }

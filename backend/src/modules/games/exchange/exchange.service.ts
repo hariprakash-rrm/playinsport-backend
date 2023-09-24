@@ -1,10 +1,7 @@
 import {
-  BadRequestException,
   Injectable,
-  InternalServerErrorException,
   NotAcceptableException,
   NotFoundException,
-  UnauthorizedException,
 } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
@@ -30,7 +27,12 @@ export class ExchangeService {
     try {
       const exchangesCount = await this.exchangeModel.countDocuments().exec();
       const id = exchangesCount + 1;
-      const createdExchange = new this.exchangeModel({ id, name });
+      let createdExchange = await new this.exchangeModel({
+        id,
+        name,
+        isFinalized: false,
+        gameType: 0,
+      });
       return await createdExchange.save();
     } catch (error) {
       throw new NotAcceptableException("Unable to create exchange");
@@ -61,17 +63,14 @@ export class ExchangeService {
     }
   }
 
-  async getRecent20Data(): Promise<Exchange[]> {
+  async findUnfinalizedExchanges(): Promise<Exchange[]> {
     try {
-      const data = await this.exchangeModel
-        .find()
-        .sort({ timestamp: -1 })
-        .limit(1)
+      const unfinalizedExchanges = await this.exchangeModel
+        .find({ isFinalized: false })
         .exec();
-
-      return data;
+      return unfinalizedExchanges;
     } catch (error) {
-      throw new NotFoundException("Failed to fetch recent data");
+      throw new NotFoundException("Unable to retrieve unfinalized exchanges");
     }
   }
 
@@ -86,26 +85,79 @@ export class ExchangeService {
       }
 
       exchange.match = matchData;
+      exchange.match.details = [];
       return await exchange.save();
     } catch (error) {
       throw new NotAcceptableException("Unable to create match");
     }
   }
 
-  async updateMatch(exchangeId: number, matchData: any): Promise<Exchange> {
+  async updateMatch(
+    exchangeId: number,
+    matchData: UpdateMatchDto
+  ): Promise<Exchange> {
     try {
-      const existingExchange = await this.exchangeModel.findOne({
-        id: exchangeId,
-      });
+      let existingExchange: any = await this.exchangeModel
+        .findOne({
+          id: exchangeId,
+        })
+        .exec();
 
       if (!existingExchange) {
-        throw new Error("Exchange not found");
+        throw new NotFoundException("Exchange not found");
       }
 
-      // Update the "match" section of the existing exchange
-      console.log(matchData);
-      existingExchange.match = matchData;
+      // Update the "details" property within the "match" object
+      existingExchange.team1 = matchData.team1;
+      existingExchange.team2 = matchData.team2;
+      existingExchange.odds1 = matchData.odds1;
+      existingExchange.odds2 = matchData.odds2;
+      existingExchange.startTime = matchData.startTime;
+      existingExchange.endTime = matchData.endTime;
+      existingExchange.isFinalized = matchData.isFinalized;
+      existingExchange.markModified("match");
+      await existingExchange.save();
+      console.log(existingExchange.match.details);
+      // Save the updated exchange document
+      const updatedExchange = await existingExchange.save();
 
+      return updatedExchange;
+    } catch (error) {
+      throw new NotAcceptableException(error);
+    }
+  }
+
+  async predictMatch(id: number, _user: any, detials: any): Promise<any> {
+    try {
+      let existingExchange: any = await this.exchangeModel
+        .findOne({
+          id: id,
+        })
+        .exec();
+
+      if (!existingExchange) {
+        throw new NotFoundException("Exchange not found");
+      }
+      let user: any = await this.userModal.findOne({ number: _user.number });
+      // console.log(user)
+      if (+user.reward + +user.wallet >= +detials.amount) {
+        if (+user.reward - +detials.amount <= 0) {
+          let deductwallet = +detials.amount - +user.reward;
+          user.reward = 0;
+          user.wallet -= +deductwallet;
+        } else {
+          user.reward -= +detials.amount;
+        }
+        // user.markModified()
+        console.log(user);
+      } else {
+        throw new NotAcceptableException("Not enough balance");
+      }
+      existingExchange.match.details.push(detials);
+      existingExchange.markModified("match");
+      await existingExchange.save();
+      await user.save();
+      console.log(existingExchange.match.details);
       // Save the updated exchange document
       const updatedExchange = await existingExchange.save();
 

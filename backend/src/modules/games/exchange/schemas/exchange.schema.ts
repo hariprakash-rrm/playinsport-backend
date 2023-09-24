@@ -10,6 +10,12 @@ export class Exchange {
   @Prop()
   name: string;
 
+  @Prop()
+  gameType:number
+
+  @Prop()
+  isFinalized: boolean;
+
   @Prop({ type: Object })
   match: {
     team1: string;
@@ -24,7 +30,7 @@ export class Exchange {
 
     endTime: number;
 
-    details: [];
+    details: object[];
 
     isFinalized: boolean;
 
@@ -32,7 +38,7 @@ export class Exchange {
   };
 
   @Prop({ type: Object })
-  Toss: {
+  toss: {
     team1: string;
 
     team2: string;
@@ -53,7 +59,7 @@ export class Exchange {
   };
 
   @Prop()
-  team1: [
+  lambi: [
     {
       team: string;
 
@@ -74,7 +80,7 @@ export class Exchange {
       message: string;
     }
   ];
-  isFinalized: boolean;
+ 
 }
 
 export const ExchangeSchema = SchemaFactory.createForClass(Exchange);
