@@ -12,7 +12,7 @@ import {
   UnauthorizedException,
   ForbiddenException,
 } from "@nestjs/common";
-import { CreateMatchDto } from "./dto/CreateExchangeDto";
+import { CreateMatchDto, CreateTossDto, CreateExchDto } from "./dto/CreateExchangeDto";
 import { ExchangeService } from "./exchange.service";
 import { AuthGuard } from "@nestjs/passport";
 import { UpdateMatchDto } from "./dto/updateExchangeDto";
@@ -25,13 +25,13 @@ export class ExchangeController {
 
   // POST /exchange
   @Post()
-  async create(@Request() req: any,@Body("name") name: string): Promise<any> {
+  async create(@Request() req: any,@Body("name") data: CreateExchDto): Promise<any> {
     const user = req.user;
     if (!user.isAdmin) {
       throw new UnauthorizedException("You are not an admin");
     }
     try {
-      return await this.exchangeService.createExchange(name);
+      return await this.exchangeService.createExchange(data);
     } catch (error) {
       throw new NotAcceptableException(error);
     }
@@ -99,6 +99,23 @@ export class ExchangeController {
       throw new NotAcceptableException(error);
     }
   }
+   // POST /exchange/:id/match
+   @Post(":id/toss")
+   async createToss(
+     @Request() req:any,
+     @Param("id") id: number,
+     @Body() matchData: CreateTossDto
+   ): Promise<any> {
+     const user = req.user;
+     if (!user.isAdmin) {
+       throw new UnauthorizedException("You are not an admin");
+     }
+     try {
+       return await this.exchangeService.createToss(id, matchData);
+     } catch (error) {
+       throw new NotAcceptableException(error);
+     }
+   }
 
   // PUT /exchange/match/:id
   @Put('match/:id')
@@ -133,4 +150,38 @@ export class ExchangeController {
       userLockFlags.set(userId, false);
     }
   }
+
+   // PUT /exchange/match/:id
+   @Put('Toss/:id')
+   async updateToss(@Param('id') exchangeId: number, @Body() matchData: UpdateMatchDto): Promise<any> {
+     try {
+       const updatedExchange = await this.exchangeService.updateMatch(exchangeId, matchData);
+       return updatedExchange;
+     } catch (error) {
+       throw new NotAcceptableException(error);
+     }
+   }
+ 
+   // PUT /exchange/match/:id
+   @Post('Toss/predict/:id')
+   async predictToss(@Request() req:any,@Param('id') exchangeId: number, @Body() matchData: any): Promise<any> {
+     const user=req.user
+     const userId = user.number
+ 
+       // Check if the user is locked
+       if (userLockFlags.get(userId)) {
+         throw new NotAcceptableException('Please Wait');
+       }
+ 
+     try {
+       userLockFlags.set(userId, true);
+       const updatedExchange = await this.exchangeService.predictMatch(exchangeId,user, matchData);
+       return updatedExchange;
+     } catch (error:any) {
+       throw new NotAcceptableException(error);
+     } finally {
+       // Always set the user's lock flag (rate limit) to false in the finally block
+       userLockFlags.set(userId, false);
+     }
+   }
 }
